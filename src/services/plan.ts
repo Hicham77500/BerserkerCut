@@ -35,7 +35,7 @@ export class PlanService {
       const dayOfWeek = today.getDay();
       
       // Déterminer le type de jour (training/rest)
-      const trainingDay = user.profile.trainingDays.find(td => td.dayOfWeek === dayOfWeek);
+      const trainingDay = user.profile.training.trainingDays.find(td => td.dayOfWeek === dayOfWeek);
       const dayType = trainingDay ? 'training' : 'rest';
       
       // Calculer les besoins caloriques
@@ -153,7 +153,8 @@ export class PlanService {
    * Calculer les calories quotidiennes nécessaires
    */
   private static calculateDailyCalories(user: User, dayType: 'training' | 'rest'): number {
-    const { weight, height, age, gender, activityLevel, objective } = user.profile;
+    const { weight, height, age, gender, activityLevel } = user.profile.health;
+    const { objective } = user.profile;
     
     // Calcul du métabolisme de base (Harris-Benedict)
     let bmr: number;
@@ -196,7 +197,8 @@ export class PlanService {
    * Générer un plan nutritionnel
    */
   private static generateNutritionPlan(user: User, totalCalories: number, dayType: 'training' | 'rest'): NutritionPlan {
-    const { weight, objective } = user.profile;
+    const { weight } = user.profile.health;
+    const { objective } = user.profile;
     
     // Calcul des macros
     let proteinPerKg: number;
@@ -345,7 +347,7 @@ export class PlanService {
       evening: []
     };
 
-    user.profile.availableSupplements.forEach(supplement => {
+    user.profile.supplements.available.forEach(supplement => {
       if (!supplement.available) return;
 
       switch (supplement.type) {

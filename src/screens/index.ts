@@ -4,5 +4,5 @@
 
 export { LoginScreen } from './LoginScreen';
 export { OnboardingScreen } from './OnboardingScreen';
-export { DashboardScreen } from './DashboardScreen';
+export { DashboardScreen } from './DashboardScreenFixed';
 export { ProfileScreen } from './ProfileScreen';

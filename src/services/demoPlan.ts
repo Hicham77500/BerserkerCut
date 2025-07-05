@@ -14,7 +14,7 @@ export class DemoPlanService {
     const dayOfWeek = today.getDay();
     
     // Déterminer si c'est un jour d'entraînement
-    const isTrainingDay = user.profile.trainingDays.some(td => td.dayOfWeek === dayOfWeek);
+    const isTrainingDay = user.profile.training.trainingDays.some(td => td.dayOfWeek === dayOfWeek);
     const dayType = isTrainingDay ? 'training' : 'rest';
     
     const dailyPlan: DailyPlan = {

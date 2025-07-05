@@ -66,16 +66,37 @@ export const OnboardingScreen: React.FC = () => {
 
       await updateProfile({
         name: formData.name,
-        weight: formData.weight,
-        height: formData.height,
-        age: formData.age,
-        gender: formData.gender,
-        activityLevel: formData.activityLevel,
         objective: formData.objective,
-        trainingDays,
-        availableSupplements,
         allergies: formData.allergies,
-        foodPreferences: formData.foodPreferences
+        foodPreferences: formData.foodPreferences,
+        health: {
+          weight: formData.weight,
+          height: formData.height,
+          age: formData.age,
+          gender: formData.gender,
+          activityLevel: formData.activityLevel,
+          averageSleepHours: 8,
+          dataSource: {
+            type: 'manual',
+            isConnected: false,
+            permissions: []
+          },
+          lastUpdated: new Date(),
+          isManualEntry: true
+        },
+        training: {
+          trainingDays,
+          experienceLevel: 'beginner',
+          preferredTimeSlots: ['evening']
+        },
+        supplements: {
+          available: availableSupplements,
+          preferences: {
+            preferNatural: false,
+            budgetRange: 'medium',
+            allergies: []
+          }
+        }
       });
 
       Alert.alert('Succès', 'Profil configuré avec succès !');

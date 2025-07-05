@@ -10,7 +10,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { PlanProvider } from '../hooks/usePlan';
-import { LoginScreen, OnboardingScreen, ProfileScreen } from '../screens';
+import { LoginScreen } from '../screens/LoginScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { OnboardingScreen } from '../screens/OnboardingScreenModern';
 import { DashboardScreen } from '../screens/DashboardScreenFixed';
 
 const Stack = createStackNavigator();

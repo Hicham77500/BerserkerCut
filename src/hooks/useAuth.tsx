@@ -3,7 +3,6 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User as FirebaseUser } from 'firebase/auth';
 import { AuthService } from '../services/auth';
 import { User, AuthContextType, UserProfile } from '../types';
 
@@ -18,18 +17,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = AuthService.onAuthStateChanged(async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        try {
-          const userData = await AuthService.getUserData(firebaseUser.uid);
-          setUser(userData);
-        } catch (error) {
-          console.error('Erreur lors de la récupération des données utilisateur:', error);
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
+    const unsubscribe = AuthService.onAuthStateChanged(async (user: User | null) => {
+      setUser(user);
       setLoading(false);
     });
 

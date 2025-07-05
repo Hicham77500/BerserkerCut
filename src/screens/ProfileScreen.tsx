@@ -72,17 +72,17 @@ export const ProfileScreen: React.FC = () => {
 
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Poids</Text>
-          <Text style={styles.infoValue}>{user.profile.weight} kg</Text>
+          <Text style={styles.infoValue}>{user.profile.health.weight} kg</Text>
         </View>
 
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Taille</Text>
-          <Text style={styles.infoValue}>{user.profile.height} cm</Text>
+          <Text style={styles.infoValue}>{user.profile.health.height} cm</Text>
         </View>
 
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Âge</Text>
-          <Text style={styles.infoValue}>{user.profile.age} ans</Text>
+          <Text style={styles.infoValue}>{user.profile.health.age} ans</Text>
         </View>
 
         <View style={styles.infoItem}>
@@ -96,8 +96,8 @@ export const ProfileScreen: React.FC = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Jours d'entraînement</Text>
-        {user.profile.trainingDays.length > 0 ? (
-          user.profile.trainingDays.map((day, index) => (
+        {user.profile.training.trainingDays.length > 0 ? (
+          user.profile.training.trainingDays.map((day, index) => (
             <View key={index} style={styles.trainingDay}>
               <Text style={styles.trainingDayText}>
                 {['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'][day.dayOfWeek]}
@@ -114,8 +114,8 @@ export const ProfileScreen: React.FC = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Suppléments disponibles</Text>
-        {user.profile.availableSupplements.length > 0 ? (
-          user.profile.availableSupplements.map((supplement, index) => (
+        {user.profile.supplements.available.length > 0 ? (
+          user.profile.supplements.available.map((supplement, index) => (
             <View key={index} style={styles.supplementItem}>
               <Text style={styles.supplementName}>{supplement.name}</Text>
               <Text style={styles.supplementDosage}>{supplement.dosage}</Text>

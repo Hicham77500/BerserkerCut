@@ -11,17 +11,69 @@ export interface User {
 }
 
 export interface UserProfile {
+  // Informations de base
   name: string;
+  
+  // Objectifs et préférences
+  objective: 'cutting' | 'recomposition' | 'maintenance';
+  allergies: string[];
+  foodPreferences: string[];
+  
+  // Données de santé et activité
+  health: HealthProfile;
+  
+  // Entraînement
+  training: TrainingProfile;
+  
+  // Suppléments
+  supplements: SupplementProfile;
+}
+
+export interface HealthProfile {
+  // Informations physiques de base
   weight: number; // en kg
   height: number; // en cm
   age: number;
   gender: 'male' | 'female';
+  
+  // Niveau d'activité général
   activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-  objective: 'cutting' | 'recomposition' | 'maintenance';
+  
+  // Données de sommeil
+  averageSleepHours: number; // heures par nuit
+  
+  // Données d'activité (optionnelles)
+  averageDailySteps?: number;
+  restingHeartRate?: number; // bpm
+  
+  // Source des données pour future intégration
+  dataSource: HealthDataSource;
+  
+  // Métadonnées
+  lastUpdated: Date;
+  isManualEntry: boolean;
+}
+
+export interface TrainingProfile {
   trainingDays: TrainingDay[];
-  availableSupplements: Supplement[];
-  allergies: string[];
-  foodPreferences: string[];
+  experienceLevel: 'beginner' | 'intermediate' | 'advanced';
+  preferredTimeSlots: ('morning' | 'afternoon' | 'evening')[];
+}
+
+export interface SupplementProfile {
+  available: Supplement[];
+  preferences: {
+    preferNatural: boolean;
+    budgetRange: 'low' | 'medium' | 'high';
+    allergies: string[];
+  };
+}
+
+export interface HealthDataSource {
+  type: 'manual' | 'apple_healthkit' | 'google_fit' | 'other';
+  lastSyncDate?: Date;
+  permissions?: string[];
+  isConnected: boolean;
 }
 
 export interface TrainingDay {

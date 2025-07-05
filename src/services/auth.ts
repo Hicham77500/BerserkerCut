@@ -33,16 +33,37 @@ export class AuthService {
       // Créer le profil utilisateur initial
       const defaultProfile: UserProfile = {
         name: '',
-        weight: 0,
-        height: 0,
-        age: 0,
-        gender: 'male',
-        activityLevel: 'moderate',
         objective: 'cutting',
-        trainingDays: [],
-        availableSupplements: [],
         allergies: [],
-        foodPreferences: []
+        foodPreferences: [],
+        health: {
+          weight: 0,
+          height: 0,
+          age: 0,
+          gender: 'male',
+          activityLevel: 'moderate',
+          averageSleepHours: 8,
+          dataSource: {
+            type: 'manual',
+            isConnected: false,
+            permissions: []
+          },
+          lastUpdated: new Date(),
+          isManualEntry: true
+        },
+        training: {
+          trainingDays: [],
+          experienceLevel: 'beginner',
+          preferredTimeSlots: ['evening']
+        },
+        supplements: {
+          available: [],
+          preferences: {
+            preferNatural: false,
+            budgetRange: 'medium',
+            allergies: []
+          }
+        }
       };
 
       const newUser: User = {
@@ -122,7 +143,8 @@ export class AuthService {
    */
   static async updateProfile(userId: string, profileUpdates: Partial<UserProfile>): Promise<void> {
     if (USE_DEMO_MODE) {
-      return DemoAuthService.updateProfile(userId, profileUpdates);
+      await DemoAuthService.updateProfile(profileUpdates);
+      return;
     }
     
     try {
@@ -142,7 +164,7 @@ export class AuthService {
    */
   static async getUserData(userId: string): Promise<User | null> {
     if (USE_DEMO_MODE) {
-      return DemoAuthService.getUserData(userId);
+      return DemoAuthService.getCurrentUser();
     }
     
     try {
@@ -170,11 +192,19 @@ export class AuthService {
   /**
    * Observer les changements d'état d'authentification
    */
-  static onAuthStateChanged(callback: (user: FirebaseUser | null) => void): () => void {
+  static onAuthStateChanged(callback: (user: User | null) => void): () => void {
     if (USE_DEMO_MODE) {
       return DemoAuthService.onAuthStateChanged(callback);
     }
     
-    return onAuthStateChanged(auth, callback);
+    return onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        // Convertir Firebase User en notre User personnalisé
+        const userData = await this.getUserData(firebaseUser.uid);
+        callback(userData);
+      } else {
+        callback(null);
+      }
+    });
   }
 }
