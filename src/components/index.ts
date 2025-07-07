@@ -7,3 +7,4 @@ export { Card } from './Card';
 export { Input } from './Input';
 export { MacroCard } from './MacroCard';
 export { HealthStep } from './HealthStep';
+export { OnboardingTrainingStep } from './OnboardingTrainingStep';

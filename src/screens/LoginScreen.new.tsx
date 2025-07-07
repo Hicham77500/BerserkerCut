@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...Typography.body,
-    color: Colors.textSecondary,
+    color: Colors.textLight,
     textAlign: 'center',
   },
   formCard: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   formTitle: {
     ...Typography.h2,
-    color: Colors.textPrimary,
+    color: Colors.text,
     textAlign: 'center',
     marginBottom: Spacing.lg,
   },
@@ -175,12 +175,12 @@ const styles = StyleSheet.create({
   },
   demoTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: Colors.text,
     marginBottom: Spacing.sm,
   },
   demoSubtitle: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: Colors.textLight,
     textAlign: 'center',
     marginBottom: Spacing.md,
   },

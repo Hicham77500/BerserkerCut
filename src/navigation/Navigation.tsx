@@ -32,9 +32,9 @@ const TabNavigator: React.FC = () => {
           backgroundColor: 'white',
           borderTopWidth: 1,
           borderTopColor: '#ecf0f1',
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
+          paddingBottom: 20, // Augmenté pour plus d'espace avec la barre native
+          paddingTop: 15,    // Augmenté pour remonter les icônes/textes
+          height: 85,        // Augmenté pour compenser les paddings
         },
       }}
     >

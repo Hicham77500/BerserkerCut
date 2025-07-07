@@ -15,8 +15,9 @@ import {
 } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { UserProfile, HealthProfile, TrainingProfile, SupplementProfile } from '../types';
+import { ExtendedTrainingProfile } from '../types/TrainingProfile';
 import { Colors, Typography, Spacing, BorderRadius } from '../utils/theme';
-import { Card, Button, Input, HealthStep } from '../components';
+import { Card, Button, Input, HealthStep, OnboardingTrainingStep } from '../components';
 import HealthService from '../services/healthService';
 
 interface OnboardingStep {
@@ -27,7 +28,7 @@ interface OnboardingStep {
 }
 
 export const OnboardingScreen: React.FC = () => {
-  const { updateProfile } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   
@@ -39,6 +40,8 @@ export const OnboardingScreen: React.FC = () => {
   });
 
   const [healthData, setHealthData] = useState<Partial<HealthProfile>>({});
+  
+  const [extendedTrainingData, setExtendedTrainingData] = useState<Partial<ExtendedTrainingProfile>>({});
   
   const [trainingData, setTrainingData] = useState<Partial<TrainingProfile>>({
     trainingDays: [],
@@ -69,7 +72,7 @@ export const OnboardingScreen: React.FC = () => {
         setHealthData(stepData);
         break;
       case 2:
-        setTrainingData(stepData);
+        setExtendedTrainingData(stepData);
         break;
       case 3:
         setSupplementData(stepData);
@@ -185,14 +188,15 @@ export const OnboardingScreen: React.FC = () => {
     },
     {
       id: 2,
-      title: 'Entraînement',
-      subtitle: 'Configurez votre routine d\'entraînement',
-      component: (
-        <TrainingStep
-          initialData={trainingData}
-          onComplete={handleStepComplete}
+      title: 'Entraînement & Santé',
+      subtitle: 'Configurez vos objectifs et déclarez votre état de santé',
+      component: user ? (
+        <OnboardingTrainingStep
+          userId={user.id}
+          onComplete={(data: ExtendedTrainingProfile) => handleStepComplete(data)}
+          onBack={handleBack}
         />
-      ),
+      ) : null,
     },
     {
       id: 3,
@@ -322,21 +326,21 @@ const BasicInfoStep: React.FC<StepProps> = ({ initialData, onComplete }) => {
         <Text style={styles.sectionTitle}>Objectif principal</Text>
         <View style={styles.optionColumn}>
           <Button
-            title="🔥 Sèche (perte de graisse)"
-            variant={objective === 'cutting' ? 'primary' : 'outline'}
-            onPress={() => setObjective('cutting')}
-            style={styles.fullWidthButton}
-          />
-          <Button
-            title="⚖️ Recomposition corporelle"
+            title="💪 Prise de masse 💪"
             variant={objective === 'recomposition' ? 'primary' : 'outline'}
             onPress={() => setObjective('recomposition')}
             style={styles.fullWidthButton}
           />
           <Button
-            title="📈 Maintien du poids"
+            title="⚖️ Maintien du poids ⚖️"
             variant={objective === 'maintenance' ? 'primary' : 'outline'}
             onPress={() => setObjective('maintenance')}
+            style={styles.fullWidthButton}
+          />
+          <Button
+            title="🔥 Sèche (perte de graisse) 🔥"
+            variant={objective === 'cutting' ? 'primary' : 'outline'}
+            onPress={() => setObjective('cutting')}
             style={styles.fullWidthButton}
           />
         </View>
