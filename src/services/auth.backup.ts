@@ -74,6 +74,16 @@ export class AuthService {
    * @throws {Error} Si l'email est déjà utilisé
    * @throws {Error} Si le mot de passe est trop faible
    * @throws {Error} Si la création du profil Firestore échoue
+   * 
+   * @example
+   * ```typescript
+   * try {
+   *   const newUser = await AuthService.register('john@example.com', 'securePassword123');
+   *   console.log('Compte créé pour:', newUser.email);
+   * } catch (error) {
+   *   console.error('Erreur création compte:', error.message);
+   * }
+   * ```
    */
   static async register(email: string, password: string): Promise<User> {
     // Utilisation du mode démo pendant le développement
@@ -163,7 +173,7 @@ export class AuthService {
        * Gestion centralisée des erreurs d'authentification
        * @description Transforme les erreurs Firebase en messages utilisateur compréhensibles
        */
-      throw new Error(AuthService.formatAuthError(error.code, error.message));
+      throw new Error(this.formatAuthError(error.code, error.message));
     }
   }
 
@@ -180,6 +190,16 @@ export class AuthService {
    * @throws {Error} Si les credentials sont incorrects
    * @throws {Error} Si le compte n'existe pas
    * @throws {Error} Si le profil Firestore est inaccessible
+   * 
+   * @example
+   * ```typescript
+   * try {
+   *   const user = await AuthService.login('john@example.com', 'password123');
+   *   console.log('Connexion réussie:', user.profile.name);
+   * } catch (error) {
+   *   console.error('Erreur connexion:', error.message);
+   * }
+   * ```
    */
   static async login(email: string, password: string): Promise<User> {
     // Mode démo pour le développement
@@ -217,129 +237,141 @@ export class AuthService {
       return user;
       
     } catch (error: any) {
-      throw new Error(AuthService.formatAuthError(error.code, error.message));
+      throw new Error(this.formatAuthError(error.code, error.message));
+    }
+  }
+
+      // Sauvegarder dans Firestore
+      await setDoc(doc(db, 'users', firebaseUser.uid), {
+        ...newUser,
+        createdAt: newUser.createdAt.toISOString(),
+        updatedAt: newUser.updatedAt.toISOString()
+      });
+
+      return newUser;
+    } catch (error) {
+      console.error('Erreur lors de l\'inscription:', error);
+      throw error;
     }
   }
 
   /**
-   * Déconnecte l'utilisateur actuel
-   * @description Use case de déconnexion. Nettoie la session Firebase
-   * et déclenche les listeners d'état d'authentification.
-   * 
-   * @throws {Error} Si la déconnexion échoue
+   * Connexion utilisateur
+   */
+  static async login(email: string, password: string): Promise<User> {
+    if (USE_DEMO_MODE) {
+      return DemoAuthService.login(email, password);
+    }
+    
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+      
+      // Récupérer les données utilisateur depuis Firestore
+      const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+      
+      if (!userDoc.exists()) {
+        throw new Error('Profil utilisateur non trouvé');
+      }
+
+      const userData = userDoc.data();
+      
+      return {
+        id: firebaseUser.uid,
+        email: firebaseUser.email!,
+        profile: userData.profile,
+        createdAt: new Date(userData.createdAt),
+        updatedAt: new Date(userData.updatedAt)
+      };
+    } catch (error) {
+      console.error('Erreur lors de la connexion:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Déconnexion
    */
   static async logout(): Promise<void> {
     if (USE_DEMO_MODE) {
       return DemoAuthService.logout();
     }
-
+    
     try {
       await signOut(auth);
-    } catch (error: any) {
-      throw new Error(`Erreur lors de la déconnexion: ${error.message}`);
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      throw error;
     }
   }
 
   /**
-   * Met à jour le profil utilisateur
-   * @description Use case de mise à jour du profil. Synchronise les changements
-   * avec Firestore et maintient la cohérence des données.
-   * 
-   * @param userId - ID de l'utilisateur à mettre à jour
-   * @param profileUpdates - Données du profil à mettre à jour (partial)
-   * 
-   * @returns Promise<void>
-   * 
-   * @throws {Error} Si l'utilisateur n'est pas authentifié
-   * @throws {Error} Si la mise à jour Firestore échoue
+   * Mettre à jour le profil utilisateur
    */
   static async updateProfile(userId: string, profileUpdates: Partial<UserProfile>): Promise<void> {
     if (USE_DEMO_MODE) {
       await DemoAuthService.updateProfile(profileUpdates);
       return;
     }
-
+    
     try {
-      await updateDoc(doc(db, 'users', userId), {
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, {
         profile: profileUpdates,
-        updatedAt: new Date() // Mise à jour du timestamp
+        updatedAt: new Date().toISOString()
       });
-    } catch (error: any) {
-      throw new Error(`Erreur lors de la mise à jour du profil: ${error.message}`);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du profil:', error);
+      throw error;
     }
   }
 
   /**
-   * Écoute les changements d'état d'authentification
-   * @description Observable pour réagir aux changements de session utilisateur.
-   * Utilisé par le contexte d'authentification pour maintenir l'état global.
-   * 
-   * @param callback - Fonction appelée à chaque changement d'état
-   * 
-   * @returns Fonction de désabonnement
-   * 
-   * @example
-   * ```typescript
-   * const unsubscribe = AuthService.onAuthStateChanged((user) => {
-   *   if (user) {
-   *     // Utilisateur connecté
-   *     console.log('User logged in:', user.email);
-   *   } else {
-   *     // Utilisateur déconnecté
-   *     console.log('User logged out');
-   *   }
-   * });
-   * 
-   * // Nettoyer l'abonnement
-   * unsubscribe();
-   * ```
+   * Récupérer les données utilisateur
    */
-  static onAuthStateChanged(callback: (user: FirebaseUser | null) => void): () => void {
+  static async getUserData(userId: string): Promise<User | null> {
     if (USE_DEMO_MODE) {
-      // Pour le mode démo, on simule le comportement Firebase
-      return () => {}; // Fonction de désabonnement vide pour la démo
+      return DemoAuthService.getCurrentUser();
     }
+    
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      
+      if (!userDoc.exists()) {
+        return null;
+      }
 
-    return onAuthStateChanged(auth, callback);
+      const userData = userDoc.data();
+      
+      return {
+        id: userId,
+        email: userData.email,
+        profile: userData.profile,
+        createdAt: new Date(userData.createdAt),
+        updatedAt: new Date(userData.updatedAt)
+      };
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données utilisateur:', error);
+      return null;
+    }
   }
 
   /**
-   * Formate les erreurs Firebase en messages utilisateur compréhensibles
-   * @description Transforme les codes d'erreur techniques Firebase en messages
-   * adaptés à l'utilisateur final, en français.
-   * 
-   * @private
-   * @param errorCode - Code d'erreur Firebase
-   * @param originalMessage - Message d'erreur original
-   * 
-   * @returns Message d'erreur formaté pour l'utilisateur
+   * Observer les changements d'état d'authentification
    */
-  private static formatAuthError(errorCode: string, originalMessage: string): string {
-    /**
-     * Mapping des erreurs Firebase les plus courantes
-     * @description Couvre les cas d'usage principaux pour améliorer l'UX
-     */
-    const errorMessages: Record<string, string> = {
-      // Erreurs d'inscription
-      'auth/email-already-in-use': 'Cette adresse email est déjà utilisée.',
-      'auth/invalid-email': 'Adresse email invalide.',
-      'auth/weak-password': 'Le mot de passe doit contenir au moins 6 caractères.',
-      
-      // Erreurs de connexion
-      'auth/user-not-found': 'Aucun compte associé à cette adresse email.',
-      'auth/wrong-password': 'Mot de passe incorrect.',
-      'auth/invalid-credential': 'Email ou mot de passe incorrect.',
-      
-      // Erreurs réseau et système
-      'auth/network-request-failed': 'Erreur de connexion. Vérifiez votre connexion internet.',
-      'auth/too-many-requests': 'Trop de tentatives. Veuillez réessayer plus tard.',
-      
-      // Erreurs de session
-      'auth/user-disabled': 'Ce compte a été désactivé.',
-      'auth/operation-not-allowed': 'Cette opération n\'est pas autorisée.'
-    };
-
-    // Retourne le message personnalisé ou le message original si non mappé
-    return errorMessages[errorCode] || `Erreur d'authentification: ${originalMessage}`;
+  static onAuthStateChanged(callback: (user: User | null) => void): () => void {
+    if (USE_DEMO_MODE) {
+      return DemoAuthService.onAuthStateChanged(callback);
+    }
+    
+    return onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        // Convertir Firebase User en notre User personnalisé
+        const userData = await this.getUserData(firebaseUser.uid);
+        callback(userData);
+      } else {
+        callback(null);
+      }
+    });
   }
 }
