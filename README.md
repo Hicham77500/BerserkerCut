@@ -83,6 +83,7 @@ src/
    - Activer Authentication (email/password)
    - Activer Firestore
    - Mettre à jour les clés dans `app.json`
+   - Voir [docs/setup/FIREBASE_SETUP.md](./docs/setup/FIREBASE_SETUP.md) pour plus de détails
 
 4. **Lancer l'application (iOS)**
    ```bash
@@ -210,7 +211,35 @@ service cloud.firestore {
    - Optimisations Lighthouse
    - Déploiement production
 
-Pour plus de détails, voir [DEVELOPMENT_ROADMAP.md](./DEVELOPMENT_ROADMAP.md)
+Pour plus de détails, voir [docs/development/DEVELOPMENT_ROADMAP.md](./docs/development/DEVELOPMENT_ROADMAP.md)
+
+## 📚 Documentation
+
+La documentation complète du projet est organisée dans le dossier `docs/` :
+
+### 🛠️ Setup & Configuration
+- [Firebase Setup](./docs/setup/FIREBASE_SETUP.md) - Configuration Firebase complète
+- [Firebase Activation](./docs/setup/FIREBASE_ACTIVATION.md) - Activation des services
+- [Firestore Schema](./docs/setup/FIRESTORE_SCHEMA.md) - Structure de la base de données
+- [Firebase Troubleshooting](./docs/setup/FIREBASE_TROUBLESHOOTING.md) - Résolution de problèmes
+
+### 🔧 Development
+- [Development Roadmap](./docs/development/DEVELOPMENT_ROADMAP.md) - Stratégie iOS→PWA
+- [Development Log](./docs/development/DEVELOPMENT_LOG.md) - Journal de développement
+- [Deployment Guide](./docs/development/DEPLOYMENT.md) - Guide de déploiement
+- [Testing Guide](./docs/development/TESTING.md) - Guide des tests
+
+### 🚀 Features
+- [Health Improvements](./docs/features/HEALTH_IMPROVEMENTS.md) - Améliorations santé
+- [Mission Accomplished](./docs/features/MISSION_ACCOMPLISHED.md) - Fonctionnalités complétées
+- [Onboarding Training](./docs/features/ONBOARDING_TRAINING_IMPLEMENTATION.md) - Implémentation onboarding
+
+### 📋 Releases
+- [Release Notes v1.0.1](./docs/releases/RELEASE_NOTES_v1.0.1.md)
+- [Release Notes v1.0.2](./docs/releases/RELEASE_NOTES_v1.0.2.md)
+- [Release Notes v1.0.4](./docs/releases/RELEASE_NOTES_v1.0.4.md) - iOS-first + PWA prep
+- [Migration Notes v1.0.4](./docs/releases/MIGRATION_NOTES_v1.0.4.md) - Architecture migration
+- [PWA Transition v1.0.4](./docs/releases/PWA_TRANSITION_v1.0.4.md) - Plan transition PWA
 
 ## 🤝 Contribution
 

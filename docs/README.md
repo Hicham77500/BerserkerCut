@@ -1,21 +1,34 @@
-# Documentation BerserkerCut
+# BerserkerCut - Documentation 📚
 
-Ce dossier contient toute la documentation du projet BerserkerCut organisée par catégorie.
+Bienvenue dans la documentation complète de BerserkerCut ! Cette documentation est organisée de manière logique pour faciliter la navigation et la maintenance.
 
-## 📁 Structure de la documentation
+## 📁 Structure de la Documentation
 
-### 🛠️ Setup (`/setup/`)
-Configuration et installation des services externes :
-- `FIREBASE_SETUP.md` - Configuration initiale de Firebase
-- `FIREBASE_ACTIVATION.md` - Activation des services Firebase
-- `FIREBASE_TROUBLESHOOTING.md` - Résolution des problèmes Firebase
-- `FIRESTORE_SCHEMA.md` - Schéma de base de données Firestore
+### 🛠️ [setup/](./setup/) - Configuration & Installation
+Configuration initiale du projet et services externes :
+- **Firebase Setup** - Configuration complète Firebase
+- **Firebase Activation** - Activation des services Firebase
+- **Firestore Schema** - Structure de la base de données
+- **Firebase Troubleshooting** - Guide de résolution de problèmes
 
-### 💻 Development (`/development/`)
-Documentation de développement et processus :
-- `DEVELOPMENT_LOG.md` - Journal de développement
-- `TESTING.md` - Guide de tests
-- `DEPLOYMENT.md` - Processus de déploiement
+### � [development/](./development/) - Développement
+Documentation technique pour les développeurs :
+- **Development Roadmap** - Stratégie iOS-first → PWA
+- **Development Log** - Journal détaillé du projet
+- **Deployment Guide** - Guide de déploiement iOS & PWA
+- **Testing Guide** - Stratégies et outils de test
+
+### 🚀 [features/](./features/) - Fonctionnalités
+Documentation des fonctionnalités spécifiques :
+- **Health Improvements** - Améliorations liées à la santé
+- **Mission Accomplished** - Fonctionnalités terminées
+- **Onboarding Training** - Système d'onboarding
+
+### 📋 [releases/](./releases/) - Versions & Releases
+Historique des versions et migrations :
+- **Release Notes** - Notes de chaque version
+- **Migration Notes** - Guides de migration
+- **PWA Transition** - Plan de transition PWA
 
 ### 🚀 Releases (`/releases/`)
 Notes de version et historique des mises à jour :

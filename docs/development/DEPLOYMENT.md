@@ -1,263 +1,318 @@
-# 🚀 Guide de Déploiement BerserkerCut
+# BerserkerCut - Deployment Guide 🚀
 
-## Préparation avant déploiement
+## Stratégie de Déploiement
 
-### 1. Vérification du code
-```bash
-# Compilation TypeScript
-npx tsc --noEmit
+Ce guide couvre le déploiement pour les deux phases du projet :
+1. **Phase 1** : iOS Native (App Store)
+2. **Phase 2** : PWA (Web)
 
-# Vérification des packages
-npm audit
+---
 
-# Tests manuels
-npm start
-```
+## 📱 Phase 1 : Déploiement iOS
 
-### 2. Configuration Firebase
-- [ ] Projet Firebase configuré en production
-- [ ] Règles de sécurité Firestore déployées
-- [ ] Authentification email/password activée
-- [ ] Clés de configuration mises à jour dans `app.json`
+### Pré-requis
+- Compte Apple Developer ($99/an)
+- Xcode installé sur macOS
+- Certificats de développement et distribution configurés
+- Profils de provisioning créés
 
-### 3. Configuration Expo
-```bash
-# Installation du CLI Expo
-npm install -g @expo/cli
+### Configuration App Store Connect
 
-# Connexion au compte Expo
-expo login
-
-# Configuration du projet
-expo install --fix
-```
-
-## Déploiement sur Expo
-
-### 1. Build de développement
-```bash
-# Build pour Android
-expo build:android
-
-# Build pour iOS
-expo build:ios
-```
-
-### 2. Publication sur Expo
-```bash
-# Publication sur Expo Go
-expo publish
-
-# Ou avec un canal spécifique
-expo publish --release-channel production
-```
-
-### 3. Configuration des builds
-```bash
-# Configuration EAS Build
-npm install -g eas-cli
-eas login
-eas build:configure
-
-# Build pour les stores
-eas build --platform android
-eas build --platform ios
-```
-
-## Déploiement sur les Stores
-
-### Google Play Store (Android)
-
-1. **Préparation**
+1. **Créer l'application**
    ```bash
-   # Générer l'APK signé
-   eas build --platform android --profile production
+   # Dans App Store Connect
+   - Nom : BerserkerCut
+   - Bundle ID : com.anonymous.BerserkerCut
+   - Plateforme : iOS
    ```
 
-2. **Upload sur Play Console**
-   - Créer une nouvelle application
-   - Uploader l'APK/AAB
-   - Configurer les métadonnées
-   - Définir les captures d'écran
-   - Publier en test interne puis production
+2. **Métadonnées App Store**
+   - Description courte et longue
+   - Mots-clés : nutrition, fitness, sèche, musculation
+   - Catégorie : Santé et remise en forme
+   - Screenshots iPhone/iPad
 
-3. **Configuration Play Console**
-   - Politique de confidentialité
-   - Classification du contenu
-   - Tarification et distribution
-   - Consentement des applications
+### Build et Soumission
 
-### Apple App Store (iOS)
+#### Development Build
+```bash
+# Test local
+npm run ios
 
-1. **Préparation**
-   ```bash
-   # Générer l'IPA
-   eas build --platform ios --profile production
-   ```
+# Build pour simulateur
+expo run:ios --device
+```
 
-2. **Upload sur App Store Connect**
-   - Créer une nouvelle app
-   - Uploader l'IPA via Transporter
-   - Configurer les informations de l'app
-   - Soumettre pour révision
+#### TestFlight Build
+```bash
+# Build pour TestFlight
+expo build:ios --type archive
 
-3. **Configuration App Store Connect**
-   - Métadonnées de l'app
-   - Captures d'écran pour tous les appareils
-   - Politique de confidentialité
-   - Informations de contact
+# Ou avec EAS (recommandé)
+npm install -g @expo/eas-cli
+eas build --platform ios --profile production
+```
 
-## Configuration de production
+#### Soumission App Store
+```bash
+# Upload via Xcode ou Transporter
+# Puis soumission dans App Store Connect
 
-### 1. Variables d'environnement
-```javascript
-// app.json - Configuration production
+# Review checklist :
+- Métadonnées complètes
+- Screenshots HD
+- Politique de confidentialité
+- Tests de fonctionnalité
+```
+
+### Configuration Firebase pour Production
+
+```typescript
+// app.json - Production Config
 {
-  "expo": {
-    "name": "BerserkerCut",
-    "slug": "berserker-cut",
-    "version": "1.0.0",
-    "extra": {
-      "firebaseApiKey": "PRODUCTION_API_KEY",
-      "firebaseAuthDomain": "berserkercut-prod.firebaseapp.com",
-      "firebaseProjectId": "berserkercut-prod",
-      // ... autres clés de production
-    }
+  "extra": {
+    "firebaseApiKey": "AIza...", // Production key
+    "firebaseAuthDomain": "berserkercut-prod.firebaseapp.com",
+    "firebaseProjectId": "berserkercut-prod",
+    "firebaseStorageBucket": "berserkercut-prod.appspot.com",
+    "firebaseMessagingSenderId": "...",
+    "firebaseAppId": "..."
   }
 }
 ```
 
-### 2. Optimisations
-```javascript
-// eas.json
+### Tests Pré-Publication
+
+1. **Tests Fonctionnels**
+   - Authentification (login/register)
+   - Onboarding complet
+   - Génération de plans
+   - Sauvegarde données
+
+2. **Tests Performance**
+   - Temps de démarrage < 3s
+   - 60 FPS constant
+   - Utilisation mémoire optimale
+
+3. **Tests Appareils**
+   - iPhone SE (écran petit)
+   - iPhone 15 Pro (écran standard)
+   - iPad (si supporté)
+
+### Monitoring Production
+```typescript
+// Analytics et crash reporting
+- Firebase Analytics
+- Firebase Crashlytics
+- App Store Connect Analytics
+```
+
+---
+
+## 🌐 Phase 2 : Déploiement PWA (Future)
+
+### Architecture de Déploiement
+
+```
+deployment/
+├── ios/           # Build iOS (Phase 1)
+├── web/           # Build PWA (Phase 2)
+│   ├── static/    # Assets statiques
+│   ├── sw.js      # Service Worker
+│   └── manifest.json
+```
+
+### Configuration PWA
+
+#### Manifest.json
+```json
 {
-  "build": {
-    "production": {
-      "android": {
-        "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
-      },
-      "ios": {
-        "buildConfiguration": "Release"
-      }
+  "name": "BerserkerCut",
+  "short_name": "BerserkerCut",
+  "description": "Coach personnel pour la sèche",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF6B35",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
-  }
+  ]
 }
 ```
 
-### 3. Sécurité
-- [ ] Clés de développement supprimées
-- [ ] Règles Firebase restrictives
-- [ ] Logging de production désactivé
-- [ ] Certificats de production configurés
+#### Service Worker
+```typescript
+// Service Worker pour cache et offline
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open('berserkercut-v1').then((cache) => {
+      return cache.addAll([
+        '/',
+        '/static/js/bundle.js',
+        '/static/css/main.css',
+        '/manifest.json'
+      ]);
+    })
+  );
+});
+```
 
-## Monitoring et Analytics
+### Plateforme de Déploiement
 
-### 1. Expo Analytics
+#### Option 1: Vercel (Recommandé)
 ```bash
-# Activer les analytics
-expo install expo-analytics-amplitude
+# Installation
+npm install -g vercel
+
+# Configuration
+vercel init
+
+# Déploiement
+vercel --prod
 ```
 
-### 2. Crash Reporting
+#### Option 2: Netlify
 ```bash
-# Sentry pour le monitoring d'erreurs
-expo install @sentry/react-native
+# Build command
+npm run build:web
+
+# Deploy directory
+dist/
 ```
 
-### 3. Performance Monitoring
+#### Option 3: Firebase Hosting
 ```bash
-# Firebase Performance
-expo install @react-native-firebase/perf
+# Installation
+npm install -g firebase-tools
+
+# Configuration
+firebase init hosting
+
+# Déploiement
+firebase deploy --only hosting
 ```
 
-## Mise à jour OTA (Over-The-Air)
+### Optimisations PWA
 
-### 1. Publication d'une mise à jour
+#### Performance
+```typescript
+// Webpack/Vite optimizations
+- Code splitting
+- Tree shaking
+- Image optimization
+- Gzip compression
+```
+
+#### SEO et Métadonnées
+```html
+<!-- Meta tags pour PWA -->
+<meta name="description" content="BerserkerCut - Coach personnel pour la sèche">
+<meta name="keywords" content="nutrition, fitness, sèche, musculation">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+```
+
+---
+
+## 🔄 CI/CD Pipeline (Future)
+
+### GitHub Actions
+
+```yaml
+name: Deploy BerserkerCut
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # Phase 1: iOS Build
+  ios-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install
+      - run: expo build:ios
+      
+  # Phase 2: PWA Build
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install
+      - run: npm run build:web
+      - run: vercel --prod
+```
+
+---
+
+## 🔐 Sécurité Déploiement
+
+### Variables d'Environnement
 ```bash
-# Mise à jour mineure
-expo publish --release-channel production
-
-# Avec message de version
-expo publish --release-channel production --message "Fix critical bug"
+# Production secrets
+FIREBASE_API_KEY=***
+FIREBASE_PROJECT_ID=berserkercut-prod
+APPLE_TEAM_ID=***
+APPLE_KEY_ID=***
 ```
 
-### 2. Canaux de distribution
-```javascript
-// app.json
-{
-  "expo": {
-    "updates": {
-      "fallbackToCacheTimeout": 0,
-      "url": "https://exp.host/@username/berserker-cut"
-    }
-  }
-}
-```
+### Monitoring Sécurité
+- Firebase Security Rules
+- App Store Review Guidelines
+- HTTPS only pour PWA
+- Content Security Policy
 
-## Checklist de déploiement
+---
 
-### Pré-déploiement
-- [ ] Tests manuels complets
+## 📊 Métriques et Monitoring
+
+### iOS (App Store Connect)
+- Téléchargements et installations
+- Notes et avis utilisateurs
+- Crashes et performances
+- Utilisation des fonctionnalités
+
+### PWA (Google Analytics + Firebase)
+- Visiteurs uniques
+- Temps d'engagement
+- Taux de conversion
+- Performance Lighthouse
+
+---
+
+## 🚀 Checklist de Déploiement
+
+### Phase 1 (iOS)
+- [ ] Tests complets sur appareils physiques
+- [ ] Optimisations performance iOS
 - [ ] Configuration Firebase production
-- [ ] Variables d'environnement mises à jour
-- [ ] Version incrémentée dans app.json
-- [ ] Changelog mis à jour
+- [ ] Métadonnées App Store complètes
+- [ ] Screenshots et assets
+- [ ] TestFlight beta testing
+- [ ] Soumission App Store Review
+- [ ] Monitoring post-lancement
 
-### Builds
-- [ ] Build Android sans erreur
-- [ ] Build iOS sans erreur
-- [ ] Tests sur appareils physiques
-- [ ] Vérification des permissions
-- [ ] Test de l'authentification
+### Phase 2 (PWA)
+- [ ] Refactoring architecture partagée
+- [ ] Build PWA optimisé
+- [ ] Service Workers configurés
+- [ ] Tests cross-browser
+- [ ] Optimisations Lighthouse (score > 90)
+- [ ] Déploiement production
+- [ ] Monitoring web analytics
 
-### Métadonnées des stores
-- [ ] Titre et description optimisés
-- [ ] Captures d'écran de qualité
-- [ ] Icône de l'app finalisée
-- [ ] Politique de confidentialité
-- [ ] Catégories appropriées
+---
 
-### Post-déploiement
-- [ ] Monitoring des erreurs activé
-- [ ] Analytics configurées
-- [ ] Feedback utilisateur collecté
-- [ ] Plan de mise à jour défini
-
-## Support et Maintenance
-
-### 1. Monitoring
-- Surveillance des erreurs avec Sentry
-- Analytics d'usage avec Firebase
-- Performance monitoring
-- Feedback utilisateur
-
-### 2. Mises à jour
-- Corrections de bugs via OTA
-- Nouvelles fonctionnalités via store
-- Maintenance Firebase
-- Mise à jour des dépendances
-
-### 3. Support utilisateur
-- Canal de support défini
-- FAQ maintenue
-- Gestion des avis stores
-- Amélioration continue
-
-## Environnements
-
-### Développement
-- Firebase: berserkercut-dev
-- Expo: development channel
-- Debug mode: activé
-
-### Staging
-- Firebase: berserkercut-staging
-- Expo: staging channel
-- Debug mode: désactivé
-
-### Production
-- Firebase: berserkercut-prod
-- Expo: production channel
-- Debug mode: désactivé
-- Analytics: activées
+Ce guide sera mis à jour selon l'avancement des phases de développement.
