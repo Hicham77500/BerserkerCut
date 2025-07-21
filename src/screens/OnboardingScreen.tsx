@@ -9,9 +9,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Alert,
-  Switch
+  Switch,
+  Platform,
+  Pressable
 } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { OnboardingData, TrainingDay } from '../types';
@@ -152,47 +153,107 @@ export const OnboardingScreen: React.FC = () => {
           <View style={styles.stepContainer}>
             <Text style={styles.stepTitle}>Genre et objectif</Text>
             
-            <View style={styles.segmentContainer}>
-              <Text style={styles.label}>Genre:</Text>
-              <View style={styles.segmentButtons}>
-                <TouchableOpacity
-                  style={[styles.segmentButton, formData.gender === 'male' && styles.segmentButtonActive]}
-                  onPress={() => setFormData({...formData, gender: 'male'})}
+            {/* Section Genre - Refaite complètement */}
+            <View style={styles.step2Section}>
+              <Text style={styles.step2Label}>Genre:</Text>
+              <View style={styles.step2ButtonContainer}>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.step2Button,
+                    formData.gender === 'male' && styles.step2ButtonActive,
+                    Platform.OS === 'android' && pressed && { opacity: 0.8 }
+                  ]}
+                  onPress={() => {
+                    console.log('🔵 Genre Homme sélectionné');
+                    setFormData({...formData, gender: 'male'});
+                  }}
+                  android_ripple={Platform.OS === 'android' ? { 
+                    color: 'rgba(231, 76, 60, 0.2)', 
+                    borderless: false 
+                  } : undefined}
                 >
-                  <Text style={[styles.segmentButtonText, formData.gender === 'male' && styles.segmentButtonTextActive]}>
-                    Homme
+                  <Text style={[
+                    styles.step2ButtonText,
+                    formData.gender === 'male' && styles.step2ButtonTextActive
+                  ]}>
+                    👨 Homme
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.segmentButton, formData.gender === 'female' && styles.segmentButtonActive]}
-                  onPress={() => setFormData({...formData, gender: 'female'})}
+                </Pressable>
+                
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.step2Button,
+                    formData.gender === 'female' && styles.step2ButtonActive,
+                    Platform.OS === 'android' && pressed && { opacity: 0.8 }
+                  ]}
+                  onPress={() => {
+                    console.log('🔴 Genre Femme sélectionné');
+                    setFormData({...formData, gender: 'female'});
+                  }}
+                  android_ripple={Platform.OS === 'android' ? { 
+                    color: 'rgba(231, 76, 60, 0.2)', 
+                    borderless: false 
+                  } : undefined}
                 >
-                  <Text style={[styles.segmentButtonText, formData.gender === 'female' && styles.segmentButtonTextActive]}>
-                    Femme
+                  <Text style={[
+                    styles.step2ButtonText,
+                    formData.gender === 'female' && styles.step2ButtonTextActive
+                  ]}>
+                    👩 Femme
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
 
-            <View style={styles.segmentContainer}>
-              <Text style={styles.label}>Objectif:</Text>
-              <View style={styles.segmentButtons}>
-                <TouchableOpacity
-                  style={[styles.segmentButton, formData.objective === 'cutting' && styles.segmentButtonActive]}
-                  onPress={() => setFormData({...formData, objective: 'cutting'})}
+            {/* Section Objectif - Refaite complètement */}
+            <View style={styles.step2Section}>
+              <Text style={styles.step2Label}>Objectif:</Text>
+              <View style={styles.step2ButtonContainer}>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.step2Button,
+                    formData.objective === 'cutting' && styles.step2ButtonActive,
+                    Platform.OS === 'android' && pressed && { opacity: 0.8 }
+                  ]}
+                  onPress={() => {
+                    console.log('🟠 Objectif Sèche sélectionné');
+                    setFormData({...formData, objective: 'cutting'});
+                  }}
+                  android_ripple={Platform.OS === 'android' ? { 
+                    color: 'rgba(231, 76, 60, 0.2)', 
+                    borderless: false 
+                  } : undefined}
                 >
-                  <Text style={[styles.segmentButtonText, formData.objective === 'cutting' && styles.segmentButtonTextActive]}>
-                    Sèche
+                  <Text style={[
+                    styles.step2ButtonText,
+                    formData.objective === 'cutting' && styles.step2ButtonTextActive
+                  ]}>
+                    🔥 Sèche
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.segmentButton, formData.objective === 'recomposition' && styles.segmentButtonActive]}
-                  onPress={() => setFormData({...formData, objective: 'recomposition'})}
+                </Pressable>
+                
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.step2Button,
+                    formData.objective === 'recomposition' && styles.step2ButtonActive,
+                    Platform.OS === 'android' && pressed && { opacity: 0.8 }
+                  ]}
+                  onPress={() => {
+                    console.log('🟡 Objectif Recomp sélectionné');
+                    setFormData({...formData, objective: 'recomposition'});
+                  }}
+                  android_ripple={Platform.OS === 'android' ? { 
+                    color: 'rgba(231, 76, 60, 0.2)', 
+                    borderless: false 
+                  } : undefined}
                 >
-                  <Text style={[styles.segmentButtonText, formData.objective === 'recomposition' && styles.segmentButtonTextActive]}>
-                    Recomp
+                  <Text style={[
+                    styles.step2ButtonText,
+                    formData.objective === 'recomposition' && styles.step2ButtonTextActive
+                  ]}>
+                    💪 Recomp
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           </View>
@@ -203,30 +264,48 @@ export const OnboardingScreen: React.FC = () => {
           <View style={styles.stepContainer}>
             <Text style={styles.stepTitle}>Niveau d'activité</Text>
             
-            <View style={styles.activityContainer}>
+            <View style={styles.activityCompactContainer}>
               {[
-                { key: 'sedentary', label: 'Sédentaire', desc: 'Pas d\'exercice' },
-                { key: 'light', label: 'Léger', desc: '1-3 fois/semaine' },
-                { key: 'moderate', label: 'Modéré', desc: '3-5 fois/semaine' },
-                { key: 'active', label: 'Actif', desc: '6-7 fois/semaine' },
-                { key: 'very_active', label: 'Très actif', desc: '2x/jour' }
+                { key: 'sedentary', label: 'Sédentaire', icon: '😴', desc: 'Pas d\'exercice' },
+                { key: 'light', label: 'Léger', icon: '🚶', desc: '1-3x/sem' },
+                { key: 'moderate', label: 'Modéré', icon: '🏃', desc: '3-5x/sem' },
+                { key: 'active', label: 'Actif', icon: '💪', desc: '6-7x/sem' },
+                { key: 'very_active', label: 'Très actif', icon: '🔥', desc: '2x/jour' }
               ].map(activity => (
-                <TouchableOpacity
+                <Pressable
                   key={activity.key}
-                  style={[
-                    styles.activityButton,
-                    formData.activityLevel === activity.key && styles.activityButtonActive
+                  style={({ pressed }) => [
+                    styles.activityChipButton,
+                    formData.activityLevel === activity.key && styles.activityChipButtonActive,
+                    // Style de press spécial Android pour éviter les effets visuels
+                    Platform.OS === 'android' && pressed && {
+                      opacity: 0.8,
+                      transform: [{ scale: 0.98 }],
+                    }
                   ]}
                   onPress={() => setFormData({...formData, activityLevel: activity.key as any})}
+                  android_ripple={Platform.OS === 'android' ? { 
+                    color: 'rgba(255, 107, 53, 0.2)', 
+                    borderless: false,
+                    radius: 60
+                  } : undefined}
                 >
-                  <Text style={[
-                    styles.activityButtonText,
-                    formData.activityLevel === activity.key && styles.activityButtonTextActive
-                  ]}>
-                    {activity.label}
-                  </Text>
-                  <Text style={styles.activityButtonDesc}>{activity.desc}</Text>
-                </TouchableOpacity>
+                  <View style={styles.activityChipContent}>
+                    <Text style={styles.activityChipIcon}>{activity.icon}</Text>
+                    <Text style={[
+                      styles.activityChipText,
+                      formData.activityLevel === activity.key && styles.activityChipTextActive
+                    ]}>
+                      {activity.label}
+                    </Text>
+                    <Text style={[
+                      styles.activityChipDesc,
+                      formData.activityLevel === activity.key && styles.activityChipDescActive
+                    ]}>
+                      {activity.desc}
+                    </Text>
+                  </View>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -338,39 +417,41 @@ export const OnboardingScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Configuration du profil</Text>
-        <Text style={styles.progress}>Étape {step} sur 5</Text>
-      </View>
+    <View style={styles.container}>
+      <View style={styles.scrollableContent}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Configuration du profil</Text>
+          <Text style={styles.progress}>Étape {step} sur 5</Text>
+        </View>
 
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${(step / 5) * 100}%` }]} />
-      </View>
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${(step / 5) * 100}%` }]} />
+        </View>
 
-      {renderStep()}
+        {renderStep()}
 
-      <View style={styles.buttons}>
-        {step > 1 && (
+        <View style={styles.buttons}>
+          {step > 1 && (
+            <TouchableOpacity
+              style={[styles.button, styles.buttonSecondary]}
+              onPress={() => setStep(step - 1)}
+            >
+              <Text style={styles.buttonSecondaryText}>Précédent</Text>
+            </TouchableOpacity>
+          )}
+          
           <TouchableOpacity
-            style={[styles.button, styles.buttonSecondary]}
-            onPress={() => setStep(step - 1)}
+            style={[styles.button, !canProceed() && styles.buttonDisabled]}
+            onPress={handleNext}
+            disabled={!canProceed() || loading}
           >
-            <Text style={styles.buttonSecondaryText}>Précédent</Text>
+            <Text style={styles.buttonText}>
+              {loading ? 'Chargement...' : (step === 5 ? 'Terminer' : 'Suivant')}
+            </Text>
           </TouchableOpacity>
-        )}
-        
-        <TouchableOpacity
-          style={[styles.button, !canProceed() && styles.buttonDisabled]}
-          onPress={handleNext}
-          disabled={!canProceed() || loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? 'Chargement...' : (step === 5 ? 'Terminer' : 'Suivant')}
-          </Text>
-        </TouchableOpacity>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -378,6 +459,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+    ...(Platform.OS === 'web' ? {
+      height: '100vh' as any,
+      display: 'flex' as any,
+      flexDirection: 'column' as any,
+    } : {}),
+  },
+  scrollableContent: {
+    flex: 1,
+    ...(Platform.OS === 'web' ? {
+      overflowY: 'auto' as any,
+      height: '100%' as any,
+      minHeight: '100vh' as any,
+    } : {}),
   },
   header: {
     padding: 20,
@@ -410,11 +504,21 @@ const styles = StyleSheet.create({
     margin: 20,
     padding: 20,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    // Suppression de l'effet carré blanc sur Android
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+    } : {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    }),
   },
   stepTitle: {
     fontSize: 20,
@@ -447,56 +551,174 @@ const styles = StyleSheet.create({
   segmentContainer: {
     marginBottom: 20,
   },
-  segmentButtons: {
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
+  
+  // ===== STYLES ÉTAPE 2 REFAITS COMPLÈTEMENT ===== 
+  // Séparation totale Android/iOS pour éviter tout conflit
+  step2Section: {
+    marginBottom: 24,
+    width: '100%',
   },
-  segmentButton: {
+  step2Label: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 12,
+    textAlign: 'left',
+  },
+  step2ButtonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    width: '100%',
+    flexShrink: 0,
+  },
+  step2Button: {
     flex: 1,
+    padding: Platform.OS === 'android' ? 16 : 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Platform.OS === 'android' ? 12 : 10,
+    borderWidth: Platform.OS === 'android' ? 2 : 1,
+    borderColor: Platform.OS === 'android' ? '#d1d5db' : '#ddd',
+    backgroundColor: Platform.OS === 'android' ? '#ffffff' : '#f9f9f9',
+    minHeight: Platform.OS === 'android' ? 52 : 48,
+    
+    // ANDROID : Suppression totale des effets visuels
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      shadowColor: 'transparent',
+      overflow: 'hidden',
+      backfaceVisibility: 'hidden',
+    } : {
+      // iOS : Design natif avec ombres subtiles
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 3,
+    }),
+  },
+  step2ButtonActive: {
+    borderColor: Platform.OS === 'android' ? '#ff6b35' : '#e74c3c',
+    backgroundColor: Platform.OS === 'android' ? '#ff6b35' : '#e74c3c',
+    
+    // ANDROID : Pas d'ombres même actif
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      shadowColor: 'transparent',
+      overflow: 'hidden',
+      backfaceVisibility: 'hidden',
+    } : {
+      // iOS : Ombre plus marquée quand actif
+      shadowColor: '#e74c3c',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+    }),
+  },
+  step2ButtonText: {
+    fontSize: Platform.OS === 'android' ? 15 : 16,
+    fontWeight: Platform.OS === 'android' ? '600' : '500',
+    color: '#2c3e50',
+    textAlign: 'center',
+    lineHeight: Platform.OS === 'android' ? 20 : 22,
+  },
+  step2ButtonTextActive: {
+    color: '#ffffff',
+    fontWeight: Platform.OS === 'android' ? '700' : '600',
+  },
+  // ===== FIN STYLES ÉTAPE 2 ===== 
+  activityCompactContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'space-between',
+  },
+  activityChipButton: {
+    flex: 1,
+    minWidth: '48%',
     padding: 12,
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    // HACK Android : forcer un arrière-plan complètement opaque pour éviter les effets
+    backgroundColor: Platform.OS === 'android' ? '#ffffff' : '#f9f9f9',
+    // Design moderne spécial Android - suppression TOTALE des ombres
+    ...(Platform.OS === 'android' ? {
+      borderWidth: 2,
+      borderColor: '#d1d5db',
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      shadowColor: 'transparent',
+      // Hack supplémentaire pour Android
+      overflow: 'hidden',
+      backfaceVisibility: 'hidden',
+    } : {
+      borderWidth: 1,
+      borderColor: '#ddd',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    }),
   },
-  segmentButtonActive: {
-    backgroundColor: '#e74c3c',
+  activityChipButtonActive: {
+    // HACK Android : couleur complètement opaque pour éviter les effets de transparence
+    backgroundColor: Platform.OS === 'android' ? '#ff6b35' : '#e74c3c',
+    // Design actif moderne pour Android avec suppression TOTALE des ombres
+    ...(Platform.OS === 'android' ? {
+      borderColor: '#ff6b35',
+      borderWidth: 2,
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      shadowColor: 'transparent',
+      // Hack supplémentaire pour Android
+      overflow: 'hidden',
+      backfaceVisibility: 'hidden',
+    } : {
+      borderColor: '#e74c3c',
+      shadowColor: '#e74c3c',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+    }),
   },
-  segmentButtonText: {
-    fontSize: 16,
+  activityChipContent: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  activityChipIcon: {
+    fontSize: 20,
+    marginBottom: 4,
+  },
+  activityChipText: {
+    fontSize: Platform.OS === 'android' ? 13 : 14,
+    fontWeight: Platform.OS === 'android' ? '600' : '500',
     color: '#2c3e50',
+    textAlign: 'center',
+    marginBottom: 2,
   },
-  segmentButtonTextActive: {
+  activityChipTextActive: {
     color: 'white',
-    fontWeight: '600',
+    fontWeight: Platform.OS === 'android' ? '700' : '600',
   },
-  activityContainer: {
-    gap: 12,
-  },
-  activityButton: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    backgroundColor: '#f9f9f9',
-  },
-  activityButtonActive: {
-    backgroundColor: '#e74c3c',
-    borderColor: '#e74c3c',
-  },
-  activityButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#2c3e50',
-  },
-  activityButtonTextActive: {
-    color: 'white',
-  },
-  activityButtonDesc: {
-    fontSize: 14,
+  activityChipDesc: {
+    fontSize: Platform.OS === 'android' ? 10 : 11,
     color: '#7f8c8d',
-    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: Platform.OS === 'android' ? '500' : '400',
+  },
+  activityChipDescActive: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: Platform.OS === 'android' ? '600' : '500',
   },
   daysContainer: {
     flexDirection: 'row',
@@ -512,10 +734,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#f9f9f9',
     alignItems: 'center',
+    // Suppression de l'effet carré blanc sur Android
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      borderWidth: 2,
+      borderColor: 'rgba(221, 221, 221, 0.8)',
+    } : {}),
   },
   dayButtonActive: {
     backgroundColor: '#e74c3c',
     borderColor: '#e74c3c',
+    // Suppression de l'effet carré blanc sur Android pour l'état actif
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      borderWidth: 2,
+    } : {}),
   },
   dayButtonText: {
     fontSize: 14,
@@ -537,10 +776,27 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 20,
     backgroundColor: '#f9f9f9',
+    // Suppression de l'effet carré blanc sur Android
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      borderWidth: 2,
+      borderColor: 'rgba(221, 221, 221, 0.8)',
+    } : {}),
   },
   supplementButtonActive: {
     backgroundColor: '#e74c3c',
     borderColor: '#e74c3c',
+    // Suppression de l'effet carré blanc sur Android pour l'état actif
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      borderWidth: 2,
+    } : {}),
   },
   supplementButtonText: {
     fontSize: 14,
@@ -577,5 +833,10 @@ const styles = StyleSheet.create({
     color: '#2c3e50',
     fontSize: 16,
     fontWeight: '600',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    minHeight: '100%',
+    paddingBottom: 20,
   },
 });

@@ -10,7 +10,8 @@ import {
   ViewStyle, 
   TextStyle, 
   ActivityIndicator,
-  TouchableOpacityProps 
+  TouchableOpacityProps,
+  Platform 
 } from 'react-native';
 import { Colors, Typography, BorderRadius, Spacing, Shadows } from '../utils/theme';
 
@@ -58,7 +59,7 @@ export const Button: React.FC<ButtonProps> = ({
     <TouchableOpacity
       style={buttonStyle}
       disabled={disabled || loading}
-      activeOpacity={0.8}
+      activeOpacity={Platform.OS === 'android' ? 0.6 : 0.8}
       {...props}
     >
       {loading ? (
@@ -82,49 +83,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: BorderRadius.md,
-    ...Shadows.sm,
+    // Sur Android, les ombres peuvent causer des problèmes avec les bordures
+    ...(Platform.OS === 'ios' ? Shadows.sm : {}),
   } as ViewStyle,
 
   // Variants
   primary: {
     backgroundColor: Colors.primary,
+    // Ombre uniquement sur iOS pour éviter les conflits Android
+    ...(Platform.OS === 'ios' ? {} : { elevation: 2 }),
   } as ViewStyle,
 
   secondary: {
     backgroundColor: Colors.secondary,
+    ...(Platform.OS === 'ios' ? {} : { elevation: 1 }),
   } as ViewStyle,
 
   outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: Colors.primary,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 0.02)' : 'transparent', // Encore plus léger sur Android
+    borderWidth: Platform.OS === 'android' ? 2 : 2, // Bordure normale
+    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 0.8)' : Colors.primary,
+    // Pas d'élévation pour éviter les carrés sur Android
+    ...(Platform.OS === 'android' ? { 
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      elevation: 0, // Suppression complète de l'élévation
+    } : {}),
   } as ViewStyle,
 
   ghost: {
     backgroundColor: 'transparent',
+    // Pas d'ombre pour ghost
   } as ViewStyle,
 
   danger: {
     backgroundColor: Colors.error,
+    ...(Platform.OS === 'ios' ? {} : { elevation: 2 }),
   } as ViewStyle,
 
-  // Sizes
+  // Sizes avec ajustements pour Android
   sm: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    minHeight: 36,
+    minHeight: Platform.OS === 'android' ? 40 : 36, // Un peu plus haut sur Android
   } as ViewStyle,
 
   md: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    minHeight: 48,
+    minHeight: Platform.OS === 'android' ? 52 : 48,
   } as ViewStyle,
 
   lg: {
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.lg,
-    minHeight: 56,
+    minHeight: Platform.OS === 'android' ? 60 : 56,
   } as ViewStyle,
 
   // States
@@ -136,22 +151,36 @@ const styles = StyleSheet.create({
     width: '100%',
   } as ViewStyle,
 
-  // Text styles
+  // Text styles avec meilleure lisibilité Android
   baseText: {
     ...Typography.button,
     textAlign: 'center',
+    // Améliorer le contraste sur Android
+    ...(Platform.OS === 'android' ? { 
+      fontWeight: '600',
+      letterSpacing: 0.5 
+    } : {}),
   } as TextStyle,
 
   primaryText: {
     color: Colors.textDark,
+    fontWeight: 'bold',
   } as TextStyle,
 
   secondaryText: {
     color: Colors.textDark,
+    fontWeight: 'bold',
   } as TextStyle,
 
   outlineText: {
     color: Colors.primary,
+    fontWeight: Platform.OS === 'android' ? '700' : 'bold', // Plus visible sur Android
+    ...(Platform.OS === 'android' ? {
+      letterSpacing: 0.8, // Espacement des lettres pour meilleure lisibilité
+      textShadowColor: 'rgba(0,0,0,0.1)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 1,
+    } : {}),
   } as TextStyle,
 
   ghostText: {

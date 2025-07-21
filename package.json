@@ -1,17 +1,20 @@
 {
   "name": "berserkercut",
-  "version": "1.0.0",
-  "description": "React Native Expo app for personalized cutting nutrition and supplement plans with intelligent daily recommendations",
+  "version": "1.0.4",
+  "description": "iOS-first React Native Expo app for personalized cutting nutrition and supplement plans with intelligent daily recommendations. PWA version planned for Phase 2.",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:ios": "expo build:ios",
+    "build:android": "expo build:android",
+    "test": "echo \"Phase 1: iOS development. Tests to be implemented.\" && exit 0"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
-    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/bottom-tabs": "^7.4.2",
     "@react-navigation/native": "^7.1.14",
     "@react-navigation/stack": "^7.4.2",

@@ -13,7 +13,10 @@ import {
   TextInput,
   Alert,
   Switch,
-  Dimensions
+  Dimensions,
+  Platform,
+  Animated,
+  Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing } from '../utils/theme';
@@ -234,6 +237,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                   objectives.primary === obj.key && styles.optionChipSelected
                 ]}
                 onPress={() => handleObjectiveSelect('primary', obj.key)}
+                activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
               >
                 <Text style={styles.optionChipEmoji}>{obj.emoji}</Text>
                 <Text style={[
@@ -255,6 +259,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                   objectives.primary === obj.key && styles.optionChipSelected
                 ]}
                 onPress={() => handleObjectiveSelect('primary', obj.key)}
+                activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
               >
                 <Text style={styles.optionChipEmoji}>{obj.emoji}</Text>
                 <Text style={[
@@ -279,6 +284,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                       objectives.secondary === obj.key && styles.optionChipSelected
                     ]}
                     onPress={() => handleObjectiveSelect('secondary', obj.key)}
+                    activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
                   >
                     <Text style={styles.optionChipEmojiSmall}>{obj.emoji}</Text>
                     <Text style={[
@@ -358,6 +364,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                   activityTypes[activity.key as keyof ActivityType] && styles.activityChipSelected
                 ]}
                 onPress={() => handleActivityToggle(activity.key as keyof ActivityType)}
+                activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
               >
                 <Text style={styles.activityChipIcon}>{activity.icon}</Text>
                 <Text style={[
@@ -388,21 +395,27 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
           
           <View style={styles.neatOptionsCompact}>
             {NEAT_LEVELS.map((level) => (
-              <TouchableOpacity
+              <Pressable
                 key={level.key}
-                style={[
-                  styles.neatChip,
-                  neatLevel.level === level.key && styles.neatChipSelected
+                style={({ pressed }) => [
+                  styles.neatChipButton,
+                  neatLevel.level === level.key && styles.neatChipButtonActive,
+                  // Effet de press subtil pour tous les OS
+                  pressed && { opacity: 0.9 }
                 ]}
                 onPress={() => handleNeatLevelSelect({ level: level.key as any, description: level.description })}
+                android_ripple={Platform.OS === 'android' ? { 
+                  color: 'rgba(128, 128, 128, 0.1)',
+                  borderless: false
+                } : undefined}
               >
                 <Text style={[
-                  styles.neatChipTitle,
-                  neatLevel.level === level.key && styles.neatChipTitleSelected
+                  styles.neatChipButtonText,
+                  neatLevel.level === level.key && styles.neatChipButtonTextActive
                 ]}>
                   {level.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
           {neatLevel.level && (
@@ -557,18 +570,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modeIndicator: {
-    backgroundColor: Colors.info + '15',
-    borderRadius: 8,
-    padding: Spacing.sm,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(59, 130, 246, 0.08)' : Colors.info + '15',
+    borderRadius: Platform.OS === 'android' ? 12 : 8,
+    padding: Platform.OS === 'android' ? Spacing.md : Spacing.sm,
     marginTop: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.info + '30',
+    borderWidth: Platform.OS === 'android' ? 2 : 1,
+    borderColor: Platform.OS === 'android' ? 'rgba(59, 130, 246, 0.4)' : Colors.info + '30',
+    // Suppression complète des élévations qui causent les carrés
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+    } : {}),
   },
   modeIndicatorText: {
     ...Typography.caption,
-    color: Colors.info,
+    color: Platform.OS === 'android' ? 'rgb(59, 130, 246)' : Colors.info, // Couleur plus contrastée sur Android
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: Platform.OS === 'android' ? '700' : '600', // Plus gras sur Android
+    ...(Platform.OS === 'android' ? {
+      fontSize: 13, // Légèrement plus grand sur Android
+      letterSpacing: 0.3,
+    } : {}),
   },
   errorContainer: {
     backgroundColor: Colors.error + '15',
@@ -584,12 +609,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   section: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg, // Compact comme iOS sur toutes les plateformes
   },
   sectionTitle: {
     ...Typography.h3,
     color: Colors.text,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   fieldLabel: {
     ...Typography.body,
@@ -600,7 +625,7 @@ const styles = StyleSheet.create({
   fieldDescription: {
     ...Typography.caption,
     color: Colors.textLight,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   optionsGrid: {
     marginBottom: Spacing.md,
@@ -624,18 +649,35 @@ const styles = StyleSheet.create({
   },
   optionChip: {
     flex: 1,
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    paddingVertical: Spacing.md,
+    backgroundColor: Platform.OS === 'android' ? 'transparent' : Colors.surface, // Complètement transparent sur Android
+    borderRadius: Platform.OS === 'android' ? 16 : 12,
+    paddingVertical: Platform.OS === 'android' ? Spacing.md + 2 : Spacing.md,
     paddingHorizontal: Spacing.sm,
-    borderWidth: 2,
-    borderColor: Colors.border,
+    borderWidth: Platform.OS === 'android' ? 2 : 2,
+    borderColor: Platform.OS === 'android' ? 'rgba(203, 213, 225, 0.9)' : Colors.border,
     alignItems: 'center',
-    minHeight: 70,
+    minHeight: Platform.OS === 'android' ? 75 : 70,
+    // Suppression complète des ombres et élévations sur Android
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+    } : {}),
   },
   optionChipSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 0.1)' : Colors.primary + '10',
+    // Suppression des élévations et ombres sur Android pour éviter les carrés
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      // Pas de transform pour éviter les effets visuels bizarres
+    } : {}),
   },
   optionChipEmoji: {
     fontSize: 24,
@@ -643,14 +685,15 @@ const styles = StyleSheet.create({
   },
   optionChipSmall: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 255, 255, 0.95)' : Colors.surface,
     borderRadius: 10,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Platform.OS === 'android' ? Spacing.sm + 2 : Spacing.sm,
     paddingHorizontal: Spacing.xs,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderWidth: Platform.OS === 'android' ? 2 : 1.5,
+    borderColor: Platform.OS === 'android' ? 'rgba(209, 213, 219, 0.8)' : Colors.border,
     alignItems: 'center',
-    minHeight: 50,
+    minHeight: Platform.OS === 'android' ? 55 : 50,
+    ...(Platform.OS === 'android' ? { elevation: 1 } : {}),
   },
   optionText: {
     ...Typography.body,
@@ -663,13 +706,23 @@ const styles = StyleSheet.create({
   },
   optionChipText: {
     ...Typography.body,
-    fontWeight: '600',
+    fontWeight: Platform.OS === 'android' ? '700' : '600',
     color: Colors.text,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: Platform.OS === 'android' ? 13 : 12,
+    ...(Platform.OS === 'android' ? {
+      letterSpacing: 0.3,
+      lineHeight: 16,
+    } : {}),
   },
   optionChipTextSelected: {
-    color: Colors.primary,
+    color: Platform.OS === 'android' ? 'rgb(255, 107, 53)' : Colors.primary,
+    ...(Platform.OS === 'android' ? {
+      fontWeight: '700',
+      textShadowColor: 'rgba(255, 107, 53, 0.2)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 1,
+    } : {}),
   },
   optionChipTextSmall: {
     ...Typography.caption,
@@ -689,21 +742,37 @@ const styles = StyleSheet.create({
   daysContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   dayButton: {
     width: (width - 2 * Spacing.lg - 6 * Spacing.xs) / 7,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.surface,
-    borderWidth: 2,
-    borderColor: Colors.border,
+    height: Platform.OS === 'android' ? 42 : 44,
+    borderRadius: Platform.OS === 'android' ? 21 : 22,
+    backgroundColor: Platform.OS === 'android' ? 'transparent' : Colors.surface,
+    borderWidth: Platform.OS === 'android' ? 2 : 2,
+    borderColor: Platform.OS === 'android' ? 'rgba(203, 213, 225, 0.9)' : Colors.border,
     justifyContent: 'center',
     alignItems: 'center',
+    // Suppression complète des ombres sur Android
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+    } : {}),
   },
   dayButtonSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary,
+    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
+    // Suppression des effets 3D sur Android
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+    } : {}),
   },
   dayText: {
     ...Typography.caption,
@@ -750,8 +819,9 @@ const styles = StyleSheet.create({
   activitiesCompact: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.xs,
-    marginBottom: Spacing.md,
+    gap: Spacing.xs, // Même espacement compact sur toutes les plateformes
+    marginBottom: Spacing.sm, // Compact comme iOS
+    justifyContent: 'flex-start',
   },
   activityCard: {
     width: (width - 2 * Spacing.lg - Spacing.sm) / 2,
@@ -770,25 +840,44 @@ const styles = StyleSheet.create({
   activityChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: 20,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    marginBottom: Spacing.xs,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 255, 255, 0)' : Colors.surface, // Totalement transparent sur Android
+    borderRadius: Platform.OS === 'android' ? 20 : 20,
+    paddingHorizontal: Platform.OS === 'android' ? Spacing.md : Spacing.md + 2,
+    paddingVertical: Platform.OS === 'android' ? Spacing.xs + 3 : Spacing.sm + 2,
+    borderWidth: Platform.OS === 'android' ? 2 : 1.5,
+    borderColor: Platform.OS === 'android' ? 'rgba(203, 213, 225, 1)' : Colors.border, // Bordure plus opaque
+    marginBottom: Platform.OS === 'android' ? Spacing.xs / 2 : Spacing.xs,
+    maxWidth: Platform.OS === 'android' ? '48%' : 'auto',
+    // Suppression absolue de tout effet visuel sur Android
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      overflow: 'hidden', // Assure qu'aucun effet ne dépasse
+    } : {}),
   },
   activityChipSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '15',
+    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 0.08)' : Colors.primary + '15', // Plus léger sur Android
+    // Suppression absolue de tout effet 3D sur Android
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      overflow: 'hidden', // Assure qu'aucun effet ne dépasse
+    } : {}),
   },
   activityIcon: {
     fontSize: 24,
     marginBottom: Spacing.xs,
   },
   activityChipIcon: {
-    fontSize: 16,
-    marginRight: Spacing.xs,
+    fontSize: Platform.OS === 'android' ? 14 : 16, // Plus petit sur Android
+    marginRight: Platform.OS === 'android' ? Spacing.xs / 2 : Spacing.xs, // Moins d'espace
   },
   activityText: {
     ...Typography.body,
@@ -802,14 +891,23 @@ const styles = StyleSheet.create({
   activityChipText: {
     ...Typography.body,
     color: Colors.text,
-    fontSize: 14,
+    fontSize: Platform.OS === 'android' ? 15 : 14,
+    fontWeight: Platform.OS === 'android' ? '600' : 'normal',
+    ...(Platform.OS === 'android' ? {
+      letterSpacing: 0.2,
+    } : {}),
   },
   activityChipTextSelected: {
-    color: Colors.primary,
-    fontWeight: '600',
+    color: Platform.OS === 'android' ? 'rgb(255, 107, 53)' : Colors.primary,
+    fontWeight: Platform.OS === 'android' ? '700' : '600',
+    ...(Platform.OS === 'android' ? {
+      textShadowColor: 'rgba(255, 107, 53, 0.2)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 1,
+    } : {}),
   },
   otherActivityContainer: {
-    marginTop: Spacing.md,
+    marginTop: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   textInput: {
     backgroundColor: Colors.surface,
@@ -826,52 +924,70 @@ const styles = StyleSheet.create({
   },
   neatOptionsCompact: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    gap: Spacing.xs,
     marginBottom: Spacing.sm,
+    justifyContent: 'space-between',
   },
-  neatOption: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    borderWidth: 2,
-    borderColor: Colors.border,
-  },
-  neatOptionSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
-  },
-  neatChip: {
+  // Nouveaux styles pour les boutons NEAT optimisés Android/iOS
+  neatChipButton: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: Platform.OS === 'android' ? '#FFFFFF' : Colors.surface,
     borderRadius: 12,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
-    borderWidth: 2,
-    borderColor: Colors.border,
+    paddingVertical: Platform.OS === 'android' ? 12 : 14,
+    paddingHorizontal: Platform.OS === 'android' ? 8 : 10,
+    borderWidth: Platform.OS === 'android' ? 1.5 : 2,
+    borderColor: Platform.OS === 'android' ? '#E2E8F0' : Colors.border,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+    marginHorizontal: 4,
+    // Suppression totale des ombres et effets 3D sur Android
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      overflow: 'hidden',
+      backfaceVisibility: 'hidden',
+    } : {
+      // iOS garde des ombres subtiles
+      shadowColor: Colors.text,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    }),
   },
-  neatChipSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+  neatChipButtonActive: {
+    borderColor: Platform.OS === 'android' ? '#FF6B35' : Colors.primary,
+    backgroundColor: Platform.OS === 'android' ? '#FFFFFF' : Colors.primary + '10',
+    // Suppression totale des effets 3D sur Android même actif
+    ...(Platform.OS === 'android' ? { 
+      elevation: 0,
+      shadowColor: 'transparent',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      overflow: 'hidden',
+      backfaceVisibility: 'hidden',
+    } : {
+      shadowColor: Colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+    }),
   },
-  neatOptionTitle: {
+  neatChipButtonText: {
     ...Typography.body,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: Spacing.xs,
-  },
-  neatOptionTitleSelected: {
-    color: Colors.primary,
-  },
-  neatChipTitle: {
-    ...Typography.body,
-    fontWeight: '600',
+    fontWeight: Platform.OS === 'android' ? '600' : '600',
     color: Colors.text,
     textAlign: 'center',
+    fontSize: Platform.OS === 'android' ? 13 : 14,
+    lineHeight: Platform.OS === 'android' ? 18 : 20,
   },
-  neatChipTitleSelected: {
-    color: Colors.primary,
+  neatChipButtonTextActive: {
+    color: Platform.OS === 'android' ? '#FF6B35' : Colors.primary,
+    fontWeight: '700',
   },
   neatOptionDescription: {
     ...Typography.caption,
@@ -881,7 +997,8 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.textLight,
     fontStyle: 'italic',
-    marginTop: Spacing.xs,
+    marginTop: Platform.OS === 'android' ? Spacing.xs / 2 : Spacing.xs, // Moins d'espace sur Android
+    fontSize: Platform.OS === 'android' ? 11 : 12, // Plus petit sur Android
   },
   switchRow: {
     flexDirection: 'row',

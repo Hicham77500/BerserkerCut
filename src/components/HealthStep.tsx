@@ -13,7 +13,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Colors, Typography, Spacing, BorderRadius } from '../utils/theme';
-import { Card, Input, Button } from '../components';
+import { Card } from './Card';
+import { Input } from './Input'; 
+import { Button } from './Button';
 import { HealthProfile } from '../types';
 import HealthService from '../services/healthService';
 

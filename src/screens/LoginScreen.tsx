@@ -1,4 +1,4 @@
-/**
+ /**
  * Écran de connexion avec design moderne
  */
 
@@ -116,7 +116,10 @@ export const LoginScreen: React.FC = () => {
                 handleSubmit();
               }}
               variant="outline"
-              style={styles.demoButton}
+              style={[styles.demoButton, Platform.OS === 'android' && {
+                borderColor: Colors.primary,
+                borderWidth: 2.5,
+              }]}
             />
           </View>
         </ScrollView>
@@ -172,6 +175,15 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
+    // Suppression de l'effet carré blanc sur Android
+    ...(Platform.OS === 'android' ? {
+      borderWidth: 1,
+      borderColor: Colors.primary + '20', // Bordure très légère
+      elevation: 0, // Suppression de l'élévation
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+    } : {}),
   },
   demoTitle: {
     ...Typography.h3,
@@ -186,5 +198,11 @@ const styles = StyleSheet.create({
   },
   demoButton: {
     minWidth: 200,
+    // Styles spécifiques Android pour le bouton démo
+    ...(Platform.OS === 'android' ? {
+      marginTop: 8,
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+    } : {}),
   },
 });

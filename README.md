@@ -1,6 +1,8 @@
 # BerserkerCut 🔥
 
-Une application mobile React Native Expo pour la sèche intelligente avec plans nutritionnels et suppléments personnalisés.
+Une application iOS native (React Native Expo) pour la sèche intelligente avec plans nutritionnels et suppléments personnalisés.
+
+> **Stratégie de développement** : iOS-first puis PWA. Voir [DEVELOPMENT_ROADMAP.md](./DEVELOPMENT_ROADMAP.md) pour plus de détails.
 
 ## 🎯 Objectif
 
@@ -10,7 +12,7 @@ Une application mobile React Native Expo pour la sèche intelligente avec plans 
 - Vos suppléments disponibles
 - Vos préférences alimentaires
 
-## 🚀 Fonctionnalités
+## 🚀 Fonctionnalités (Phase iOS)
 
 - **Authentification Firebase** (email/mot de passe)
 - **Onboarding complet** avec formulaire de profil
@@ -18,17 +20,26 @@ Une application mobile React Native Expo pour la sèche intelligente avec plans 
 - **Logique conditionnelle** (plans différents selon le jour)
 - **Suivi des suppléments** avec notifications
 - **Conseils quotidiens** adaptés au contexte
+- **Optimisations iOS** (performances, animations, UX native)
 
 ## 📱 Technologies
 
-- **React Native** avec Expo
-- **TypeScript** pour la type safety
-- **Firebase** (Authentication & Firestore)
-- **React Navigation** pour la navigation
+### Phase Actuelle (iOS Native)
+- **React Native** avec Expo SDK 53
+- **TypeScript** 5.8.3 pour la type safety
+- **Firebase** v11.10.0 (Authentication & Firestore)
+- **React Navigation** v7 pour la navigation
 - **Architecture propre** avec séparation des responsabilités
+
+### Phase Future (PWA)
+- Architecture partagée (90% de code réutilisé)
+- React Router pour la navigation web
+- Service Workers pour l'offline
+- PWA optimizations
 
 ## 🏗️ Architecture
 
+### Phase iOS (Actuelle)
 ```
 src/
 ├── components/     # Composants réutilisables
@@ -37,7 +48,21 @@ src/
 ├── screens/       # Écrans de l'application
 ├── services/      # Services Firebase
 ├── types/         # Types TypeScript
-└── utils/         # Utilitaires
+└── utils/         # Utilitaires et thème
+```
+
+### Phase PWA (Future)
+```
+src/
+├── platforms/
+│   ├── mobile/     # Code spécifique React Native
+│   └── web/        # Code spécifique PWA
+├── shared/         # Code commun (90% du code actuel)
+│   ├── components/
+│   ├── services/
+│   ├── hooks/
+│   ├── utils/
+│   └── types/
 ```
 
 ## 🔧 Installation
@@ -59,9 +84,16 @@ src/
    - Activer Firestore
    - Mettre à jour les clés dans `app.json`
 
-4. **Lancer l'application**
+4. **Lancer l'application (iOS)**
    ```bash
+   # Développement
    npm start
+   
+   # Build iOS spécifique
+   npm run ios
+   
+   # Pour tester sur simulateur iOS
+   expo run:ios
    ```
 
 ## 🔥 Firebase Configuration
@@ -132,6 +164,7 @@ service cloud.firestore {
 
 ## 📊 État du Projet
 
+### Phase iOS (En cours) ✅
 - ✅ Architecture de base
 - ✅ Authentification Firebase
 - ✅ Écrans principaux (Login, Onboarding, Dashboard, Profile)
@@ -140,14 +173,44 @@ service cloud.firestore {
 - ✅ Navigation React Navigation
 - ✅ Génération intelligente de plans
 - ✅ Interface utilisateur moderne
+- 🔄 Optimisations iOS en cours
+- 📋 Tests et déploiement TestFlight à venir
+
+### Phase PWA (Planifiée) 🔮
+- 📋 Refactoring architecture partagée
+- 📋 Adaptations web (React Router, localStorage)
+- 📋 Service Workers et PWA features
+- 📋 Responsive design et optimisations web
 
 ## 🚀 Prochaines Étapes
 
-1. **Tests de l'application**
-2. **Amélioration de l'algorithme** de génération
-3. **Notifications push** pour les suppléments
-4. **Statistiques** et suivi de progression
-5. **Mode hors ligne** avec synchronisation
+### Phase iOS (Priorité)
+1. **Optimisations iOS natives**
+   - Performances (60 FPS constant)
+   - Animations fluides
+   - Gestion mémoire optimisée
+2. **Tests approfondis**
+   - Tests unitaires et d'intégration
+   - Tests sur différents appareils iOS
+   - Tests de performance
+3. **Préparation App Store**
+   - TestFlight beta testing
+   - Screenshots et métadonnées
+   - Soumission App Store
+
+### Phase PWA (Après iOS)
+1. **Refactoring architecture**
+   - Migration vers structure partagée
+   - Séparation mobile/web
+2. **Développement PWA**
+   - React Router integration
+   - Service Workers
+   - Progressive enhancement
+3. **Déploiement web**
+   - Optimisations Lighthouse
+   - Déploiement production
+
+Pour plus de détails, voir [DEVELOPMENT_ROADMAP.md](./DEVELOPMENT_ROADMAP.md)
 
 ## 🤝 Contribution
 

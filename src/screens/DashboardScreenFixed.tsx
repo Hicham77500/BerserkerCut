@@ -441,6 +441,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.info + '20',
     borderWidth: 1,
     borderColor: Colors.info + '40',
+    // Suppression de l'effet carré blanc sur Android
+    elevation: 0,
+    shadowOpacity: 0,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 0,
   },
   
   demoText: {

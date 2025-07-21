@@ -10,7 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Switch
+  Platform
 } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 
@@ -167,11 +167,21 @@ const styles = StyleSheet.create({
     marginTop: 0,
     padding: 16,
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    // Suppression de l'effet carré blanc sur Android
+    ...(Platform.OS === 'android' ? {
+      elevation: 0,
+      shadowOpacity: 0,
+      shadowOffset: { width: 0, height: 0 },
+      shadowRadius: 0,
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
+    } : {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    }),
   },
   sectionTitle: {
     fontSize: 18,
