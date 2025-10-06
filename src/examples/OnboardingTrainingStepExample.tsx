@@ -22,7 +22,7 @@ export const ExampleUsage: React.FC<ExampleUsageProps> = ({
   onNavigateBack
 }) => {
   const handleTrainingComplete = (data: ExtendedTrainingProfile) => {
-    // Les données sont automatiquement sauvegardées dans Firestore
+    // Les données sont automatiquement sauvegardées via l'API backend
     // par le composant OnboardingTrainingStep
     
     console.log('Données d\'entraînement reçues:', {
@@ -64,15 +64,15 @@ export const ExampleUsage: React.FC<ExampleUsageProps> = ({
 };
 
 /**
- * Exemple de récupération des données depuis Firestore
+ * Exemple de récupération des données depuis le backend
  */
 export const ExampleDataRetrieval = async (userId: string) => {
   try {
     // Import du service
-    const { getTrainingProfileFromFirestore } = await import('../services/trainingService');
+    const { getTrainingProfile } = await import('../services/trainingService');
     
     // Récupération des données
-    const trainingProfile = await getTrainingProfileFromFirestore(userId);
+    const trainingProfile = await getTrainingProfile(userId);
     
     if (trainingProfile) {
       console.log('Profil d\'entraînement récupéré:', trainingProfile);

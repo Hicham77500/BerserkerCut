@@ -35,7 +35,7 @@ import {
   TIME_SLOTS,
   ACTIVITY_TYPES
 } from '../types/TrainingProfile';
-import { saveTrainingProfileToFirestore, validateTrainingProfile, getCurrentMode } from '../services/trainingService';
+import { saveTrainingProfile, validateTrainingProfile, getCurrentMode } from '../services/trainingService';
 import { getUIModeMessages } from '../utils/config';
 
 interface Props {
@@ -82,7 +82,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [operatingMode] = useState(getCurrentMode());
-  const uiMessages = getUIModeMessages(operatingMode as 'demo' | 'firebase');
+  const uiMessages = getUIModeMessages(operatingMode as 'demo' | 'cloud');
 
   // Gestion de la sélection des objectifs
   const handleObjectiveSelect = useCallback((type: 'primary' | 'secondary', value: string) => {
@@ -155,8 +155,8 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
         return;
       }
 
-      // Sauvegarde dans Firestore ou en local
-      await saveTrainingProfileToFirestore(userId, trainingData);
+      // Sauvegarde via API ou local selon le mode
+      await saveTrainingProfile(userId, trainingData);
 
       // Message de succès adapté au mode
       Alert.alert(

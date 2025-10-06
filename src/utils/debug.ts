@@ -1,36 +1,33 @@
 /**
- * Utilitaires de debug pour BerserkerCut
- * Aide au diagnostic des problèmes de configuration
+ * Utilitaires de debug pour BerserkerCut (backend MongoDB + mode démo).
  */
 
-import { getCurrentMode, checkFirebaseConnection, listLocalProfiles } from '../services/trainingService';
-import { AppConfig, isFirebaseConfigured } from '../utils/config';
+import { getCurrentMode, checkBackendConnection, listLocalProfiles } from '../services/trainingService';
+import { AppConfig, isBackendConfigured } from './config';
+import { apiClient } from '../services/apiClient';
 
 /**
- * Diagnostique complet de l'état de l'application
+ * Diagnostique complet de l'état de l'application.
  */
 export const diagnoseApp = async () => {
   console.log('\n🔍 === DIAGNOSTIC BERSERKERCUT ===');
-  
-  // Mode de fonctionnement
+
   const mode = getCurrentMode();
   console.log(`📱 Mode actuel: ${mode}`);
-  
-  // Configuration Firebase
-  const firebaseConfigured = isFirebaseConfigured();
-  console.log(`⚙️ Firebase configuré: ${firebaseConfigured ? '✅' : '❌'}`);
-  
-  // Test de connexion Firebase
-  if (mode === 'firebase') {
+
+  const backendConfigured = isBackendConfigured();
+  console.log(`⚙️ Backend configuré: ${backendConfigured ? '✅' : '❌'}`);
+  console.log(`🌐 API Base URL: ${apiClient.baseUrl}`);
+
+  if (mode === 'cloud') {
     try {
-      const connected = await checkFirebaseConnection();
-      console.log(`🌐 Connexion Firebase: ${connected ? '✅' : '❌'}`);
+      const connected = await checkBackendConnection();
+      console.log(`🌐 Connexion backend: ${connected ? '✅' : '❌'}`);
     } catch (error) {
-      console.log(`🌐 Connexion Firebase: ❌ (${error})`);
+      console.log(`🌐 Connexion backend: ❌ (${error})`);
     }
   }
-  
-  // Profils locaux
+
   try {
     const localProfiles = await listLocalProfiles();
     console.log(`💾 Profils locaux: ${localProfiles.length}`);
@@ -40,119 +37,106 @@ export const diagnoseApp = async () => {
   } catch (error) {
     console.log(`💾 Profils locaux: ❌ (${error})`);
   }
-  
-  // Configuration app
+
   console.log(`🔧 Demo mode: ${AppConfig.DEMO_MODE ? '✅' : '❌'}`);
-  console.log(`🔥 Firebase enabled: ${AppConfig.FIREBASE_ENABLED ? '✅' : '❌'}`);
   console.log(`🐛 Debug mode: ${AppConfig.DEBUG_MODE ? '✅' : '❌'}`);
-  
+
   console.log('=== FIN DIAGNOSTIC ===\n');
 };
 
-/**
- * Affiche les informations de configuration Firebase
- */
-export const showFirebaseConfig = () => {
-  console.log('\n🔥 === CONFIGURATION FIREBASE ===');
-  
-  // Variables d'environnement (masquées pour sécurité)
+/** Affiche les informations de configuration backend. */
+export const showBackendConfig = () => {
+  console.log('\n☁️ === CONFIGURATION BACKEND ===');
+
   const config = {
-    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY?.substring(0, 10) + '...',
-    authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID?.substring(0, 20) + '...'
+    apiBaseUrl: apiClient.baseUrl,
+    forceDemoMode: process.env.EXPO_PUBLIC_FORCE_DEMO_MODE,
   };
-  
+
   Object.entries(config).forEach(([key, value]) => {
-    const status = value && !value.includes('undefined') && !value.includes('your-') ? '✅' : '❌';
-    console.log(`${status} ${key}: ${value || 'NON DÉFINI'}`);
+    console.log(`${value ? '✅' : '❌'} ${key}: ${value || 'NON DÉFINI'}`);
   });
-  
-  console.log('=== FIN CONFIG FIREBASE ===\n');
+
+  console.log('=== FIN CONFIG BACKEND ===\n');
 };
 
-/**
- * Test complet de sauvegarde (mode debug)
- */
+/** Test complet de sauvegarde (mode debug). */
 export const testSaveProfile = async (userId: string = 'test-user') => {
   console.log('\n🧪 === TEST SAUVEGARDE ===');
-  
+
   try {
-    const { saveTrainingProfileToFirestore } = await import('../services/trainingService');
-    
-    // Profil de test
+    const { saveTrainingProfile } = await import('../services/trainingService');
+
     const testProfile = {
       objectives: { primary: 'cutting' as const },
       weeklySchedule: {
-        monday: true, tuesday: false, wednesday: true, 
-        thursday: false, friday: true, saturday: false, sunday: false
+        monday: true,
+        tuesday: false,
+        wednesday: true,
+        thursday: false,
+        friday: true,
+        saturday: false,
+        sunday: false,
       },
       preferredTimes: { morning: true, afternoon: false, evening: false },
       activityTypes: {
-        strength_training: true, cardio: true, yoga: false, 
-        sports: false, other: false
+        strength_training: true,
+        cardio: true,
+        yoga: false,
+        sports: false,
+        other: false,
       },
       neatLevel: { level: 'moderate' as const, description: 'Test' },
       healthLimitations: { hasLimitations: false },
       healthDeclaration: { declareGoodHealth: true, acknowledgeDisclaimer: true },
       completedAt: new Date(),
-      isComplete: true
+      isComplete: true,
     };
-    
-    await saveTrainingProfileToFirestore(userId, testProfile);
+
+    await saveTrainingProfile(userId, testProfile);
     console.log('✅ Test de sauvegarde réussi');
-    
   } catch (error) {
     console.log(`❌ Test de sauvegarde échoué: ${error}`);
   }
-  
+
   console.log('=== FIN TEST ===\n');
 };
 
-/**
- * Affiche les recommandations selon la configuration
- */
+/** Affiche les recommandations selon la configuration. */
 export const showRecommendations = () => {
   console.log('\n💡 === RECOMMANDATIONS ===');
-  
+
   const mode = getCurrentMode();
-  const firebaseConfigured = isFirebaseConfigured();
-  
+  const backendConfigured = isBackendConfigured();
+
   if (mode === 'demo') {
     console.log('🔧 Mode développement actif');
     console.log('   → Les données sont sauvegardées localement');
-    console.log('   → Parfait pour le développement et les tests');
-    
-    if (!firebaseConfigured) {
-      console.log('   → Pour la production, configurez Firebase dans app.json');
+    if (!backendConfigured) {
+      console.log('   → Configurez EXPO_PUBLIC_API_BASE_URL pour activer la synchronisation cloud');
     }
   }
-  
-  if (mode === 'firebase' && firebaseConfigured) {
-    console.log('☁️ Mode Firebase actif');
-    console.log('   → Les données sont synchronisées dans le cloud');
-    console.log('   → Assurez-vous que les règles Firestore sont configurées');
+
+  if (mode === 'cloud' && backendConfigured) {
+    console.log('☁️ Mode cloud actif');
+    console.log('   → Les données sont synchronisées via l\'API backend');
+    console.log('   → Assurez-vous que les endpoints sécurisés sont opérationnels');
   }
-  
-  console.log('\n📚 Consultez FIREBASE_TROUBLESHOOTING.md pour plus d\'aide');
+
   console.log('=== FIN RECOMMANDATIONS ===\n');
 };
 
-/**
- * Diagnostic rapide avec toutes les informations
- */
+/** Diagnostic rapide avec toutes les informations. */
 export const quickDiagnose = async () => {
   await diagnoseApp();
-  showFirebaseConfig();
+  showBackendConfig();
   showRecommendations();
 };
 
 export default {
   diagnoseApp,
-  showFirebaseConfig,
+  showBackendConfig,
   testSaveProfile,
   showRecommendations,
-  quickDiagnose
+  quickDiagnose,
 };

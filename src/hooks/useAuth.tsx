@@ -72,22 +72,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     try {
-      const unsubscribe = AuthService.onAuthStateChanged(async (firebaseUser) => {
-        if (firebaseUser) {
-          try {
-            // For web platform or if we need to fetch the full user profile
-            // since Firebase Auth doesn't store our custom User type
-            const userData = await AuthService.getUserProfile(firebaseUser.uid);
-            setUser(userData);
-          } catch (error) {
-            console.error('Error fetching user profile:', error);
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
-        
-        // Clear loading state after auth state is determined
+      const unsubscribe = AuthService.onAuthStateChanged((currentUser) => {
+        setUser(currentUser);
         setLoading(false);
       });
 

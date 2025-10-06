@@ -1,26 +1,15 @@
 /**
  * Génère et persiste les plans quotidiens nutritionnels et de suppléments.
- * Peut fonctionner via Firestore ou un mode démo en mémoire.
+ * Peut fonctionner via un backend MongoDB ou un mode démo en mémoire.
  */
 
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  query, 
-  where, 
-  getDocs,
-  updateDoc,
-  orderBy,
-  limit 
-} from 'firebase/firestore';
-import { db } from './firebase';
 import { DailyPlan, User, NutritionPlan, SupplementPlan, Meal, Food, TrainingDay } from '../types';
 import { DemoPlanService } from './demoPlan';
+import { apiClient } from './apiClient';
+import { AppConfig } from '../utils/config';
 
-/** Active le mode démo tant que Firebase n'est pas finalisé. */
-const USE_DEMO_MODE = true;
+/** Active le mode démo tant que le backend n'est pas disponible. */
+const USE_DEMO_MODE = AppConfig.DEMO_MODE;
 
 /** Valeurs de référence utilisées pour les calculs nutritionnels. */
 const NUTRITION_CONSTANTS = {
@@ -67,7 +56,7 @@ export class PlanService {
    * Calcule et enregistre le plan quotidien d'un utilisateur.
    * @param user Profil complet comprenant santé et préférences.
    * @returns Plan consolidé avec nutrition et suppléments.
-   * @throws {Error} Si les calculs ou l'écriture Firestore échouent.
+   * @throws {Error} Si les calculs ou la persistance backend échouent.
    */
   static async generateDailyPlan(user: User): Promise<DailyPlan> {
     // Mode démo pour le développement
@@ -107,12 +96,11 @@ export class PlanService {
         createdAt: new Date()    // Timestamp de génération
       };
 
-      // Étape 5: Persistance en base avec format Firestore
-      await setDoc(doc(db, 'dailyPlans', dailyPlan.id), {
+      // Étape 5: Persistance via l'API MongoDB
+      await apiClient.put(`/plans/${dailyPlan.id}`, {
         ...dailyPlan,
-        // Conversion des objets Date en ISO string pour Firestore
         date: dailyPlan.date.toISOString(),
-        createdAt: dailyPlan.createdAt.toISOString()
+        createdAt: dailyPlan.createdAt.toISOString(),
       });
 
       return dailyPlan;
@@ -125,7 +113,7 @@ export class PlanService {
 
   /**
    * Récupère le plan prévu pour la date du jour.
-   * @param userId Identifiant Firebase de l'utilisateur.
+   * @param userId Identifiant de l'utilisateur.
    * @returns Plan existant ou `null` si aucun document.
    */
   static async getTodaysPlan(userId: string): Promise<DailyPlan | null> {
@@ -138,21 +126,19 @@ export class PlanService {
       const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
       const planId = `${userId}_${today}`;
       
-      // Récupération depuis Firestore
-      const planDoc = await getDoc(doc(db, 'dailyPlans', planId));
-      
-      if (!planDoc.exists()) {
-        return null; // Aucun plan généré pour aujourd'hui
+      const planData = await apiClient.get<DailyPlan | null>('/plans/today', {
+        query: { userId },
+      });
+
+      if (!planData) {
+        return null;
       }
 
-      // Reconstruction de l'entité avec conversion des timestamps
-      const planData = planDoc.data();
       return {
         ...planData,
-        // Conversion des ISO strings Firestore vers objets Date JS
         date: new Date(planData.date),
-        createdAt: new Date(planData.createdAt)
-      } as DailyPlan;
+        createdAt: new Date(planData.createdAt),
+      };
       
     } catch (error: any) {
       console.error('Erreur lors de la récupération du plan du jour:', error);
@@ -172,36 +158,7 @@ export class PlanService {
     
     try {
       // Récupération du plan existant
-      const planRef = doc(db, 'dailyPlans', planId);
-      const planDoc = await getDoc(planRef);
-      
-      if (!planDoc.exists()) {
-        throw new Error('Plan quotidien non trouvé');
-      }
-
-      const planData = planDoc.data() as DailyPlan;
-      
-      // Parcourt chaque créneau pour marquer le supplément comme pris.
-      const updateSupplementPlan = (plan: SupplementPlan): SupplementPlan => {
-        // Parcours de tous les créneaux (morning, preWorkout, postWorkout, evening)
-        Object.keys(plan).forEach(timeSlot => {
-          const supplements = plan[timeSlot as keyof SupplementPlan];
-          supplements.forEach(supplement => {
-            if (supplement.supplementId === supplementId) {
-              supplement.taken = true; // Marquage comme pris
-            }
-          });
-        });
-        return plan;
-      };
-
-      // Application de la mise à jour
-      const updatedSupplementPlan = updateSupplementPlan(planData.supplementPlan);
-      
-      // Sauvegarde en base
-      await updateDoc(planRef, {
-        supplementPlan: updatedSupplementPlan
-      });
+      await apiClient.post(`/plans/${planId}/supplements/${supplementId}/taken`, {});
       
     } catch (error: any) {
       console.error('Erreur lors de la mise à jour du supplément:', error);

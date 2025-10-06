@@ -1,72 +1,52 @@
 # BerserkerCut 🔥
 
-Une application iOS native (React Native Expo) pour la sèche intelligente avec plans nutritionnels et suppléments personnalisés.
+Une application iOS native (React Native + Expo) pour générer des plans nutrition/suppléments personnalisés pendant une phase de sèche.
 
-> **Stratégie de développement** : iOS-first puis PWA. Voir [DEVELOPMENT_ROADMAP.md](./DEVELOPMENT_ROADMAP.md) pour plus de détails.
+## 🎯 Objectifs
 
-## 🎯 Objectif
+BerserkerCut calcule et délivre quotidiennement :
+- un plan nutritionnel individualisé (calories, macros, repas)
+- un protocole de suppléments avec timing intelligent
+- des conseils contextualisés en fonction du jour (entraînement vs repos)
 
-**BerserkerCut** génère chaque jour un plan nutritionnel et de suppléments adapté selon :
-- Votre profil (poids, objectif, jours d'entraînement)
-- Le contexte (jour d'entraînement, repos, etc.)
-- Vos suppléments disponibles
-- Vos préférences alimentaires
+Le calcul du métabolisme, de l'IMC, des macros et des plans repas est effectué **localement** dans l'application : aucune IA n'est sollicitée pour les formules déterministes.
 
-## 🚀 Fonctionnalités (Phase iOS)
+## 🚀 Fonctionnalités clés
 
-- **Authentification Firebase** (email/mot de passe)
-- **Onboarding complet** avec formulaire de profil
-- **Dashboard quotidien** avec plans personnalisés
-- **Logique conditionnelle** (plans différents selon le jour)
-- **Suivi des suppléments** avec notifications
-- **Conseils quotidiens** adaptés au contexte
-- **Optimisations iOS** (performances, animations, UX native)
+- Authentification email/mot de passe via API Node/MongoDB
+- Onboarding multi-étapes (données santé, entrainement, suppléments)
+- Génération quotidienne des plans (algorithmes internes)
+- Mode démo hors ligne (données stockées en AsyncStorage)
+- Interface iOS moderne (Expo + React Navigation)
 
-## 📱 Technologies
+## 📦 Stack technique
 
-### Phase Actuelle (iOS Native)
-- **React Native** avec Expo SDK 53
-- **TypeScript** 5.8.3 pour la type safety
-- **Firebase** v11.10.0 (Authentication & Firestore)
-- **React Navigation** v7 pour la navigation
-- **Architecture propre** avec séparation des responsabilités
+| Couche | Technologies |
+| --- | --- |
+| Interface | React Native, Expo, React Navigation |
+| Services | AuthService, PlanService, TrainingService (REST) |
+| Backend (attendu) | Node.js / Express + MongoDB Atlas (ou cluster self-hosted) |
+| Stockage local | AsyncStorage (mode démo) |
+| Langage | TypeScript end-to-end |
 
-### Phase Future (PWA)
-- Architecture partagée (90% de code réutilisé)
-- React Router pour la navigation web
-- Service Workers pour l'offline
-- PWA optimizations
+> L’application mobile **n’accède jamais à MongoDB directement** : un backend REST sécurisé est requis (JWT recommandé). Le dépôt fourni correspond à l’application cliente Expo.
 
 ## 🏗️ Architecture
 
-### Phase iOS (Actuelle)
 ```
 src/
-├── components/     # Composants réutilisables
-├── hooks/         # Contextes React (Auth, Plan)
-├── navigation/    # Configuration de navigation
-├── screens/       # Écrans de l'application
-├── services/      # Services Firebase
-├── types/         # Types TypeScript
-└── utils/         # Utilitaires et thème
-```
-Pour la vue d'ensemble complète, voir `docs/ARCHITECTURE.md`.
-
-### Phase PWA (Future)
-```
-src/
-├── platforms/
-│   ├── mobile/     # Code spécifique React Native
-│   └── web/        # Code spécifique PWA
-├── shared/         # Code commun (90% du code actuel)
-│   ├── components/
-│   ├── services/
-│   ├── hooks/
-│   ├── utils/
-│   └── types/
+├── components/     # UI réutilisable
+├── hooks/          # AuthProvider, PlanProvider…
+├── navigation/     # Routes & stacks
+├── screens/        # Écrans principaux
+├── services/       # AuthService, PlanService, apiClient, demo services
+├── types/          # Modèles TypeScript (User, DailyPlan…)
+└── utils/          # Configuration, debug helpers, thèmes
 ```
 
-## 🔧 Installation
+Documentation détaillée : `docs/ARCHITECTURE.md`.
+
+## 🔧 Installation & configuration
 
 1. **Cloner le projet**
    ```bash
@@ -79,181 +59,107 @@ src/
    npm install
    ```
 
-3. **Configurer Firebase**
-   - Créer un projet Firebase
-   - Activer Authentication (email/password)
-   - Activer Firestore
-   - Mettre à jour les clés dans `app.json`
-   - Voir [docs/setup/FIREBASE_SETUP.md](./docs/setup/FIREBASE_SETUP.md) pour plus de détails
+3. **Configurer l’API backend (MongoDB)**
+   - Un serveur Express prêt à l'emploi est disponible dans `backend/`.
+   - Étapes de démarrage :
+     ```bash
+     cd backend
+     cp .env.example .env             # renseigner MONGODB_URI + JWT_SECRET
+     npm install
+     npm run dev                      # ou npm start pour la prod
+     ```
+   - Variables clés :
+     - `MONGODB_URI` → connexion Atlas (`mongodb+srv://adminH:...@cluster0...`)
+     - `JWT_SECRET` → secret de signature des tokens
+     - `CORS_ORIGIN` → origines front autorisées (`http://localhost:19006` pour Expo)
+   - Endpoints couverts :
+     - `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`
+     - `GET /users/:id`, `PATCH /users/:id/profile`
+     - `PUT /users/:id/training-profile`, `GET /users/:id/training-profile`
+     - `PUT /plans/:planId`, `GET /plans/today?userId=`, `POST /plans/:planId/supplements/:supplementId/taken`
 
-4. **Lancer l'application (iOS)**
+4. **Variables d’environnement Expo** (`.env`)
    ```bash
-   # Développement
-   npm start
-   
-   # Build iOS spécifique
-   npm run ios
-   
-   # Pour tester sur simulateur iOS
-   expo run:ios
+   EXPO_PUBLIC_API_BASE_URL=http://localhost:4000   # backend local
+   # EXPO_PUBLIC_API_BASE_URL=https://api.berserkercut.com   # backend prod
+   EXPO_PUBLIC_FORCE_DEMO_MODE=false  # true pour travailler 100% hors ligne
+   ```
+   Option alternative : renseigner `expo.extra.apiBaseUrl` dans `app.json`.
+
+5. **Lancer l’app**
+   ```bash
+   npm start          # Expo dev client / Expo Go
+   npm run ios        # build + lancement simulateur iOS
+   npm run android    # build + lancement émulateur Android
    ```
 
-## 🔥 Firebase Configuration
+## ☁️ Backend MongoDB – recommandations
 
-### Firestore Collections
-
-- **users**: Profils utilisateurs
-- **dailyPlans**: Plans quotidiens générés
-
-### Security Rules
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Users can only access their own data
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Daily plans can only be accessed by their owner
-    match /dailyPlans/{planId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
-    }
+- **Schema utilisateur** :
+  ```json
+  {
+    "_id": "ObjectId",
+    "email": "string",
+    "hashedPassword": "string",
+    "profile": { /* voir src/types */ },
+    "createdAt": "ISO string",
+    "updatedAt": "ISO string"
   }
-}
-```
+  ```
+- **Sécurité** :
+  - Stocker les mots de passe hashés (bcrypt/argon2).
+  - Retourner uniquement les champs nécessaires au client.
+  - Protéger les routes avec un middleware JWT (Authorization: Bearer).
+- **Plans quotidiens** : collection `daily_plans` indexée sur `{ userId, date }`.
+- **IA & données sensibles** : seules les données nécessaires à l’IA doivent transiter. Par défaut, l’app n’envoie **aucune** donnée à un LLM ; prévoyez un microservice séparé si vous automatisez des recommandations IA. Garder BMI, macros, etc., dans le périmètre deterministic côté client.
 
-## 🍽️ Logique Métier
+## ♻️ Modes de fonctionnement
 
-### Génération des Plans
+| Mode | Activation | Persistance |
+| --- | --- | --- |
+| `cloud` | `EXPO_PUBLIC_API_BASE_URL` défini & backend disponible | API REST → MongoDB |
+| `demo`  | `EXPO_PUBLIC_FORCE_DEMO_MODE=true` ou aucun backend configuré | AsyncStorage (local device) |
 
-1. **Calcul des besoins caloriques**
-   - Métabolisme de base (Harris-Benedict)
-   - Facteur d'activité
-   - Ajustement selon l'objectif (sèche, recomp)
+Les services `DemoAuthService`, `DemoPlanService`, `saveTrainingProfile` (AsyncStorage) garantissent une expérience complète sans réseau.
 
-2. **Répartition des macronutriments**
-   - Protéines : 1.8-2.2g/kg selon l'objectif
-   - Lipides : 25-30% des calories
-   - Glucides : reste des calories
+## 🧠 Logique métier
 
-3. **Génération des repas**
-   - Répartition selon le type de jour
-   - Sélection d'aliments adaptés
-   - Calcul des portions
+- **Calculs énergétiques** : formule Harris-Benedict révisée, ajustements objectif + jour d’entraînement.
+- **Répartition macros** : protéines (1.8–2.2 g/kg), lipides (25–30%), glucides = reste.
+- **Plans repas** : base d’aliments typés (petit-déj/déjeuner/dîner/collation), quantités calculées proportionnellement.
+- **Suppléments** : tri par `type` et `timing`; marquage « pris » via API.
+- **Aucune IA n’est utilisée pour les calculs déterministes**. Les agents/LLM éventuels doivent être branchés depuis le backend et ne doivent recevoir que les données strictement nécessaires (ex : objectif, disponibilité de suppléments). 
 
-### Suppléments
+## 🔒 Sécurité & conformité
 
-- **Timing intelligent** selon l'entraînement
-- **Dosages personnalisés**
-- **Suivi de prise** avec notifications
+- Sessions JWT stockées dans AsyncStorage (client) + Authorization header automatique (`apiClient`).
+- Nettoyage complet des sessions côté client (`clearSession`).
+- Validation stricte des entrées (`validateTrainingProfile`, vérifications côté backend requises).
+- Pas de données médicales sensibles envoyées sans consentement explicite.
 
-## 🎨 UI/UX
+## 📊 État du projet
 
-- **Design moderne** avec Material Design
-- **Navigation intuitive** avec onglets
-- **Feedback visuel** pour les actions
-- **Responsive** sur tous les écrans
+| Avancement | Détails |
+| --- | --- |
+| ✅ Architecture mobile | Hooks, services, logique métier, mode démo |
+| ✅ Migration MongoDB | Suppression Firebase, nouveau client HTTP, stockage session |
+| 🔄 Backend à déployer | Doit être développé/déployé (Node/Mongo) pour activer le mode cloud |
+| 🔜 QA & tests | Tests automatisés + validation fonctionnelle à planifier |
 
-## 🔒 Sécurité
+## 🧭 Feuille de route courte
 
-- **Authentication Firebase** sécurisée
-- **Règles Firestore** strictes
-- **Validation des données** côté client et serveur
-- **Pas de données sensibles** exposées
+1. Déployer l’API Node/Mongo (auth + plans) et sécuriser les endpoints.
+2. Connecter l’app Expo en mode `cloud` (vérifier `apiClient.baseUrl`).
+3. Ajouter des tests (unitaires/services) + instrumentation monitoring.
+4. Préparer le packaging TestFlight / Play Store.
 
-## 📊 État du Projet
+## 🧩 Ressources utiles
 
-### Phase iOS (En cours) ✅
-- ✅ Architecture de base
-- ✅ Authentification Firebase
-- ✅ Écrans principaux (Login, Onboarding, Dashboard, Profile)
-- ✅ Services Firebase (Auth, Plans)
-- ✅ Types TypeScript complets
-- ✅ Navigation React Navigation
-- ✅ Génération intelligente de plans
-- ✅ Interface utilisateur moderne
-- 🔄 Optimisations iOS en cours
-- 📋 Tests et déploiement TestFlight à venir
-
-### Phase PWA (Planifiée) 🔮
-- 📋 Refactoring architecture partagée
-- 📋 Adaptations web (React Router, localStorage)
-- 📋 Service Workers et PWA features
-- 📋 Responsive design et optimisations web
-
-## 🚀 Prochaines Étapes
-
-### Phase iOS (Priorité)
-1. **Optimisations iOS natives**
-   - Performances (60 FPS constant)
-   - Animations fluides
-   - Gestion mémoire optimisée
-2. **Tests approfondis**
-   - Tests unitaires et d'intégration
-   - Tests sur différents appareils iOS
-   - Tests de performance
-3. **Préparation App Store**
-   - TestFlight beta testing
-   - Screenshots et métadonnées
-   - Soumission App Store
-
-### Phase PWA (Après iOS)
-1. **Refactoring architecture**
-   - Migration vers structure partagée
-   - Séparation mobile/web
-2. **Développement PWA**
-   - React Router integration
-   - Service Workers
-   - Progressive enhancement
-3. **Déploiement web**
-   - Optimisations Lighthouse
-   - Déploiement production
-
-Pour plus de détails, voir [docs/development/DEVELOPMENT_ROADMAP.md](./docs/development/DEVELOPMENT_ROADMAP.md)
-
-## 📚 Documentation
-
-La documentation complète du projet est organisée dans le dossier `docs/` :
-
-### 🛠️ Setup & Configuration
-- [Firebase Setup](./docs/setup/FIREBASE_SETUP.md) - Configuration Firebase complète
-- [Firebase Activation](./docs/setup/FIREBASE_ACTIVATION.md) - Activation des services
-- [Firestore Schema](./docs/setup/FIRESTORE_SCHEMA.md) - Structure de la base de données
-- [Firebase Troubleshooting](./docs/setup/FIREBASE_TROUBLESHOOTING.md) - Résolution de problèmes
-
-### 🔧 Development
-- [Development Roadmap](./docs/development/DEVELOPMENT_ROADMAP.md) - Stratégie iOS→PWA
-- [Development Log](./docs/development/DEVELOPMENT_LOG.md) - Journal de développement
-- [Deployment Guide](./docs/development/DEPLOYMENT.md) - Guide de déploiement
-- [Testing Guide](./docs/development/TESTING.md) - Guide des tests
-
-### 🚀 Features
-- [Health Improvements](./docs/features/HEALTH_IMPROVEMENTS.md) - Améliorations santé
-- [Mission Accomplished](./docs/features/MISSION_ACCOMPLISHED.md) - Fonctionnalités complétées
-- [Onboarding Training](./docs/features/ONBOARDING_TRAINING_IMPLEMENTATION.md) - Implémentation onboarding
-
-### 📋 Releases
-- [Release Notes v1.0.1](./docs/releases/RELEASE_NOTES_v1.0.1.md)
-- [Release Notes v1.0.2](./docs/releases/RELEASE_NOTES_v1.0.2.md)
-- [Release Notes v1.0.4](./docs/releases/RELEASE_NOTES_v1.0.4.md) - iOS-first + PWA prep
-- [Migration Notes v1.0.4](./docs/releases/MIGRATION_NOTES_v1.0.4.md) - Architecture migration
-- [PWA Transition v1.0.4](./docs/releases/PWA_TRANSITION_v1.0.4.md) - Plan transition PWA
-
-## 🤝 Contribution
-
-Ce projet utilise une architecture modulaire qui facilite les contributions :
-- Respecter les conventions TypeScript
-- Suivre le pattern établi pour les services
-- Ajouter des tests pour les nouvelles fonctionnalités
-- Maintenir la documentation à jour
-
-## 📝 Licence
-
-Projet privé - Tous droits réservés.
+- `docs/ARCHITECTURE.md` – flux détaillés (auth, plans, mode démo).
+- `src/services/apiClient.ts` – configuration HTTP + auth automatique.
+- `src/services/sessionStorage.ts` – gestion token/utilisateur.
+- `src/utils/debug.ts` – diagnostics (`quickDiagnose()` en dev console).
 
 ---
 
-**BerserkerCut** - Votre coach de sèche intelligent 🔥💪
+> Besoin d’étendre la logique (agents IA, analytics) ? Ajoutez un microservice dédié côté backend pour filtre/prétraiter les données avant appel LLM. Gardez dans l’app mobile uniquement les calculs déterministes (IMC, calories, macros) et l’UX. EOF

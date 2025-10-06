@@ -113,7 +113,7 @@ export interface TrainingProfileFirestore {
     declareGoodHealth: boolean;
     acknowledgeDisclaimer: boolean;
   };
-  completedAt: any; // Firebase Timestamp
+  completedAt: any; // Timestamp (ISO string côté API)
   isComplete: boolean;
 }
 

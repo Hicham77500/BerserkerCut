@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.BerserkerCut",
+      "bundleIdentifier": "com.GCorp.BerserkerCut",
       "buildNumber": "1.0.4",
       "requireFullScreen": false,
       "userInterfaceStyle": "light"
@@ -26,19 +26,14 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.BerserkerCut"
+      "package": "com.Gcorp.BerserkerCut"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "extra": {
-      "firebaseApiKey": "your-api-key",
-      "firebaseAuthDomain": "berserkercut-app.firebaseapp.com",
-      "firebaseProjectId": "berserkercut-app",
-      "firebaseStorageBucket": "berserkercut-app.appspot.com",
-      "firebaseMessagingSenderId": "123456789",
-      "firebaseAppId": "1:123456789:web:abcdef123456"
+      "apiBaseUrl": "http://localhost:4000"
     }
   }
 }

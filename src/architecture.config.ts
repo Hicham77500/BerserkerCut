@@ -19,7 +19,7 @@
  * │  types/ (entities & interfaces)               │
  * ├─────────────────────────────────────────────────┤
  * │              INFRASTRUCTURE                    │
- * │  utils/ (external APIs, Firebase, storage)    │
+ * │  utils/ (configuration, external APIs, storage)│
  * └─────────────────────────────────────────────────┘
  */
 
@@ -37,7 +37,7 @@ export enum ArchitectureLayer {
   /** Couche domaine - Entities, interfaces, types métier */
   DOMAIN = 'domain',
   
-  /** Couche infrastructure - APIs externes, Firebase, utilitaires système */
+  /** Couche infrastructure - APIs externes, configuration, utilitaires système */
   INFRASTRUCTURE = 'infrastructure'
 }
 
@@ -199,7 +199,7 @@ export const DOCUMENTATION_GUIDELINES = {
 export const PWA_MIGRATION_CONFIG = {
   /** Code réutilisable à 100% */
   FULLY_REUSABLE: [
-    'services/', // Services Firebase et logique métier
+    'services/', // Services backend (REST) et logique métier
     'types/',    // Types et interfaces
     'hooks/',    // Hooks React (logique)
     'utils/'     // Utilitaires (sauf platform-specific)
