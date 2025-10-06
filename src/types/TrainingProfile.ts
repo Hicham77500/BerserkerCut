@@ -1,7 +1,4 @@
-/**
- * Types spécifiques pour l'entraînement et la santé
- * Utilisés pour l'étape d'onboarding "Entraînement & Santé"
- */
+/** Types complémentaires utilisés pendant l'onboarding entraînement/santé. */
 
 export interface TrainingObjective {
   primary: 'muscle_gain' | 'weight_maintenance' | 'cutting' | 'strength' | 'endurance' | 'general_fitness';
@@ -48,9 +45,7 @@ export interface HealthDeclaration {
   acknowledgeDisclaimer: boolean;
 }
 
-/**
- * Profil d'entraînement complet pour l'onboarding
- */
+/** Profil d'entraînement détaillé stocké en complément du UserProfile. */
 export interface ExtendedTrainingProfile {
   // Objectifs d'entraînement
   objectives: TrainingObjective;
@@ -78,9 +73,7 @@ export interface ExtendedTrainingProfile {
   isComplete: boolean;
 }
 
-/**
- * Données pour la sauvegarde Firestore
- */
+/** Version sérialisable du profil d'entraînement pour Firestore. */
 export interface TrainingProfileFirestore {
   objectives: {
     primary: string;

@@ -1,5 +1,5 @@
 /**
- * Écran d'onboarding modernisé avec étape santé
+ * Écran d'onboarding modernisé avec étape santé - Version corrigée
  */
 
 import React, { useState } from 'react';
@@ -10,15 +10,29 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
-  ViewStyle,
-  TextStyle,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableOpacity,
 } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
-import { UserProfile, HealthProfile, TrainingProfile, SupplementProfile } from '../types';
-import { ExtendedTrainingProfile } from '../types/TrainingProfile';
+import {
+  UserProfile,
+  HealthProfile,
+  TrainingProfile,
+  SupplementProfile,
+  TrainingDay,
+  Supplement,
+  SupplementFormType,
+} from '../types';
+import { ExtendedTrainingProfile, WeeklyTrainingSchedule, PreferredTrainingTime } from '../types/TrainingProfile';
 import { Colors, Typography, Spacing, BorderRadius } from '../utils/theme';
 import { Card, Button, Input, HealthStep, OnboardingTrainingStep } from '../components';
-import HealthService from '../services/healthService';
+interface BasicInfo {
+  name?: string;
+  gender: 'male' | 'female';
+  objective: UserProfile['objective'];
+}
 
 interface OnboardingStep {
   id: number;
@@ -28,281 +42,224 @@ interface OnboardingStep {
 }
 
 export const OnboardingScreen: React.FC = () => {
-  const { user, updateProfile } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  
-  // États pour chaque étape
-  const [basicInfo, setBasicInfo] = useState({
-    name: '',
-    gender: 'male' as 'male' | 'female',
-    objective: 'cutting' as 'cutting' | 'recomposition' | 'maintenance',
+  // États partagés entre les étapes
+  const [basicInfo, setBasicInfo] = useState<BasicInfo>({
+    gender: 'male',
+    objective: 'recomposition',
   });
-
-  const [healthData, setHealthData] = useState<Partial<HealthProfile>>({});
-  
-  const [extendedTrainingData, setExtendedTrainingData] = useState<Partial<ExtendedTrainingProfile>>({});
-  
-  const [trainingData, setTrainingData] = useState<Partial<TrainingProfile>>({
-    trainingDays: [],
-    experienceLevel: 'intermediate' as 'beginner' | 'intermediate' | 'advanced',
-    preferredTimeSlots: ['morning'],
+  const [healthData, setHealthData] = useState<Partial<HealthProfile>>({
+    activityLevel: 'moderate',
+    averageSleepHours: 7,
   });
-
+  const [trainingProfile, setTrainingProfile] = useState<TrainingProfile | null>(null);
   const [supplementData, setSupplementData] = useState<Partial<SupplementProfile>>({
-    available: [],
     preferences: {
       preferNatural: false,
       budgetRange: 'medium',
       allergies: [],
     },
+    available: [],
   });
 
-  const [preferences, setPreferences] = useState({
-    allergies: [] as string[],
-    foodPreferences: [] as string[],
-  });
+  // Navigation entre les étapes
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleStepComplete = (stepData: any) => {
-    switch (currentStep) {
-      case 0:
-        setBasicInfo(stepData);
-        break;
-      case 1:
-        setHealthData(stepData);
-        break;
-      case 2:
-        setExtendedTrainingData(stepData);
-        break;
-      case 3:
-        setSupplementData(stepData);
-        break;
-      case 4:
-        setPreferences(stepData);
-        break;
-    }
-    
-    if (currentStep < steps.length - 1) {
+  const { user, updateProfile } = useAuth();
+
+  // Gérer la progression vers l'étape suivante
+  const handleNextStep = () => {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
-    } else {
-      handleFinalSubmit();
     }
   };
 
-  const handleFinalSubmit = async () => {
-    setLoading(true);
-    
-    try {
-      // Construire le profil utilisateur complet
-      const completeProfile: Partial<UserProfile> = {
-        name: basicInfo.name,
-        objective: basicInfo.objective,
-        allergies: preferences.allergies,
-        foodPreferences: preferences.foodPreferences,
-        
-        health: {
-          ...healthData,
-          gender: basicInfo.gender,
-          dataSource: healthData.dataSource || {
-            type: 'manual',
-            isConnected: true,
-          },
-          lastUpdated: new Date(),
-          isManualEntry: true,
-        } as HealthProfile,
-        
-        training: {
-          trainingDays: trainingData.trainingDays || [],
-          experienceLevel: trainingData.experienceLevel || 'intermediate',
-          preferredTimeSlots: trainingData.preferredTimeSlots || ['morning'],
-        },
-        
-        supplements: {
-          available: supplementData.available || [],
-          preferences: supplementData.preferences || {
-            preferNatural: false,
-            budgetRange: 'medium',
-            allergies: [],
-          },
-        },
-      };
-
-      // Sauvegarder les données de santé manuelles
-      if (healthData.weight && healthData.height) {
-        await HealthService.saveManualHealthData({
-          weight: healthData.weight,
-          height: healthData.height,
-          steps: healthData.averageDailySteps,
-          heartRate: healthData.restingHeartRate,
-          sleepHours: healthData.averageSleepHours,
-          timestamp: new Date(),
-        });
-      }
-
-      await updateProfile(completeProfile);
-      
-      Alert.alert(
-        'Profil créé !',
-        'Votre profil a été configuré avec succès. Nous allons maintenant générer votre premier plan personnalisé.',
-        [{ text: 'Commencer', style: 'default' }]
-      );
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde du profil:', error);
-      Alert.alert(
-        'Erreur',
-        'Une erreur est survenue lors de la sauvegarde de votre profil. Veuillez réessayer.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 0) {
+  // Gérer le retour à l'étape précédente
+  const handlePreviousStep = () => {
+    if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const steps: OnboardingStep[] = [
-    {
-      id: 0,
-      title: 'Informations de base',
-      subtitle: 'Parlez-nous de vous',
-      component: (
-        <BasicInfoStep
-          initialData={basicInfo}
-          onComplete={handleStepComplete}
-        />
-      ),
-    },
-    {
-      id: 1,
-      title: 'Santé et Activité',
-      subtitle: 'Vos données de santé pour des plans personnalisés',
-      component: (
-        <HealthStep
-          initialData={healthData}
-          onComplete={handleStepComplete}
-        />
-      ),
-    },
-    {
-      id: 2,
-      title: 'Entraînement & Santé',
-      subtitle: 'Configurez vos objectifs et déclarez votre état de santé',
-      component: user ? (
-        <OnboardingTrainingStep
-          userId={user.id}
-          onComplete={(data: ExtendedTrainingProfile) => handleStepComplete(data)}
-          onBack={handleBack}
-        />
-      ) : null,
-    },
-    {
-      id: 3,
-      title: 'Suppléments',
-      subtitle: 'Quels suppléments avez-vous disponibles ?',
-      component: (
-        <SupplementStep
-          initialData={supplementData}
-          onComplete={handleStepComplete}
-        />
-      ),
-    },
-    {
-      id: 4,
-      title: 'Préférences',
-      subtitle: 'Allergies et préférences alimentaires',
-      component: (
-        <PreferencesStep
-          initialData={preferences}
-          onComplete={handleStepComplete}
-        />
-      ),
-    },
-  ];
+  // Finaliser l'onboarding
+  const handleComplete = async () => {
+    if (!user) {
+      Alert.alert('Erreur', 'Veuillez vous reconnecter pour finaliser votre profil.');
+      return;
+    }
 
-  const currentStepData = steps[currentStep];
-  const progress = ((currentStep + 1) / steps.length) * 100;
+    setIsLoading(true);
+    try {
+      const now = new Date();
+
+      const resolvedHealth: HealthProfile = {
+        weight: healthData.weight ?? 0,
+        height: healthData.height ?? 0,
+        age: healthData.age ?? 0,
+        gender: basicInfo.gender,
+        activityLevel: healthData.activityLevel ?? 'moderate',
+        averageSleepHours: healthData.averageSleepHours ?? 7,
+        averageDailySteps: healthData.averageDailySteps,
+        restingHeartRate: healthData.restingHeartRate,
+        dataSource: {
+          type: healthData.dataSource?.type ?? 'manual',
+          isConnected: healthData.dataSource?.isConnected ?? false,
+          permissions: healthData.dataSource?.permissions ?? [],
+          lastSyncDate: healthData.dataSource?.lastSyncDate,
+        },
+        lastUpdated: healthData.lastUpdated ?? now,
+        isManualEntry: healthData.isManualEntry ?? true,
+      };
+
+      const resolvedTraining: TrainingProfile = trainingProfile ?? {
+        trainingDays: [],
+        experienceLevel: 'beginner',
+        preferredTimeSlots: ['evening']
+      };
+
+      const resolvedSupplements: SupplementProfile = {
+        available: supplementData.available ?? [],
+        preferences: {
+          preferNatural: supplementData.preferences?.preferNatural ?? false,
+          budgetRange: supplementData.preferences?.budgetRange ?? 'medium',
+          allergies: supplementData.preferences?.allergies ?? [],
+        }
+      };
+
+      const completeProfile: UserProfile = {
+        name: basicInfo.name?.trim() ?? '',
+        objective: basicInfo.objective ?? 'recomposition',
+        allergies: supplementData.preferences?.allergies ?? [],
+        foodPreferences: [],
+        health: resolvedHealth,
+        training: resolvedTraining,
+        supplements: resolvedSupplements,
+      };
+
+      await updateProfile(completeProfile);
+      Alert.alert('Succès', 'Votre profil a été mis à jour avec succès !');
+    } catch (error) {
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'enregistrement de votre profil.');
+      console.error('Erreur création profil:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header avec progression */}
-      <View style={styles.header}>
-        <View style={styles.progressContainer}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      >
+        <View style={styles.header}>
           <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progress}%` }]} />
+            {[1, 2, 3, 4].map((step) => (
+              <View
+                key={step}
+                style={[
+                  styles.progressDot,
+                  step <= currentStep && styles.progressDotActive,
+                ]}
+              />
+            ))}
           </View>
-          <Text style={styles.progressText}>
-            Étape {currentStep + 1} sur {steps.length}
-          </Text>
+          <Text style={styles.stepIndicator}>Étape {currentStep} sur 4</Text>
         </View>
-        
-        {currentStep > 0 && (
-          <Button
-            title="Retour"
-            variant="ghost"
-            size="sm"
-            onPress={handleBack}
-            style={styles.backButton}
-          />
-        )}
-      </View>
 
-      {/* Contenu de l'étape */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.stepContainer}>
-          <Text style={styles.stepTitle}>{currentStepData.title}</Text>
-          <Text style={styles.stepSubtitle}>{currentStepData.subtitle}</Text>
-          
-          {currentStepData.component}
-        </View>
-      </ScrollView>
-
-      {/* Loading overlay */}
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <Card style={styles.loadingCard}>
-            <Text style={styles.loadingText}>
-              Configuration de votre profil...
-            </Text>
-          </Card>
-        </View>
-      )}
+        <ScrollView
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {currentStep === 1 && (
+            <Step1
+              basicInfo={basicInfo}
+              setBasicInfo={setBasicInfo}
+              onNext={handleNextStep}
+            />
+          )}
+          {currentStep === 2 && (
+            <Step2
+              healthData={healthData}
+              setHealthData={setHealthData}
+              onNext={handleNextStep}
+              onBack={handlePreviousStep}
+            />
+          )}
+          {currentStep === 3 && (
+            <Step3
+              userId={user?.id ?? 'demo-user'}
+              setTrainingProfile={setTrainingProfile}
+              onNext={handleNextStep}
+              onBack={handlePreviousStep}
+            />
+          )}
+          {currentStep === 4 && (
+            <Step4
+              supplementData={supplementData}
+              setSupplementData={setSupplementData}
+              onComplete={handleComplete}
+              onBack={handlePreviousStep}
+              isLoading={isLoading}
+            />
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-// Composants pour chaque étape
+// Étape 1: Informations de base
 interface StepProps {
-  initialData: any;
-  onComplete: (data: any) => void;
+  onNext?: () => void;
+  onBack?: () => void;
+  onComplete?: () => void;
+  isLoading?: boolean;
 }
 
-const BasicInfoStep: React.FC<StepProps> = ({ initialData, onComplete }) => {
-  const [name, setName] = useState(initialData?.name || '');
-  const [gender, setGender] = useState<'male' | 'female'>(initialData?.gender || 'male');
-  const [objective, setObjective] = useState<'cutting' | 'recomposition' | 'maintenance'>(
-    initialData?.objective || 'cutting'
-  );
+interface Step1Props extends StepProps {
+  basicInfo: BasicInfo;
+  setBasicInfo: (data: BasicInfo) => void;
+}
+
+const Step1: React.FC<Step1Props> = ({ basicInfo, setBasicInfo, onNext }) => {
+  const [name, setName] = useState(basicInfo.name || '');
+  const [gender, setGender] = useState<BasicInfo['gender']>(basicInfo.gender);
+  const [objective, setObjective] = useState<BasicInfo['objective']>(basicInfo.objective);
 
   const handleSubmit = () => {
-    if (!name.trim()) {
-      Alert.alert('Erreur', 'Veuillez entrer votre nom');
+    if (!name) {
+      Alert.alert('Erreur', 'Veuillez renseigner votre prénom.');
       return;
     }
 
-    onComplete({ name: name.trim(), gender, objective });
+    setBasicInfo({
+      ...basicInfo,
+      name,
+      gender,
+      objective,
+    });
+
+    onNext?.();
   };
 
   return (
-    <View>
-      <Input
-        label="Votre nom *"
-        value={name}
-        onChangeText={setName}
-        placeholder="Ex: Marie Dupont"
-      />
+    <View style={styles.stepContainer}>
+      <Text style={styles.stepTitle}>Vos informations</Text>
+      <Text style={styles.stepSubtitle}>Commençons par apprendre à vous connaître</Text>
+
+      <Card style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Informations de base</Text>
+        <Input
+          placeholder="Votre prénom"
+          value={name}
+          onChangeText={setName}
+          onSubmitEditing={() => Keyboard.dismiss()}
+          style={styles.input}
+        />
+      </Card>
 
       <Card style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>Genre</Text>
@@ -346,183 +303,488 @@ const BasicInfoStep: React.FC<StepProps> = ({ initialData, onComplete }) => {
         </View>
       </Card>
 
-      <Button
-        title="Continuer"
-        onPress={handleSubmit}
-        variant="primary"
-        style={styles.continueButton}
-      />
+      <View style={styles.actionRow}>
+        <Button
+          title="OK"
+          onPress={() => Keyboard.dismiss()}
+          variant="outline"
+          style={styles.dismissButton}
+        />
+        <Button
+          title="Continuer"
+          onPress={handleSubmit}
+          variant="primary"
+          style={styles.continueButton}
+        />
+      </View>
     </View>
   );
 };
 
 // Composants simplifiés pour les autres étapes (à développer)
-const TrainingStep: React.FC<StepProps> = ({ initialData, onComplete }) => (
-  <View>
-    <Text style={styles.placeholderText}>
-      Étape d'entraînement - À développer avec sélection des jours et types d'entraînement
-    </Text>
-    <Button
-      title="Continuer (Démo)"
-      onPress={() => onComplete(initialData)}
-      variant="primary"
-      style={styles.continueButton}
-    />
-  </View>
-);
+interface Step2Props extends StepProps {
+  healthData: Partial<HealthProfile>;
+  setHealthData: (data: Partial<HealthProfile>) => void;
+}
 
-const SupplementStep: React.FC<StepProps> = ({ initialData, onComplete }) => (
-  <View>
-    <Text style={styles.placeholderText}>
-      Étape suppléments - À développer avec sélection des suppléments disponibles
-    </Text>
-    <Button
-      title="Continuer (Démo)"
-      onPress={() => onComplete(initialData)}
-      variant="primary"
-      style={styles.continueButton}
-    />
-  </View>
-);
+const Step2: React.FC<Step2Props> = ({ healthData, setHealthData, onNext, onBack }) => {
+  const handleComplete = (data: Partial<HealthProfile>) => {
+    setHealthData({ ...healthData, ...data });
+    onNext?.();
+  };
 
-const PreferencesStep: React.FC<StepProps> = ({ initialData, onComplete }) => (
-  <View>
-    <Text style={styles.placeholderText}>
-      Étape préférences - À développer avec allergies et préférences alimentaires
-    </Text>
-    <Button
-      title="Terminer (Démo)"
-      onPress={() => onComplete(initialData)}
-      variant="primary"
-      style={styles.continueButton}
+  return (
+    <View style={styles.stepContainer}>
+      <HealthStep onComplete={handleComplete} initialData={healthData} />
+      {onBack && (
+        <Button
+          title="Retour"
+          variant="outline"
+          onPress={onBack}
+          style={styles.backButton}
+        />
+      )}
+    </View>
+  );
+};
+
+interface Step3Props extends StepProps {
+  userId: string;
+  setTrainingProfile: (profile: TrainingProfile) => void;
+}
+
+const WEEKDAY_INDEX_MAP: Record<keyof WeeklyTrainingSchedule, number> = {
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6,
+  sunday: 0,
+};
+
+// Convertit le planning hebdomadaire en liste de créneaux compatibles Firestore.
+const mapWeeklyScheduleToTrainingDays = (
+  schedule: WeeklyTrainingSchedule,
+  preferredTimes: PreferredTrainingTime
+): TrainingDay[] => {
+  const selectedSlots = (['morning', 'afternoon', 'evening'] as const).filter(
+    (slot) => preferredTimes[slot]
+  );
+
+  const defaultSlot = selectedSlots[0] ?? 'evening';
+
+  return (Object.entries(schedule) as Array<[keyof WeeklyTrainingSchedule, boolean]>)
+    .filter(([, isSelected]) => isSelected)
+    .map(([day]) => ({
+      dayOfWeek: WEEKDAY_INDEX_MAP[day],
+      type: 'mixed',
+      timeSlot: defaultSlot,
+      duration: 60,
+    }));
+};
+
+const Step3: React.FC<Step3Props> = ({ onNext, onBack, userId, setTrainingProfile }) => {
+  const handleComplete = (data: ExtendedTrainingProfile) => {
+    const preferredTimeSlots = (['morning', 'afternoon', 'evening'] as const).filter(
+      (slot) => data.preferredTimes[slot]
+    );
+
+    const training: TrainingProfile = {
+      trainingDays: mapWeeklyScheduleToTrainingDays(data.weeklySchedule, data.preferredTimes),
+      experienceLevel: 'beginner',
+      preferredTimeSlots: preferredTimeSlots.length ? preferredTimeSlots : ['evening'],
+    };
+
+    setTrainingProfile(training);
+    onNext?.();
+  };
+
+  return (
+    <OnboardingTrainingStep
+      onComplete={handleComplete}
+      onBack={onBack ?? (() => {})}
+      userId={userId}
     />
-  </View>
-);
+  );
+};
+
+interface Step4Props extends StepProps {
+  supplementData: Partial<SupplementProfile>;
+  setSupplementData: (data: Partial<SupplementProfile>) => void;
+}
+
+const SUPPLEMENT_TIMINGS_ORDER: Array<Supplement['timing']> = [
+  'morning',
+  'pre_workout',
+  'post_workout',
+  'evening',
+];
+const SUPPLEMENT_TIMINGS_LABELS: Record<string, string> = {
+  morning: 'Matin',
+  pre_workout: 'Pré-entraînement',
+  post_workout: 'Post-entraînement',
+  evening: 'Soir',
+  preWorkout: 'Pré-entraînement',
+  postWorkout: 'Post-entraînement',
+};
+
+const SUPPLEMENT_UNITS: Array<{ value: SupplementFormType; label: string; suffix: string }> = [
+  { value: 'gram', label: 'Grammes (g)', suffix: 'g' },
+  { value: 'capsule', label: 'Gélules', suffix: 'gélule(s)' },
+  { value: 'milliliter', label: 'Millilitres (ml)', suffix: 'ml' },
+];
+
+const Step4: React.FC<Step4Props> = ({
+  onComplete,
+  onBack,
+  isLoading,
+  supplementData,
+  setSupplementData,
+}) => {
+  const [newSupplement, setNewSupplement] = useState({
+    name: '',
+    quantity: '',
+    unit: 'gram' as SupplementFormType,
+    timing: 'morning' as Supplement['timing'],
+  });
+
+  const supplements = supplementData.available ?? [];
+
+  const resetForm = () => {
+    setNewSupplement({
+      name: '',
+      quantity: '',
+      unit: 'gram',
+      timing: 'morning',
+    });
+  };
+
+  const handleAddSupplement = () => {
+    if (!newSupplement.name.trim() || !newSupplement.quantity.trim()) {
+      Alert.alert('Champs requis', 'Merci de renseigner un nom et un dosage.');
+      return;
+    }
+
+    const unitData = SUPPLEMENT_UNITS.find((u) => u.value === newSupplement.unit)!;
+    const dosage = `${newSupplement.quantity.trim()} ${unitData.suffix}`;
+
+    const supplementEntry = {
+      id: `supp-${Date.now()}`,
+      name: newSupplement.name.trim(),
+      dosage,
+      timing: newSupplement.timing,
+      type: 'other' as Supplement['type'],
+      available: true,
+    } as Supplement;
+
+    const updated = [...supplements, supplementEntry];
+    setSupplementData({
+      ...supplementData,
+      available: updated,
+    });
+    resetForm();
+    Keyboard.dismiss();
+  };
+
+  const handleRemoveSupplement = (id: string) => {
+    const updated = supplements.filter((supp) => supp.id !== id);
+    setSupplementData({
+      ...supplementData,
+      available: updated,
+    });
+  };
+
+  const handleFinish = () => {
+    onComplete?.();
+  };
+
+  return (
+    <View style={styles.stepContainer}>
+      <Text style={styles.stepTitle}>Compléments alimentaires</Text>
+      <Text style={styles.stepSubtitle}>Ajoutez vos compléments pour les retrouver dans le tableau de bord.</Text>
+
+      <Card style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Ajouter un complément</Text>
+        <Input
+          placeholder="Nom du complément"
+          value={newSupplement.name}
+          onChangeText={(text) => setNewSupplement((prev) => ({ ...prev, name: text }))}
+        />
+
+        <View style={styles.inlineInputs}>
+          <Input
+            placeholder="Quantité"
+            keyboardType="numeric"
+            value={newSupplement.quantity}
+            onChangeText={(text) => setNewSupplement((prev) => ({ ...prev, quantity: text }))}
+            style={[styles.input, styles.quantityInput]}
+          />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.unitChips}>
+            {SUPPLEMENT_UNITS.map((unit) => (
+              <TouchableOpacity
+                key={unit.value}
+                style={[
+                  styles.chip,
+                  newSupplement.unit === unit.value && styles.chipActive,
+                ]}
+                onPress={() => setNewSupplement((prev) => ({ ...prev, unit: unit.value }))}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    newSupplement.unit === unit.value && styles.chipTextActive,
+                  ]}
+                >
+                  {unit.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        <Text style={styles.sectionLabel}>Timing</Text>
+        <View style={styles.timingRow}>
+          {SUPPLEMENT_TIMINGS_ORDER.map((timing) => (
+            <TouchableOpacity
+              key={timing}
+              style={[
+                styles.timingChip,
+                newSupplement.timing === timing && styles.timingChipActive,
+              ]}
+              onPress={() => setNewSupplement((prev) => ({ ...prev, timing }))}
+            >
+              <Text
+                style={[
+                  styles.timingChipText,
+                  newSupplement.timing === timing && styles.timingChipTextActive,
+                ]}
+              >
+                {SUPPLEMENT_TIMINGS_LABELS[timing]}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Button
+          title="Ajouter"
+          onPress={handleAddSupplement}
+          variant="primary"
+        />
+      </Card>
+
+      {supplements.length > 0 && (
+        <Card style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>Suppléments enregistrés</Text>
+          {supplements.map((supplement) => (
+            <View key={supplement.id} style={styles.savedSupplementRow}>
+              <View>
+                <Text style={styles.savedSupplementName}>{supplement.name}</Text>
+                <Text style={styles.savedSupplementDetails}>
+                  {supplement.dosage} • {SUPPLEMENT_TIMINGS_LABELS[supplement.timing] ?? supplement.timing}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={() => handleRemoveSupplement(supplement.id)}>
+                <Text style={styles.removeLink}>Supprimer</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </Card>
+      )}
+
+      <Button
+        title={isLoading ? 'Enregistrement...' : 'Terminer'}
+        onPress={handleFinish}
+        disabled={isLoading}
+        variant="primary"
+        style={styles.continueButton}
+      />
+      {onBack && (
+        <Button
+          title="Retour"
+          variant="outline"
+          onPress={onBack}
+          style={[styles.continueButton, styles.backButton]}
+        />
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  } as ViewStyle,
-
+  },
   header: {
-    padding: Spacing.lg,
-    paddingBottom: Spacing.md,
-    backgroundColor: Colors.surface,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-  } as ViewStyle,
-
-  progressContainer: {
-    marginBottom: Spacing.md,
-  } as ViewStyle,
-
+  },
   progressBar: {
-    height: 8,
-    backgroundColor: Colors.border,
-    borderRadius: BorderRadius.sm,
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginBottom: Spacing.sm,
-    overflow: 'hidden',
-  } as ViewStyle,
-
-  progressFill: {
-    height: '100%',
+  },
+  progressDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.border,
+    marginHorizontal: 4,
+  },
+  progressDotActive: {
     backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.sm,
-  } as ViewStyle,
-
-  progressText: {
-    ...Typography.bodySmall,
-    color: Colors.textLight,
+  },
+  stepIndicator: {
+    ...Typography.caption,
     textAlign: 'center',
-  } as TextStyle,
-
-  backButton: {
-    alignSelf: 'flex-start',
-  } as ViewStyle,
-
+    color: Colors.textLight,
+  },
   content: {
     flex: 1,
-  } as ViewStyle,
-
+  },
   stepContainer: {
     padding: Spacing.lg,
-  } as ViewStyle,
-
+  },
   stepTitle: {
     ...Typography.h1,
     color: Colors.text,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  } as TextStyle,
-
+    marginBottom: Spacing.xs,
+  },
   stepSubtitle: {
     ...Typography.body,
     color: Colors.textLight,
-    textAlign: 'center',
     marginBottom: Spacing.xl,
-  } as TextStyle,
-
+  },
   sectionCard: {
     marginBottom: Spacing.lg,
-  } as ViewStyle,
-
+  },
   sectionTitle: {
-    ...Typography.h4,
+    ...Typography.h3,
     color: Colors.text,
     marginBottom: Spacing.md,
-  } as TextStyle,
-
+  },
+  input: {
+    marginBottom: Spacing.md,
+  },
   optionRow: {
     flexDirection: 'row',
-    gap: Spacing.md,
-  } as ViewStyle,
-
+    justifyContent: 'space-between',
+  },
   optionColumn: {
     gap: Spacing.sm,
-  } as ViewStyle,
-
+  },
   optionButton: {
     flex: 1,
-  } as ViewStyle,
-
-  fullWidthButton: {
-    width: '100%',
-  } as ViewStyle,
-
-  continueButton: {
-    marginTop: Spacing.xl,
-  } as ViewStyle,
-
-  placeholderText: {
-    ...Typography.body,
-    color: Colors.textMuted,
-    textAlign: 'center',
-    padding: Spacing.xl,
-    fontStyle: 'italic',
-  } as TextStyle,
-
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: Colors.overlay,
-    justifyContent: 'center',
+    marginHorizontal: 4,
+  },
+  inlineInputs: {
+    flexDirection: 'row',
     alignItems: 'center',
-  } as ViewStyle,
-
-  loadingCard: {
-    margin: Spacing.xl,
-    padding: Spacing.xl,
-  } as ViewStyle,
-
-  loadingText: {
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  quantityInput: {
+    flex: 1,
+  },
+  unitChips: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: BorderRadius.round,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    marginRight: Spacing.xs,
+    backgroundColor: Colors.background,
+  },
+  chipActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  chipText: {
+    ...Typography.caption,
+    color: Colors.text,
+  },
+  chipTextActive: {
+    color: Colors.textDark,
+    fontWeight: '600',
+  },
+  sectionLabel: {
+    ...Typography.bodySmall,
+    color: Colors.textLight,
+    marginBottom: Spacing.sm,
+  },
+  timingRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  timingChip: {
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: BorderRadius.round,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    backgroundColor: Colors.background,
+  },
+  timingChipActive: {
+    backgroundColor: Colors.secondary,
+    borderColor: Colors.secondary,
+  },
+  timingChipText: {
+    ...Typography.caption,
+    color: Colors.text,
+  },
+  timingChipTextActive: {
+    color: Colors.textDark,
+    fontWeight: '600',
+  },
+  savedSupplementRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.border,
+  },
+  savedSupplementName: {
     ...Typography.body,
     color: Colors.text,
-    textAlign: 'center',
-  } as TextStyle,
+  },
+  savedSupplementDetails: {
+    ...Typography.caption,
+    color: Colors.textLight,
+    marginTop: 2,
+  },
+  removeLink: {
+    ...Typography.caption,
+    color: Colors.error,
+    fontWeight: '600',
+  },
+  fullWidthButton: {
+    width: '100%',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.xl,
+  },
+  continueButton: {
+    flex: 1,
+  },
+  dismissButton: {
+    flex: 0.5,
+  },
+  backButton: {
+    marginTop: Spacing.md,
+  },
 });
 
 export default OnboardingScreen;

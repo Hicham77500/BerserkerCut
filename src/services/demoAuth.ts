@@ -86,10 +86,17 @@ const DEMO_USER: User = {
   updatedAt: new Date()
 };
 
+/**
+ * Implémentation d'authentification locale stockée dans AsyncStorage.
+ * Sert de remplacement à Firebase pour le développement hors connexion.
+ */
 export class DemoAuthService {
   private static currentUser: User | null = null;
   private static onAuthStateChangedCallbacks: Array<(user: User | null) => void> = [];
 
+  /**
+   * Recharge une éventuelle session de démo depuis le stockage persistant.
+   */
   static async initialize(): Promise<void> {
     try {
       const userData = await AsyncStorage.getItem('demo_user');
@@ -102,6 +109,10 @@ export class DemoAuthService {
     }
   }
 
+  /**
+   * Authentifie l'utilisateur de démonstration connu.
+   * @throws {Error} Si les identifiants ne correspondent pas.
+   */
   static async login(email: string, password: string): Promise<User> {
     // Simulation d'un délai réseau
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -116,6 +127,9 @@ export class DemoAuthService {
     }
   }
 
+  /**
+   * Crée un profil de démo minimal et l'enregistre localement.
+   */
   static async register(email: string, password: string): Promise<User> {
     // Simulation d'un délai réseau
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -167,12 +181,18 @@ export class DemoAuthService {
     return newUser;
   }
 
+  /**
+   * Supprime la session locale de démo.
+   */
   static async logout(): Promise<void> {
     this.currentUser = null;
     await AsyncStorage.removeItem('demo_user');
     this.notifyAuthStateChanged();
   }
 
+  /**
+   * Fusionne les mises à jour de profil avec l'utilisateur courant.
+   */
   static async updateProfile(updates: Partial<UserProfile>): Promise<User> {
     if (!this.currentUser) {
       throw new Error('Utilisateur non connecté');
@@ -193,10 +213,33 @@ export class DemoAuthService {
     return updatedUser;
   }
 
+  /**
+   * Renvoie l'utilisateur courant sans toucher au stockage.
+   */
   static getCurrentUser(): User | null {
     return this.currentUser;
   }
 
+  /**
+   * Retrouve un utilisateur de démo à partir de son identifiant.
+   */
+  static async getUserById(userId: string): Promise<User> {
+    // In demo mode, we only have one user
+    if (userId === DEMO_USER.id) {
+      return DEMO_USER;
+    }
+    
+    // If current user's ID matches, return current user
+    if (this.currentUser && this.currentUser.id === userId) {
+      return this.currentUser;
+    }
+    
+    throw new Error('Utilisateur non trouvé');
+  }
+
+  /**
+   * Enregistre un écouteur local sur les changements d'état demo.
+   */
   static onAuthStateChanged(callback: (user: User | null) => void): () => void {
     this.onAuthStateChangedCallbacks.push(callback);
     

@@ -1,49 +1,16 @@
 /**
- * @fileoverview Configuration et initialisation Firebase avec architecture clean
- * @description Service de la couche INFRASTRUCTURE gérant la configuration et l'initialisation
- * des services Firebase (Auth, Firestore). Centralise la configuration et fournit des instances
- * configurées pour les autres services de l'application.
- * 
- * @author BerserkerCut Team
- * @version 1.0.4
- * @since 2025-07-21
- * 
- * Architecture:
- * - Couche INFRASTRUCTURE (external services configuration)
- * - Abstractions Firebase pour les services métier
- * - Configuration sécurisée via variables d'environnement
- * - Support mode développement et production
- * 
- * Sécurité:
- * - Variables d'environnement pour clés sensibles
- * - Configuration par défaut pour développement
- * - Validation de configuration au runtime
- * - Logging sécurisé sans exposition des clés
- * 
- * @example
- * ```typescript
- * // Utilisation dans les services
- * import { auth, db } from './firebase';
- * 
- * // Authentification
- * const user = await signInWithEmailAndPassword(auth, email, password);
- * 
- * // Firestore
- * const docRef = doc(db, 'users', userId);
- * const userData = await getDoc(docRef);
- * ```
+ * Initialise Firebase et expose les instances partagées auth/db.
+ * Utilisé par la couche application quelle que soit la plateforme.
  */
 
-import { initializeApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
-/**
- * Interface de configuration Firebase typée
- * @description Définit la structure attendue pour la configuration Firebase
- * avec tous les champs requis pour l'initialisation.
- */
+/** Configuration minimale nécessaire à l'initialisation Firebase. */
 interface FirebaseConfig {
   /** Clé API Firebase pour authentification des requêtes */
   apiKey: string;
@@ -59,13 +26,7 @@ interface FirebaseConfig {
   appId: string;
 }
 
-/**
- * Configuration par défaut pour le développement
- * @description Valeurs par défaut permettant le développement local
- * même sans configuration Firebase complète. À remplacer en production.
- * 
- * @warning Ces valeurs sont factices et ne doivent pas être utilisées en production
- */
+/** Valeurs de secours pour exécuter l'app sans clés Firebase réelles. */
 const DEFAULT_FIREBASE_CONFIG: FirebaseConfig = {
   apiKey: "demo-api-key-for-development",
   authDomain: "berserkercut-app.firebaseapp.com",
@@ -76,27 +37,13 @@ const DEFAULT_FIREBASE_CONFIG: FirebaseConfig = {
 };
 
 /**
- * Récupère la configuration Firebase depuis les variables d'environnement
- * @description Lit la configuration depuis Expo Constants avec fallback sur valeurs par défaut.
- * Priorise les variables d'environnement pour la sécurité en production.
- * 
- * @returns Configuration Firebase typée et validée
- * 
- * Variables d'environnement attendues:
- * - FIREBASE_API_KEY
- * - FIREBASE_AUTH_DOMAIN  
- * - FIREBASE_PROJECT_ID
- * - FIREBASE_STORAGE_BUCKET
- * - FIREBASE_MESSAGING_SENDER_ID
- * - FIREBASE_APP_ID
+ * Construit la configuration Firebase à partir d'Expo ou du fallback dev.
+ * @returns Configuration prête pour `initializeApp`.
  */
 function getFirebaseConfig(): FirebaseConfig {
   const expoExtra = Constants.expoConfig?.extra;
   
-  /**
-   * Configuration prioritaire depuis variables d'environnement
-   * @description Lecture sécurisée avec fallback sur configuration par défaut
-   */
+  // Préfère les variables d'environnement puis la configuration de démo.
   const config: FirebaseConfig = {
     apiKey: expoExtra?.firebaseApiKey || DEFAULT_FIREBASE_CONFIG.apiKey,
     authDomain: expoExtra?.firebaseAuthDomain || DEFAULT_FIREBASE_CONFIG.authDomain,
@@ -115,13 +62,8 @@ function getFirebaseConfig(): FirebaseConfig {
 }
 
 /**
- * Valide la configuration Firebase en mode développement
- * @description Vérifie que tous les champs requis sont présents et conformes.
- * Affiche des avertissements pour les configurations par défaut en développement.
- * 
- * @param config - Configuration Firebase à valider
- * 
- * @throws {Error} Si des champs obligatoires sont manquants
+ * Vérifie la cohérence de la configuration en développement.
+ * @throws {Error} Si des champs critiques sont absents.
  */
 function validateFirebaseConfig(config: FirebaseConfig): void {
   const requiredFields: (keyof FirebaseConfig)[] = [
@@ -168,93 +110,69 @@ function validateFirebaseConfig(config: FirebaseConfig): void {
 function initializeFirebaseApp(): FirebaseApp {
   try {
     const config = getFirebaseConfig();
+    
+    // Check if Firebase is already initialized to prevent duplicate instances
+    try {
+      const existingApp = getApp();
+      if (__DEV__) console.log('Firebase app already initialized, using existing instance');
+      return existingApp;
+    } catch (e) {
+      // No app exists yet, continue with initialization
+    }
+    
     const app = initializeApp(config);
     
     if (__DEV__) {
       console.log('✅ [Firebase] Application initialisée avec succès');
       console.log('📝 [Firebase] Projet:', config.projectId);
       console.log('🔐 [Firebase] Auth Domain:', config.authDomain);
+      console.log('📱 [Firebase] Platform:', Platform.OS);
     }
     
     return app;
     
   } catch (error) {
     console.error('❌ [Firebase] Erreur lors de l\'initialisation:', error);
-    throw new Error(`Impossible d'initialiser Firebase: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+    console.error('Details:', error);
+    
+    // Don't throw error - return a minimal app to prevent crashes
+    try {
+      return getApp();
+    } catch {
+      console.warn('Creating fallback Firebase app for error recovery');
+      return initializeApp(DEFAULT_FIREBASE_CONFIG);
+    }
   }
 }
 
-/**
- * Instance principale de l'application Firebase
- * @description Application Firebase configurée et prête à l'emploi
- * pour tous les services de l'application.
- */
+/** Application Firebase initialisée une seule fois. */
 const app: FirebaseApp = initializeFirebaseApp();
 
-/**
- * Service d'authentification Firebase configuré
- * @description Instance Auth configurée avec persistance automatique gérée par Expo.
- * Utilisé par AuthService pour toutes les opérations d'authentification.
- * 
- * Fonctionnalités:
- * - Authentification email/password
- * - Gestion des sessions persistantes
- * - Listeners de changement d'état
- * - Gestion automatique des tokens
- * 
- * @example
- * ```typescript
- * import { auth } from './firebase';
- * 
- * // Connexion utilisateur
- * const credential = await signInWithEmailAndPassword(auth, email, password);
- * 
- * // Écoute des changements d'état
- * const unsubscribe = onAuthStateChanged(auth, (user) => {
- *   console.log('État auth changé:', user?.email);
- * });
- * ```
- */
+/** Instance Auth partagée par les services applicatifs. */
 export const auth: Auth = getAuth(app);
 
-/**
- * Service Firestore configuré
- * @description Instance Firestore configurée pour la persistance des données.
- * Utilisé par tous les services de données (AuthService, PlanService, etc.).
- * 
- * Fonctionnalités:
- * - Opérations CRUD sur les documents
- * - Requêtes en temps réel
- * - Transactions et batch writes
- * - Cache local automatique
- * - Synchronisation hors ligne
- * 
- * @example
- * ```typescript
- * import { db } from './firebase';
- * import { doc, getDoc, setDoc } from 'firebase/firestore';
- * 
- * // Lecture de document
- * const userDoc = await getDoc(doc(db, 'users', userId));
- * 
- * // Écriture de document
- * await setDoc(doc(db, 'plans', planId), planData);
- * ```
- */
+// On utilise getAuth standard pour le moment, mais pour résoudre le problème de persistence:
+
+// Setup auth persistence appropriate for each platform
+if (Platform.OS === 'web') {
+  // Pour le web, nous utilisons l'implémentation standard pour le moment
+  // TODO: Dans une future version, utiliser indexedDBLocalPersistence 
+  // import { initializeAuth, indexedDBLocalPersistence } from 'firebase/auth';
+  // export const auth = initializeAuth(app, { persistence: indexedDBLocalPersistence });
+} else {
+  // Pour iOS/Android
+  // TODO: Dans une future version, utiliser AsyncStorage persistence
+  // import { getReactNativePersistence } from 'firebase/auth';
+  // export const auth = initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+}
+
+/** Instance Firestore utilisée pour toutes les opérations de persistance. */
 export const db: Firestore = getFirestore(app);
 
-/**
- * Export par défaut de l'application Firebase
- * @description Instance principale pour usage avancé ou configuration personnalisée
- */
+/** Expose l'application Firebase pour les usages avancés. */
 export default app;
 
-/**
- * Informations de configuration pour debugging
- * @description Utilitaire pour diagnostiquer la configuration Firebase en développement
- * 
- * @returns Informations de configuration non sensibles
- */
+/** Fournit un aperçu de la configuration Firebase en développement. */
 export function getFirebaseInfo() {
   if (!__DEV__) {
     return { error: 'Informations disponibles uniquement en mode développement' };
@@ -270,12 +188,8 @@ export function getFirebaseInfo() {
   };
 }
 
-/**
- * Hook de nettoyage pour les tests et hot reload
- * @description Fonction utilitaire pour nettoyer les connexions Firebase
- * lors des rechargements en développement.
- */
+/** Signale dans la console que le mode développement est actif. */
 if (__DEV__) {
   // Hot reload support sera ajouté si nécessaire
-  console.log('� [Firebase] Mode développement actif');
+  console.log('🔥 [Firebase] Mode développement actif');
 }

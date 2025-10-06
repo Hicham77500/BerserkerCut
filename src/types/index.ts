@@ -54,12 +54,14 @@ export interface HealthProfile {
   isManualEntry: boolean;
 }
 
+/** Résume la structure d'entraînement utilisée pour générer les plans. */
 export interface TrainingProfile {
   trainingDays: TrainingDay[];
   experienceLevel: 'beginner' | 'intermediate' | 'advanced';
   preferredTimeSlots: ('morning' | 'afternoon' | 'evening')[];
 }
 
+/** Répertorie les suppléments disponibles et les préférences associées. */
 export interface SupplementProfile {
   available: Supplement[];
   preferences: {
@@ -198,3 +200,4 @@ export interface PlanContextType {
   updatePlan: (planId: string, updates: Partial<DailyPlan>) => Promise<void>;
   markSupplementTaken: (supplementId: string) => Promise<void>;
 }
+export type SupplementFormType = 'capsule' | 'gram' | 'milliliter';

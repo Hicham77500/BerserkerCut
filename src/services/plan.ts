@@ -1,39 +1,6 @@
 /**
- * @fileoverview Service de génération de plans nutritionnels et d'entraînement avec architecture clean
- * @description Service de la couche APPLICATION gérant la planification quotidienne personnalisée,
- * incluant les plans nutritionnels, de suppléments et les recommandations basées sur les objectifs utilisateur.
- * Implémente les use cases de génération, récupération et mise à jour des plans avec fallback démo.
- * 
- * @author BerserkerCut Team
- * @version 1.0.4
- * @since 2025-07-21
- * 
- * Architecture:
- * - Couche APPLICATION (business logic de planification)
- * - Abstractions Firestore pour la persistance (couche INFRASTRUCTURE)
- * - Types métier de la couche DOMAIN (DailyPlan, NutritionPlan, etc.)
- * - Calculs nutritionnels selon formules scientifiques validées
- * 
- * Algorithmes utilisés:
- * - Harris-Benedict pour le métabolisme de base (BMR)
- * - Facteurs d'activité TDEE standardisés
- * - Répartition macro optimisée selon objectifs (cutting/recomposition/maintenance)
- * - Timing de suppléments basé sur chronobiologie
- * 
- * @example
- * ```typescript
- * // Génération d'un plan quotidien personnalisé
- * const dailyPlan = await PlanService.generateDailyPlan(user);
- * 
- * // Récupération du plan du jour
- * const todaysPlan = await PlanService.getTodaysPlan(userId);
- * 
- * // Marquage d'un supplément comme pris
- * await PlanService.markSupplementTaken(planId, supplementId);
- * 
- * // Suivi de la progression
- * const progress = await PlanService.getWeeklyProgress(userId);
- * ```
+ * Génère et persiste les plans quotidiens nutritionnels et de suppléments.
+ * Peut fonctionner via Firestore ou un mode démo en mémoire.
  */
 
 import { 
@@ -52,26 +19,17 @@ import { db } from './firebase';
 import { DailyPlan, User, NutritionPlan, SupplementPlan, Meal, Food, TrainingDay } from '../types';
 import { DemoPlanService } from './demoPlan';
 
-/**
- * Configuration pour basculer entre Firebase et mode démo
- * @description Active le mode démo pendant le développement pour tester sans Firebase
- * @todo Passer à false quand Firebase est configuré en production
- */
+/** Active le mode démo tant que Firebase n'est pas finalisé. */
 const USE_DEMO_MODE = true;
 
-/**
- * Constantes nutritionnelles scientifiquement validées
- * @description Valeurs de référence utilisées dans les calculs nutritionnels
- */
+/** Valeurs de référence utilisées pour les calculs nutritionnels. */
 const NUTRITION_CONSTANTS = {
-  /** Calories par gramme de protéine */
+  // Calories par gramme de protéines, glucides et lipides.
   PROTEIN_CALORIES_PER_GRAM: 4,
-  /** Calories par gramme de glucides */
   CARBS_CALORIES_PER_GRAM: 4,
-  /** Calories par gramme de lipides */
   FAT_CALORIES_PER_GRAM: 9,
   
-  /** Facteurs d'activité TDEE standardisés */
+  // Facteurs d'activité appliqués au TDEE.
   ACTIVITY_FACTORS: {
     sedentary: 1.2,      // Peu ou pas d'exercice
     light: 1.375,        // Exercice léger 1-3 jours/semaine
@@ -80,14 +38,14 @@ const NUTRITION_CONSTANTS = {
     very_active: 1.9     // Exercice très intense, travail physique
   },
   
-  /** Ajustements caloriques selon objectifs */
+  // Ajustements caloriques en fonction de la stratégie.
   OBJECTIVE_MULTIPLIERS: {
     cutting: 0.8,        // Déficit de 20% pour perte de poids
     recomposition: 0.9,  // Déficit léger de 10% pour recomposition
     maintenance: 1.0     // Maintenance calorique
   },
   
-  /** Bonus calorique jour d'entraînement */
+  // Bonus calorique appliqué les jours d'entraînement.
   TRAINING_DAY_MULTIPLIER: 1.1
 } as const;
 
@@ -106,24 +64,10 @@ const NUTRITION_CONSTANTS = {
 export class PlanService {
   
   /**
-   * Génère un plan quotidien complet basé sur le profil utilisateur
-   * @description Use case principal de génération de plan. Analyse le profil utilisateur,
-   * calcule les besoins nutritionnels, génère les repas et suppléments adaptés au jour.
-   * Prend en compte l'objectif, le niveau d'activité, et si c'est un jour d'entraînement.
-   * 
-   * @param user - Profil utilisateur complet avec données santé et préférences
-   * 
-   * @returns Promise<DailyPlan> Plan quotidien personnalisé avec nutrition et suppléments
-   * 
-   * @throws {Error} Si les données utilisateur sont insuffisantes pour les calculs
-   * @throws {Error} Si la sauvegarde Firestore échoue
-   * 
-   * @example
-   * ```typescript
-   * const user = await AuthService.getCurrentUser();
-   * const plan = await PlanService.generateDailyPlan(user);
-   * console.log(`Plan généré: ${plan.nutritionPlan.totalCalories} calories`);
-   * ```
+   * Calcule et enregistre le plan quotidien d'un utilisateur.
+   * @param user Profil complet comprenant santé et préférences.
+   * @returns Plan consolidé avec nutrition et suppléments.
+   * @throws {Error} Si les calculs ou l'écriture Firestore échouent.
    */
   static async generateDailyPlan(user: User): Promise<DailyPlan> {
     // Mode démo pour le développement
@@ -136,10 +80,7 @@ export class PlanService {
       const today = new Date();
       const dayOfWeek = today.getDay();
       
-      /**
-       * Détermination du type de jour selon le planning d'entraînement
-       * @description Analyse si aujourd'hui est un jour d'entraînement programmé
-       */
+      // Vérifie si aujourd'hui correspond à un entraînement planifié.
       const trainingDay = user.profile.training.trainingDays.find(td => td.dayOfWeek === dayOfWeek);
       const dayType = trainingDay ? 'training' : 'rest';
       
@@ -153,10 +94,7 @@ export class PlanService {
       // Étape 4: Génération de recommandation intelligente
       const dailyTip = this.generateDailyTip(user, dayType);
 
-      /**
-       * Construction de l'entité DailyPlan complète
-       * @description Agrège tous les éléments du plan avec métadonnées de traçabilité
-       */
+      // Agrège les sections calculées avec leurs métadonnées.
       const dailyPlan: DailyPlan = {
         id: `${user.id}_${today.toISOString().split('T')[0]}`,  // Format: userId_YYYY-MM-DD
         userId: user.id,
@@ -186,23 +124,9 @@ export class PlanService {
   }
 
   /**
-   * Récupère le plan du jour actuel pour un utilisateur
-   * @description Use case de récupération du plan. Cherche le plan généré pour aujourd'hui
-   * ou retourne null si aucun plan n'a été généré. Gère la conversion des formats Firestore.
-   * 
-   * @param userId - Identifiant unique de l'utilisateur
-   * 
-   * @returns Promise<DailyPlan | null> Plan du jour ou null si inexistant
-   * 
-   * @example
-   * ```typescript
-   * const todaysPlan = await PlanService.getTodaysPlan(user.id);
-   * if (todaysPlan) {
-   *   console.log(`Vous avez ${todaysPlan.nutritionPlan.meals.length} repas prévus`);
-   * } else {
-   *   console.log('Aucun plan généré pour aujourd\'hui');
-   * }
-   * ```
+   * Récupère le plan prévu pour la date du jour.
+   * @param userId Identifiant Firebase de l'utilisateur.
+   * @returns Plan existant ou `null` si aucun document.
    */
   static async getTodaysPlan(userId: string): Promise<DailyPlan | null> {
     if (USE_DEMO_MODE) {
@@ -237,23 +161,9 @@ export class PlanService {
   }
 
   /**
-   * Marque un supplément comme pris dans le plan quotidien
-   * @description Use case de suivi d'adhérence. Met à jour le statut d'un supplément
-   * dans tous les créneaux où il apparaît pour maintenir la cohérence.
-   * 
-   * @param planId - Identifiant du plan quotidien
-   * @param supplementId - Identifiant du supplément à marquer
-   * 
-   * @returns Promise<void>
-   * 
-   * @throws {Error} Si le plan n'existe pas
-   * @throws {Error} Si la mise à jour échoue
-   * 
-   * @example
-   * ```typescript
-   * // Marquer la créatine comme prise
-   * await PlanService.markSupplementTaken(planId, 'creatine_001');
-   * ```
+   * Marque un supplément comme consommé dans un plan donné.
+   * @param planId Identifiant du plan quotidien.
+   * @param supplementId Identifiant du supplément ciblé.
    */
   static async markSupplementTaken(planId: string, supplementId: string): Promise<void> {
     if (USE_DEMO_MODE) {
@@ -271,12 +181,7 @@ export class PlanService {
 
       const planData = planDoc.data() as DailyPlan;
       
-      /**
-       * Fonction de mise à jour du statut des suppléments
-       * @description Parcourt tous les créneaux et marque le supplément comme pris
-       * @param plan Plan de suppléments à mettre à jour
-       * @returns Plan mis à jour avec nouveau statut
-       */
+      // Parcourt chaque créneau pour marquer le supplément comme pris.
       const updateSupplementPlan = (plan: SupplementPlan): SupplementPlan => {
         // Parcours de tous les créneaux (morning, preWorkout, postWorkout, evening)
         Object.keys(plan).forEach(timeSlot => {
@@ -304,31 +209,12 @@ export class PlanService {
     }
   }
 
-  /**
-   * Calcule les besoins caloriques quotidiens personnalisés
-   * @description Applique la formule Harris-Benedict pour le métabolisme de base (BMR),
-   * puis ajuste selon le niveau d'activité (TDEE), le type de jour et l'objectif utilisateur.
-   * 
-   * @private
-   * @param user - Profil utilisateur avec données anthropométriques
-   * @param dayType - Type de jour (entraînement ou repos)
-   * 
-   * @returns Nombre de calories quotidiennes recommandées
-   * 
-   * Formules utilisées:
-   * - BMR Homme: 88.362 + (13.397 × poids) + (4.799 × taille) - (5.677 × âge)
-   * - BMR Femme: 447.593 + (9.247 × poids) + (3.098 × taille) - (4.330 × âge)
-   * - TDEE = BMR × facteur d'activité
-   * - Ajustements selon objectif et jour d'entraînement
-   */
+  /** Calcule le besoin calorique quotidien en fonction du profil et du jour. */
   private static calculateDailyCalories(user: User, dayType: 'training' | 'rest'): number {
     const { weight, height, age, gender, activityLevel } = user.profile.health;
     const { objective } = user.profile;
     
-    /**
-     * Calcul du métabolisme de base selon la formule Harris-Benedict révisée
-     * @description Formule scientifiquement validée pour estimer les besoins énergétiques au repos
-     */
+    // Estime le métabolisme de base (BMR) via la formule Harris-Benedict révisée.
     let bmr: number;
     if (gender === 'male') {
       bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
@@ -336,53 +222,27 @@ export class PlanService {
       bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
     }
 
-    /**
-     * Calcul de la dépense énergétique totale (TDEE)
-     * @description Multiplication du BMR par le facteur d'activité approprié
-     */
+    // Multiplie le BMR par le facteur d'activité pour obtenir le TDEE.
     let tdee = bmr * NUTRITION_CONSTANTS.ACTIVITY_FACTORS[activityLevel];
     
-    /**
-     * Ajustement pour les jours d'entraînement
-     * @description Bonus de 10% les jours d'entraînement pour compenser la dépense supplémentaire
-     */
+    // Ajoute une marge supplémentaire les jours d'entraînement.
     if (dayType === 'training') {
       tdee *= NUTRITION_CONSTANTS.TRAINING_DAY_MULTIPLIER;
     }
 
-    /**
-     * Application du multiplicateur selon l'objectif
-     * @description Ajustement final selon la stratégie nutritionnelle choisie
-     */
+    // Ajuste selon l'objectif nutritionnel sélectionné.
     const objectiveMultiplier = NUTRITION_CONSTANTS.OBJECTIVE_MULTIPLIERS[objective] || 1.0;
     return Math.round(tdee * objectiveMultiplier);
   }
 
   /**
-   * Génère un plan nutritionnel équilibré avec répartition macro optimisée
-   * @description Calcule les macronutriments selon l'objectif, génère les repas
-   * et assure une répartition calorique cohérente tout au long de la journée.
-   * 
-   * @private
-   * @param user - Profil utilisateur pour personnalisation
-   * @param totalCalories - Budget calorique quotidien calculé
-   * @param dayType - Type de jour pour ajuster la répartition
-   * 
-   * @returns Plan nutritionnel complet avec macros et repas détaillés
-   * 
-   * Répartitions macro selon objectifs:
-   * - Cutting: 2.2g/kg protéines, 25% lipides, reste en glucides
-   * - Recomposition: 2.0g/kg protéines, 30% lipides, reste en glucides  
-   * - Maintenance: 1.8g/kg protéines, 30% lipides, reste en glucides
+   * Répartit les calories du jour en macros et repas cohérents avec l'objectif.
    */
   private static generateNutritionPlan(user: User, totalCalories: number, dayType: 'training' | 'rest'): NutritionPlan {
     const { weight } = user.profile.health;
     const { objective } = user.profile;
     
-    /**
-     * Configuration des macronutriments selon l'objectif
-     * @description Ratios scientifiquement optimisés pour chaque stratégie nutritionnelle
-     */
+    // Fixe les ratios macro selon l'objectif courant.
     let proteinPerKg: number;    // Grammes de protéines par kg de poids corporel
     let fatPercentage: number;   // Pourcentage des calories provenant des lipides
     
@@ -404,10 +264,7 @@ export class PlanService {
         fatPercentage = 0.3;
     }
 
-    /**
-     * Calculs des macronutriments en grammes
-     * @description Conversion des ratios en quantités absolues selon les calories
-     */
+    // Convertit les ratios en grammes à partir du budget calorique.
     const proteinGrams = Math.round(weight * proteinPerKg);
     const fatGrams = Math.round((totalCalories * fatPercentage) / NUTRITION_CONSTANTS.FAT_CALORIES_PER_GRAM);
     const carbGrams = Math.round(
@@ -430,28 +287,12 @@ export class PlanService {
   }
 
   /**
-   * Génère les repas quotidiens avec répartition calorique optimisée
-   * @description Crée une séquence de repas équilibrés selon le type de jour,
-   * avec timing et macronutriments adaptés aux besoins physiologiques.
-   * 
-   * @private
-   * @param totalCalories - Budget calorique total à répartir
-   * @param macros - Objectifs macronutriments globaux
-   * @param dayType - Type de jour influençant la répartition
-   * 
-   * @returns Liste des repas avec détail nutritionnel complet
-   * 
-   * Répartitions caloriques:
-   * - Jour d'entraînement: 25% petit-déj, 35% déjeuner, 30% dîner, 10% collation
-   * - Jour de repos: 25% petit-déj, 40% déjeuner, 35% dîner
+   * Compose la liste des repas et leur répartition calorique.
    */
   private static generateMeals(totalCalories: number, macros: { protein: number; carbs: number; fat: number }, dayType: 'training' | 'rest'): Meal[] {
     const meals: Meal[] = [];
 
-    /**
-     * Répartition calorique optimisée selon chronobiologie
-     * @description Adaptation selon le type de jour pour optimiser la performance et récupération
-     */
+    // Ajuste la répartition calorique selon qu'il s'agit d'un jour d'entraînement.
     const mealDistribution = dayType === 'training' 
       ? { 
           breakfast: 0.25,   // 25% - Démarrage énergétique

@@ -1,29 +1,106 @@
-/**
- * Context d'authentification
- */
+/** Contexte global d'authentification basé sur `AuthService`. */
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { AuthService } from '../services/auth';
+import { AuthService, USE_DEMO_MODE } from '../services/auth';
+import { DemoAuthService } from '../services/demoAuth';
 import { User, AuthContextType, UserProfile } from '../types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+let demoAuthInitialized = false;
+
+// Préserve les données imbriquées lors d'une mise à jour partielle de profil.
+const mergeUserProfiles = (current: UserProfile, updates: Partial<UserProfile>): UserProfile => {
+  const deepMerge = (target: unknown, source: unknown): unknown => {
+    if (source === undefined) {
+      return target;
+    }
+
+    if (Array.isArray(source)) {
+      return [...source];
+    }
+
+    if (source !== null && typeof source === 'object' && !(source instanceof Date)) {
+      const base = target !== null && target !== undefined && typeof target === 'object' && !Array.isArray(target)
+        ? target as Record<string, unknown>
+        : {};
+
+      const result: Record<string, unknown> = { ...base };
+
+      Object.entries(source as Record<string, unknown>).forEach(([key, value]) => {
+        result[key] = deepMerge(base[key], value);
+      });
+
+      return result;
+    }
+
+    if (source instanceof Date) {
+      return new Date(source.getTime());
+    }
+
+    return source;
+  };
+
+  return deepMerge(current, updates) as UserProfile;
+};
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Fournit l'état d'authentification et les actions associées aux descendants.
+ */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = AuthService.onAuthStateChanged(async (user: User | null) => {
-      setUser(user);
-      setLoading(false);
-    });
+    // Set a timeout to prevent infinite loading state
+    const loadingTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn('Auth loading timeout - forcing loading state to complete');
+        setLoading(false);
+      }
+    }, 5000); // 5 seconds timeout
 
-    return unsubscribe;
-  }, []);
+    if (USE_DEMO_MODE && !demoAuthInitialized) {
+      demoAuthInitialized = true;
+      DemoAuthService.initialize().catch((error) => {
+        console.error('Erreur lors de l\'initialisation du mode démo:', error);
+      });
+    }
+
+    try {
+      const unsubscribe = AuthService.onAuthStateChanged(async (firebaseUser) => {
+        if (firebaseUser) {
+          try {
+            // For web platform or if we need to fetch the full user profile
+            // since Firebase Auth doesn't store our custom User type
+            const userData = await AuthService.getUserProfile(firebaseUser.uid);
+            setUser(userData);
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+        
+        // Clear loading state after auth state is determined
+        setLoading(false);
+      });
+
+      return () => {
+        clearTimeout(loadingTimeout);
+        unsubscribe();
+      };
+    } catch (error) {
+      console.error('Error setting up auth listener:', error);
+      setLoading(false); // Ensure loading state is cleared on error
+      return () => clearTimeout(loadingTimeout);
+    }
+  }, [loading]);
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
@@ -64,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Mettre à jour l'état local
       setUser(prev => prev ? {
         ...prev,
-        profile: { ...prev.profile, ...profileUpdates },
+        profile: mergeUserProfiles(prev.profile, profileUpdates),
         updatedAt: new Date()
       } : null);
     } catch (error) {
@@ -85,6 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+/** Récupère le contexte d'authentification typé. */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {

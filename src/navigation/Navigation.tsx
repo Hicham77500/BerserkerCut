@@ -3,17 +3,14 @@
  */
 
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View, ActivityIndicator, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { PlanProvider } from '../hooks/usePlan';
-import { LoginScreen } from '../screens/LoginScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
-import { OnboardingScreen } from '../screens/OnboardingScreenModern';
-import { DashboardScreen } from '../screens/DashboardScreenFixed';
+import { LoginScreen, ProfileScreen, OnboardingScreen, DashboardScreen } from '../screens';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,9 +64,25 @@ const TabNavigator: React.FC = () => {
  */
 const AppNavigator: React.FC = () => {
   const { user, loading } = useAuth();
+  const isWebPlatform = Platform.OS === 'web';
 
   if (loading) {
-    return null; // Ou un écran de chargement
+    return (
+      <View style={{
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        backgroundColor: '#fff'
+      }}>
+        <Text style={{fontSize: 18, marginBottom: 20, color: '#e74c3c'}}>
+          BerserkerCut
+        </Text>
+        <Text style={{marginBottom: 20, color: '#333'}}>
+          {isWebPlatform ? 'Initialisation de la version web...' : 'Chargement de l\'application...'}
+        </Text>
+        <ActivityIndicator size="large" color="#e74c3c" />
+      </View>
+    );
   }
 
   return (
@@ -95,8 +108,21 @@ const AppNavigator: React.FC = () => {
  * Navigation racine avec providers
  */
 export const Navigation: React.FC = () => {
+  // Log platform info for debugging
+  React.useEffect(() => {
+    console.log(`Current platform: ${Platform.OS}`);
+    console.log('Initializing app navigation...');
+  }, []);
+  
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      fallback={
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#e74c3c" />
+          <Text>Initialisation de la navigation...</Text>
+        </View>
+      }
+    >
       <AuthProvider>
         <PlanProvider>
           <AppNavigator />

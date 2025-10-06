@@ -50,6 +50,7 @@ src/
 ├── types/         # Types TypeScript
 └── utils/         # Utilitaires et thème
 ```
+Pour la vue d'ensemble complète, voir `docs/ARCHITECTURE.md`.
 
 ### Phase PWA (Future)
 ```

@@ -36,7 +36,10 @@ export const Input: React.FC<InputProps> = ({
   size = 'md',
   isPassword = false,
   style,
-  ...props
+  returnKeyType = 'done',
+  blurOnSubmit = true,
+  onSubmitEditing,
+  ...rest
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -73,7 +76,10 @@ export const Input: React.FC<InputProps> = ({
           secureTextEntry={isPassword && !isPasswordVisible}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          {...props}
+          returnKeyType={returnKeyType}
+          blurOnSubmit={blurOnSubmit}
+          onSubmitEditing={onSubmitEditing}
+          {...rest}
         />
         
         {isPassword && (

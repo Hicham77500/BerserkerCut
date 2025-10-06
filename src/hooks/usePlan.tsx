@@ -1,6 +1,4 @@
-/**
- * Context des plans quotidiens
- */
+/** Contexte responsable du plan quotidien généré pour un utilisateur. */
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { PlanService } from '../services/plan';
@@ -13,6 +11,9 @@ interface PlanProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Fournit les actions et l'état relatifs aux plans quotidiens.
+ */
 export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const [currentPlan, setCurrentPlan] = useState<DailyPlan | null>(null);
@@ -117,6 +118,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 };
 
+/** Donne accès au contexte Plan avec vérification de présence. */
 export const usePlan = (): PlanContextType => {
   const context = useContext(PlanContext);
   if (context === undefined) {

@@ -3,6 +3,6 @@
  */
 
 export { LoginScreen } from './LoginScreen';
-export { OnboardingScreen } from './OnboardingScreen';
-export { DashboardScreen } from './DashboardScreenFixed';
+export { OnboardingScreen } from './OnboardingScreenModern';
+export { DashboardScreen } from './DashboardScreen';
 export { ProfileScreen } from './ProfileScreen';
