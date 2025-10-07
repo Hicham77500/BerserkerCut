@@ -5,7 +5,7 @@ const TrainingProfile = require('../models/TrainingProfile');
 const { requireAuth } = require('../middleware/auth');
 const { mergeDeep } = require('../utils/merge');
 const { defaultUserProfile } = require('../utils/defaults');
-const { toClientUser } = require('../utils/users');
+const { toClientUser, normalizeProfileInput } = require('../utils/users');
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.patch('/:id/profile', requireAuth, async (req, res) => {
   const { id } = req.params;
   ensureSameUser(id, req.userId);
 
-  const profileUpdates = req.body || {};
+  const profileUpdates = normalizeProfileInput(req.body || {});
   const objectId = ensureObjectId(id);
   const user = await User.findById(objectId);
 
@@ -51,11 +51,13 @@ router.patch('/:id/profile', requireAuth, async (req, res) => {
     return res.status(404).json({ message: 'User not found' });
   }
 
-  const currentProfile = user.profile
-    ? JSON.parse(JSON.stringify(user.profile))
-    : defaultUserProfile();
+  const currentProfile = normalizeProfileInput(
+    user.profile ? user.profile.toObject() : defaultUserProfile(),
+    { fillDefaults: true }
+  );
   const mergedProfile = mergeDeep(currentProfile, profileUpdates);
-  user.profile = mergedProfile;
+  const normalizedProfile = normalizeProfileInput(mergedProfile, { fillDefaults: true });
+  user.profile = normalizedProfile;
   user.markModified('profile');
   await user.save();
 

@@ -11,11 +11,11 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
-  SafeAreaView,
   StatusBar,
   Modal,
   Switch,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';

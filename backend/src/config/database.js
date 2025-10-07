@@ -12,9 +12,14 @@ async function connectToDatabase() {
 
   mongoose.set('strictQuery', false);
 
-  connectionPromise = mongoose
+  // MongoDB crée automatiquement la base de données si elle n'existe pas
+  // lorsqu'on insère la première donnée
+    connectionPromise = mongoose
     .connect(MONGODB_URI, {
       autoIndex: true,
+      // Assure que la base de données sera créée automatiquement
+      // lors de la première insertion de données
+      autoCreate: true,
     })
     .then((connection) => {
       const uriSafe = MONGODB_URI.replace(/:\w+@/, ':****@');

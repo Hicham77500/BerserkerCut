@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { defaultUserProfile } = require('../utils/defaults');
 const { mergeDeep } = require('../utils/merge');
-const { toClientUser } = require('../utils/users');
+const { toClientUser, normalizeProfileInput } = require('../utils/users');
 
 const router = express.Router();
 
@@ -22,7 +22,8 @@ function createToken(userId) {
 
 function normalizeProfileOverrides(profileOverrides = {}) {
   const base = defaultUserProfile();
-  return mergeDeep(base, profileOverrides);
+  const safeOverrides = normalizeProfileInput(profileOverrides, { fillDefaults: true }) || {};
+  return mergeDeep(base, safeOverrides);
 }
 
 router.post('/register', async (req, res) => {
@@ -38,10 +39,11 @@ router.post('/register', async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
+  const mergedProfile = normalizeProfileOverrides(profile);
   const user = new User({
     email: email.toLowerCase(),
     hashedPassword,
-    profile: normalizeProfileOverrides(profile),
+    profile: mergedProfile,
   });
 
   await user.save();

@@ -4,9 +4,13 @@ import { getAuthToken } from './sessionStorage';
 
 const expoConfig = Constants.expoConfig?.extra ?? {};
 
-const DEFAULT_API_URL = Platform.OS === 'web'
-  ? 'http://localhost:4000'
-  : 'http://10.0.2.2:4000'; // Android emulator fallback
+// Gestion optimisée des URLs par défaut selon la plateforme
+const DEFAULT_API_URL = Platform.select({
+  web: 'http://localhost:4000',
+  ios: 'http://localhost:4000', // Pour simulateur iOS
+  android: 'http://10.0.2.2:4000', // Pour émulateur Android
+  default: 'http://localhost:4000'
+});
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ||

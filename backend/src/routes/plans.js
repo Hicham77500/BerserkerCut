@@ -36,25 +36,23 @@ router.put('/:planId', requireAuth, async (req, res) => {
 
   const planDate = payload.date ? new Date(payload.date) : new Date();
 
+  const setFields = {
+    userId: userObjectId,
+    date: planDate,
+    dayType: payload.dayType || 'training',
+    nutritionPlan: payload.nutritionPlan || {},
+    supplementPlan: payload.supplementPlan || {},
+    dailyTip: payload.dailyTip || '',
+    completed: Boolean(payload.completed),
+    updatedAt: new Date(),
+  };
+
   const update = {
-    $set: {
-      userId: userObjectId,
-      date: planDate,
-      dayType: payload.dayType || 'training',
-      nutritionPlan: payload.nutritionPlan || {},
-      supplementPlan: payload.supplementPlan || {},
-      dailyTip: payload.dailyTip || '',
-      completed: Boolean(payload.completed),
-      updatedAt: new Date(),
-    },
+    $set: setFields,
     $setOnInsert: {
       createdAt: payload.createdAt ? new Date(payload.createdAt) : new Date(),
     },
   };
-
-  if (payload.createdAt) {
-    update.$set.createdAt = new Date(payload.createdAt);
-  }
 
   const plan = await DailyPlan.findByIdAndUpdate(planId, update, {
     new: true,

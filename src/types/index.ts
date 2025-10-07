@@ -92,6 +92,8 @@ export interface Supplement {
   dosage: string;
   timing: 'morning' | 'pre_workout' | 'post_workout' | 'evening' | 'with_meals';
   available: boolean;
+  quantity?: number;
+  unit?: SupplementFormType;
 }
 
 export interface DailyPlan {
@@ -155,6 +157,8 @@ export interface SupplementIntake {
   dosage: string;
   time: string;
   taken: boolean;
+  unit?: SupplementFormType;
+  quantity?: number;
 }
 
 export interface OnboardingData {

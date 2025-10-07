@@ -12,32 +12,156 @@ import {
   Alert,
   Modal,
   TextInput,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '../utils/theme';
-import { Supplement } from '../types';
+import { Supplement, TrainingDay } from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const SUPPLEMENT_TIMINGS: Record<string, string> = {
-  morning: 'Matin',
-  preWorkout: 'Pré-entraînement',
-  postWorkout: 'Post-entraînement',
-  evening: 'Soir',
+const SUPPLEMENT_TIMING_OPTIONS: Array<{ value: Supplement['timing']; label: string }> = [
+  { value: 'morning', label: 'Matin' },
+  { value: 'pre_workout', label: 'Pré-entraînement' },
+  { value: 'post_workout', label: 'Post-entraînement' },
+  { value: 'evening', label: 'Soir' },
+  { value: 'with_meals', label: 'Avec repas' },
+];
+
+const TIMING_LABEL_MAP = SUPPLEMENT_TIMING_OPTIONS.reduce<Record<Supplement['timing'], string>>(
+  (acc, option) => {
+    acc[option.value] = option.label;
+    return acc;
+  },
+  {
+    morning: 'Matin',
+    pre_workout: 'Pré-entraînement',
+    post_workout: 'Post-entraînement',
+    evening: 'Soir',
+    with_meals: 'Avec repas',
+  }
+);
+
+const TIMING_ALIASES: Record<string, Supplement['timing']> = {
+  morning: 'morning',
+  matin: 'morning',
+  preworkout: 'pre_workout',
+  pre_workout: 'pre_workout',
+  preWorkout: 'pre_workout',
+  'pre-entraînement': 'pre_workout',
+  postworkout: 'post_workout',
+  post_workout: 'post_workout',
+  postWorkout: 'post_workout',
+  'post-entraînement': 'post_workout',
+  evening: 'evening',
+  soir: 'evening',
+  with_meals: 'with_meals',
+  withMeals: 'with_meals',
+  repas: 'with_meals',
 };
+
+const normalizeTimingKey = (value: string): Supplement['timing'] => {
+  if (!value) return 'with_meals';
+  const normalized = value.toString().trim();
+  const aliasKey = normalized in TIMING_ALIASES
+    ? normalized
+    : normalized.toLowerCase().replace(/[^a-z]/g, '_');
+  return TIMING_ALIASES[aliasKey] ?? TIMING_ALIASES[normalized] ?? 'with_meals';
+};
+
+const getTimingLabel = (timing: string): string => {
+  const key = normalizeTimingKey(timing);
+  return TIMING_LABEL_MAP[key] ?? timing;
+};
+
+const normalizeUnit = (unit?: string): Supplement['unit'] | undefined => {
+  if (!unit) return undefined;
+  const formatted = unit.toLowerCase().trim();
+  switch (formatted) {
+    case 'gram':
+    case 'grams':
+    case 'g':
+      return 'gram';
+    case 'capsule':
+    case 'capsules':
+    case 'gélule':
+    case 'gélules':
+    case 'gelule':
+    case 'gelules':
+      return 'capsule';
+    case 'ml':
+    case 'milliliter':
+    case 'milliliters':
+    case 'millilitre':
+    case 'millilitres':
+      return 'milliliter';
+    default:
+      return undefined;
+  }
+};
+
+const parseQuantity = (value: unknown): number | undefined => {
+  if (value === null || value === undefined) return undefined;
+  const numeric = typeof value === 'number' ? value : Number.parseFloat(String(value));
+  return Number.isFinite(numeric) && numeric > 0 ? Number(numeric.toFixed(3)) : undefined;
+};
+
+const sanitizeSupplementList = (list: Supplement[] = []): Supplement[] =>
+  list.map((supplement) => {
+    const timing = normalizeTimingKey(supplement.timing);
+    const unit = normalizeUnit(supplement.unit);
+    const quantity = parseQuantity(supplement.quantity);
+
+    return {
+      ...supplement,
+      timing,
+      ...(unit ? { unit } : {}),
+      ...(quantity !== undefined ? { quantity } : {}),
+    };
+  });
 
 export const ProfileScreen: React.FC = () => {
   const { user, logout, updateProfile } = useAuth();
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const [supplementModalVisible, setSupplementModalVisible] = useState(false);
-  const [newSupplement, setNewSupplement] = useState({
+  const [newSupplement, setNewSupplement] = useState<{ name: string; dosage: string; timing: Supplement['timing'] }>({
     name: '',
     dosage: '',
     timing: 'morning',
   });
-  const [supplementsState, setSupplementsState] = useState(user?.profile.supplements);
+  const [supplementsState, setSupplementsState] = useState({
+    available: [] as Supplement[],
+    preferences: {
+      preferNatural: false,
+      budgetRange: 'medium' as 'low' | 'medium' | 'high',
+      allergies: [] as string[],
+    },
+  });
+
+  useEffect(() => {
+    if (!user?.profile?.supplements) {
+      setSupplementsState({
+        available: [],
+        preferences: {
+          preferNatural: false,
+          budgetRange: 'medium',
+          allergies: [],
+        },
+      });
+      return;
+    }
+
+    const supplements = user.profile.supplements;
+    setSupplementsState({
+      preferences: {
+        preferNatural: supplements.preferences?.preferNatural ?? false,
+        budgetRange: supplements.preferences?.budgetRange ?? 'medium',
+        allergies: supplements.preferences?.allergies ?? [],
+      },
+      available: sanitizeSupplementList(supplements.available ?? []),
+    });
+  }, [user?.profile?.supplements]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -63,20 +187,36 @@ export const ProfileScreen: React.FC = () => {
     );
   };
 
-  if (!user) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Utilisateur non connecté</Text>
-      </View>
-    );
-  }
+  const fallbackProfile = {
+    name: '',
+    objective: 'cutting' as const,
+    allergies: [] as string[],
+    foodPreferences: [] as string[],
+    health: {
+      weight: 0,
+      height: 0,
+      age: 0,
+      gender: 'male' as const,
+      activityLevel: 'moderate' as const,
+      averageSleepHours: 8,
+      dataSource: {
+        type: 'manual' as const,
+        isConnected: false,
+        permissions: [] as string[],
+      },
+      lastUpdated: new Date(),
+      isManualEntry: true,
+    },
+    training: {
+      trainingDays: [] as TrainingDay[],
+      experienceLevel: 'beginner' as const,
+      preferredTimeSlots: ['evening'] as Array<'morning' | 'afternoon' | 'evening'>,
+    },
+  };
 
-  const { profile } = user;
-  const { health, training, objective, allergies, foodPreferences } = profile;
-
-  useEffect(() => {
-    setSupplementsState(profile.supplements);
-  }, [profile.supplements]);
+  const effectiveProfile = user?.profile ?? fallbackProfile;
+  const { health, training, objective, allergies, foodPreferences } = effectiveProfile;
+  const isAuthenticated = Boolean(user);
 
   const bmi = health.height > 0
     ? health.weight / Math.pow(health.height / 100, 2)
@@ -114,13 +254,21 @@ export const ProfileScreen: React.FC = () => {
         .join(', ')
     : 'Non défini';
 
-  const availableSupplements = supplementsState?.available ?? [];
+  const availableSupplements = useMemo(
+    () => sanitizeSupplementList(supplementsState.available ?? []),
+    [supplementsState.available]
+  );
   const supplementsByTiming = useMemo(() => {
-    const grouped: Record<string, Supplement[]> = {};
+    const grouped: Record<Supplement['timing'], Supplement[]> = {
+      morning: [],
+      pre_workout: [],
+      post_workout: [],
+      evening: [],
+      with_meals: [],
+    };
     availableSupplements.forEach((supplement) => {
-      const key = supplement.timing;
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key] = [...grouped[key], supplement];
+      const key = normalizeTimingKey(supplement.timing);
+      grouped[key] = [...grouped[key], { ...supplement, timing: key }];
     });
     return grouped;
   }, [availableSupplements]);
@@ -188,16 +336,18 @@ export const ProfileScreen: React.FC = () => {
       return;
     }
 
+    const timing = normalizeTimingKey(newSupplement.timing);
+
     const newEntry: Supplement = {
       id: `supplement-${Date.now()}`,
       name: newSupplement.name.trim(),
       dosage: newSupplement.dosage.trim(),
-      timing: newSupplement.timing as Supplement['timing'],
+      timing,
       type: 'other',
       available: true,
     };
 
-    const updatedList = [...availableSupplements, newEntry];
+    const updatedList = sanitizeSupplementList([...availableSupplements, newEntry]);
     setSupplementsState((prev) => ({
       preferences: prev?.preferences ?? {
         preferNatural: false,
@@ -216,6 +366,17 @@ export const ProfileScreen: React.FC = () => {
       setSupplementsState((prev) => prev ? { ...prev, available: availableSupplements } : prev);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" />
+        <View style={[styles.container, styles.centeredFallback]}>
+          <Text style={styles.errorText}>Veuillez vous connecter pour accéder à votre profil.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -239,12 +400,12 @@ export const ProfileScreen: React.FC = () => {
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Nom :</Text>
-          <Text style={styles.infoValue}>{profile.name || 'Non renseigné'}</Text>
+          <Text style={styles.infoValue}>{effectiveProfile.name || 'Non renseigné'}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Email :</Text>
-          <Text style={styles.infoValue}>{user.email}</Text>
+          <Text style={styles.infoValue}>{user?.email ?? 'Non renseigné'}</Text>
         </View>
 
         <View style={styles.infoRow}>
@@ -344,9 +505,11 @@ export const ProfileScreen: React.FC = () => {
             Aucun supplément enregistré. Touchez « Ajouter » pour commencer.
           </Text>
         ) : (
-          Object.entries(supplementsByTiming).map(([timing, supplements]) => (
+          Object.entries(supplementsByTiming)
+            .filter(([, supplements]) => supplements.length > 0)
+            .map(([timing, supplements]) => (
             <View key={timing} style={styles.supplementSection}>
-              <Text style={styles.supplementTitle}>{SUPPLEMENT_TIMINGS[timing] ?? timing}</Text>
+              <Text style={styles.supplementTitle}>{getTimingLabel(timing)}</Text>
               {supplements.map((supplement) => (
                 <TouchableOpacity
                   key={supplement.id}
@@ -409,8 +572,8 @@ export const ProfileScreen: React.FC = () => {
             />
 
             <View style={styles.timingPicker}>
-              {Object.entries(SUPPLEMENT_TIMINGS).map(([value, label]) => {
-                const isActive = newSupplement.timing === value;
+              {SUPPLEMENT_TIMING_OPTIONS.map(({ value, label }) => {
+                const isActive = normalizeTimingKey(newSupplement.timing) === value;
                 return (
                   <TouchableOpacity
                     key={value}
@@ -596,6 +759,12 @@ const styles = StyleSheet.create({
     color: Colors.error,
     textAlign: 'center',
     marginTop: Spacing.xl,
+  },
+  centeredFallback: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.lg,
   },
   modalBackdrop: {
     flex: 1,

@@ -1,48 +1,14 @@
 /** Contexte global d'authentification basé sur `AuthService`. */
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { AuthService, USE_DEMO_MODE } from '../services/auth';
+import { AuthService } from '../services/auth';
 import { DemoAuthService } from '../services/demoAuth';
 import { User, AuthContextType, UserProfile } from '../types';
+import { isDemoMode, addModeChangeListener, initializeAppMode } from '../services/appModeService';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 let demoAuthInitialized = false;
-
-// Préserve les données imbriquées lors d'une mise à jour partielle de profil.
-const mergeUserProfiles = (current: UserProfile, updates: Partial<UserProfile>): UserProfile => {
-  const deepMerge = (target: unknown, source: unknown): unknown => {
-    if (source === undefined) {
-      return target;
-    }
-
-    if (Array.isArray(source)) {
-      return [...source];
-    }
-
-    if (source !== null && typeof source === 'object' && !(source instanceof Date)) {
-      const base = target !== null && target !== undefined && typeof target === 'object' && !Array.isArray(target)
-        ? target as Record<string, unknown>
-        : {};
-
-      const result: Record<string, unknown> = { ...base };
-
-      Object.entries(source as Record<string, unknown>).forEach(([key, value]) => {
-        result[key] = deepMerge(base[key], value);
-      });
-
-      return result;
-    }
-
-    if (source instanceof Date) {
-      return new Date(source.getTime());
-    }
-
-    return source;
-  };
-
-  return deepMerge(current, updates) as UserProfile;
-};
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -56,37 +22,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set a timeout to prevent infinite loading state
-    const loadingTimeout = setTimeout(() => {
-      if (loading) {
-        console.warn('Auth loading timeout - forcing loading state to complete');
-        setLoading(false);
+    let isMounted = true;
+    let unsubscribeAuth: (() => void) | undefined;
+
+    const prepareAuth = async () => {
+      try {
+        await initializeAppMode();
+
+        if (isDemoMode() && !demoAuthInitialized) {
+          demoAuthInitialized = true;
+          await DemoAuthService.initialize();
+        }
+
+        unsubscribeAuth = AuthService.onAuthStateChanged((currentUser) => {
+          if (!isMounted) return;
+          setUser(currentUser);
+          setLoading(false);
+        });
+      } catch (error) {
+        console.error('Error setting up auth listener:', error);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    }, 5000); // 5 seconds timeout
+    };
 
-    if (USE_DEMO_MODE && !demoAuthInitialized) {
-      demoAuthInitialized = true;
-      DemoAuthService.initialize().catch((error) => {
-        console.error('Erreur lors de l\'initialisation du mode démo:', error);
-      });
-    }
+    const unsubscribeModeChange = addModeChangeListener((demoMode) => {
+      if (demoMode && !demoAuthInitialized) {
+        demoAuthInitialized = true;
+        DemoAuthService.initialize().catch((error) => {
+          console.error('Erreur lors de l\'initialisation du mode démo:', error);
+        });
+      }
+    });
 
-    try {
-      const unsubscribe = AuthService.onAuthStateChanged((currentUser) => {
-        setUser(currentUser);
-        setLoading(false);
-      });
+    prepareAuth();
 
-      return () => {
-        clearTimeout(loadingTimeout);
-        unsubscribe();
-      };
-    } catch (error) {
-      console.error('Error setting up auth listener:', error);
-      setLoading(false); // Ensure loading state is cleared on error
-      return () => clearTimeout(loadingTimeout);
-    }
-  }, [loading]);
+    return () => {
+      isMounted = false;
+      unsubscribeAuth?.();
+      unsubscribeModeChange();
+    };
+  }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
@@ -122,14 +99,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!user) throw new Error('Utilisateur non connecté');
     
     try {
-      await AuthService.updateProfile(user.id, profileUpdates);
-      
-      // Mettre à jour l'état local
-      setUser(prev => prev ? {
-        ...prev,
-        profile: mergeUserProfiles(prev.profile, profileUpdates),
-        updatedAt: new Date()
-      } : null);
+      const updatedUser = await AuthService.updateProfile(user.id, profileUpdates);
+      setUser(updatedUser);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du profil:', error);
       throw error;

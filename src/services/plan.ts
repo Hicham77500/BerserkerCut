@@ -3,13 +3,10 @@
  * Peut fonctionner via un backend MongoDB ou un mode démo en mémoire.
  */
 
-import { DailyPlan, User, NutritionPlan, SupplementPlan, Meal, Food, TrainingDay } from '../types';
+import { DailyPlan, User, NutritionPlan, SupplementPlan, Meal, Food, TrainingDay, Supplement } from '../types';
 import { DemoPlanService } from './demoPlan';
 import { apiClient } from './apiClient';
-import { AppConfig } from '../utils/config';
-
-/** Active le mode démo tant que le backend n'est pas disponible. */
-const USE_DEMO_MODE = AppConfig.DEMO_MODE;
+import { isDemoMode } from './appModeService';
 
 /** Valeurs de référence utilisées pour les calculs nutritionnels. */
 const NUTRITION_CONSTANTS = {
@@ -38,6 +35,52 @@ const NUTRITION_CONSTANTS = {
   TRAINING_DAY_MULTIPLIER: 1.1
 } as const;
 
+const SUPPLEMENT_TYPE_ALIASES: Record<string, Supplement['type']> = {
+  preWorkout: 'pre_workout',
+  'pre-workout': 'pre_workout',
+  postWorkout: 'post_workout',
+  'post-workout': 'post_workout',
+  fatBurner: 'fat_burner',
+  'fat-burner': 'fat_burner',
+};
+
+const SUPPLEMENT_TIMING_ALIASES: Record<string, Supplement['timing']> = {
+  morning: 'morning',
+  matin: 'morning',
+  preworkout: 'pre_workout',
+  preWorkout: 'pre_workout',
+  'pre-workout': 'pre_workout',
+  pre_workout: 'pre_workout',
+  postworkout: 'post_workout',
+  postWorkout: 'post_workout',
+  'post-workout': 'post_workout',
+  post_workout: 'post_workout',
+  evening: 'evening',
+  soir: 'evening',
+  with_meals: 'with_meals',
+  withMeals: 'with_meals',
+};
+
+function normalizeSupplementType(type: Supplement['type'] | string | undefined): Supplement['type'] {
+  if (!type) return 'other';
+  if (typeof type === 'string' && SUPPLEMENT_TYPE_ALIASES[type]) {
+    return SUPPLEMENT_TYPE_ALIASES[type];
+  }
+  return ['protein', 'creatine', 'pre_workout', 'post_workout', 'fat_burner', 'multivitamin', 'other'].includes(type as string)
+    ? (type as Supplement['type'])
+    : 'other';
+}
+
+function normalizeSupplementTiming(timing: Supplement['timing'] | string | undefined): Supplement['timing'] {
+  if (!timing) return 'with_meals';
+  if (typeof timing === 'string' && SUPPLEMENT_TIMING_ALIASES[timing]) {
+    return SUPPLEMENT_TIMING_ALIASES[timing];
+  }
+  return ['morning', 'pre_workout', 'post_workout', 'evening', 'with_meals'].includes(timing as string)
+    ? (timing as Supplement['timing'])
+    : 'with_meals';
+}
+
 /**
  * Service principal de planification nutritionnelle et d'entraînement
  * @description Implémente tous les use cases liés à la génération et gestion des plans quotidiens.
@@ -50,6 +93,8 @@ const NUTRITION_CONSTANTS = {
  * - Suivi de l'adhérence et des progressions
  * - Recommandations intelligentes basées sur les données historiques
  */
+const useDemoMode = () => isDemoMode();
+
 export class PlanService {
   
   /**
@@ -60,7 +105,7 @@ export class PlanService {
    */
   static async generateDailyPlan(user: User): Promise<DailyPlan> {
     // Mode démo pour le développement
-    if (USE_DEMO_MODE) {
+    if (useDemoMode()) {
       return DemoPlanService.generateDailyPlan(user);
     }
     
@@ -117,7 +162,7 @@ export class PlanService {
    * @returns Plan existant ou `null` si aucun document.
    */
   static async getTodaysPlan(userId: string): Promise<DailyPlan | null> {
-    if (USE_DEMO_MODE) {
+    if (useDemoMode()) {
       return DemoPlanService.getTodaysPlan(userId);
     }
     
@@ -152,7 +197,7 @@ export class PlanService {
    * @param supplementId Identifiant du supplément ciblé.
    */
   static async markSupplementTaken(planId: string, supplementId: string): Promise<void> {
-    if (USE_DEMO_MODE) {
+    if (useDemoMode()) {
       return DemoPlanService.markSupplementTaken(planId, supplementId);
     }
     
@@ -411,10 +456,12 @@ export class PlanService {
      * Traitement de chaque supplément disponible selon sa catégorie
      * @description Assignation intelligente aux créneaux selon propriétés pharmacologiques
      */
-    user.profile.supplements.available.forEach(supplement => {
-      if (!supplement.available) return; // Skip suppléments non disponibles
+    user.profile.supplements.available.forEach((supplement) => {
+      if (!supplement || supplement.available === false) return;
 
-      switch (supplement.type) {
+      const normalizedType = normalizeSupplementType(supplement.type);
+
+      switch (normalizedType) {
         case 'multivitamin':
           // Multivitamines le matin pour absorption optimale
           supplementPlan.morning.push({
@@ -422,7 +469,9 @@ export class PlanService {
             name: supplement.name,
             dosage: supplement.dosage,
             time: '08:00',
-            taken: false
+            taken: false,
+            unit: supplement.unit,
+            quantity: supplement.quantity,
           });
           break;
         
@@ -435,7 +484,9 @@ export class PlanService {
               name: supplement.name,
               dosage: supplement.dosage,
               time: postWorkoutTime,
-              taken: false
+              taken: false,
+              unit: supplement.unit,
+              quantity: supplement.quantity,
             });
           }
           break;
@@ -447,7 +498,9 @@ export class PlanService {
             name: supplement.name,
             dosage: supplement.dosage,
             time: '08:00',
-            taken: false
+            taken: false,
+            unit: supplement.unit,
+            quantity: supplement.quantity,
           });
           break;
         
@@ -460,7 +513,9 @@ export class PlanService {
               name: supplement.name,
               dosage: supplement.dosage,
               time: preWorkoutTime,
-              taken: false
+              taken: false,
+              unit: supplement.unit,
+              quantity: supplement.quantity,
             });
           }
           break;
@@ -472,9 +527,32 @@ export class PlanService {
             name: supplement.name,
             dosage: supplement.dosage,
             time: '08:00',
-            taken: false
+            taken: false,
+            unit: supplement.unit,
+            quantity: supplement.quantity,
           });
           break;
+        default: {
+          const mappedTiming = normalizeSupplementTiming(supplement.timing);
+          const slot = mappedTiming === 'pre_workout'
+            ? 'preWorkout'
+            : mappedTiming === 'post_workout'
+              ? 'postWorkout'
+              : mappedTiming === 'evening'
+                ? 'evening'
+                : 'morning';
+
+          const collection = supplementPlan[slot as keyof SupplementPlan];
+          collection.push({
+            supplementId: supplement.id,
+            name: supplement.name,
+            dosage: supplement.dosage,
+            time: slot === 'preWorkout' ? '07:30' : slot === 'postWorkout' ? '20:30' : slot === 'evening' ? '21:00' : '08:00',
+            taken: false,
+            unit: supplement.unit,
+            quantity: supplement.quantity,
+          });
+        }
       }
     });
 

@@ -2,7 +2,7 @@
  * Écran de connexion avec design moderne
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,19 +11,27 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  SafeAreaView
+  Switch,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 import { Colors, Typography, Spacing, BorderRadius } from '../utils/theme';
 import { Button, Input, Card } from '../components';
+import { isDemoMode, setDemoMode } from '../services/appModeService';
 
 export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [demoModeEnabled, setDemoModeEnabled] = useState(false);
   
   const { login, register } = useAuth();
+  
+  // Initialiser l'état du mode démo lors du chargement du composant
+  useEffect(() => {
+    setDemoModeEnabled(isDemoMode());
+  }, []);
 
   const handleSubmit = async () => {
     if (!email || !password) {
@@ -46,6 +54,33 @@ export const LoginScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemoLogin = async () => {
+    if (!demoModeEnabled) {
+      await setDemoMode(true);
+      setDemoModeEnabled(true);
+      Alert.alert('Mode démo activé', 'Les données seront stockées localement sur cet appareil.');
+    }
+
+    setEmail('demo@berserkercut.com');
+    setPassword('demo123');
+
+    setTimeout(() => {
+      handleSubmit();
+    }, 300);
+  };
+
+  const toggleDemoMode = async (value: boolean) => {
+    await setDemoMode(value);
+    setDemoModeEnabled(value);
+
+    Alert.alert(
+      value ? 'Mode démo activé' : 'Mode production activé',
+      value
+        ? 'Les données seront stockées localement sur cet appareil.'
+        : 'Les données seront synchronisées avec votre backend.'
+    );
   };
 
   return (
@@ -108,13 +143,22 @@ export const LoginScreen: React.FC = () => {
             <Text style={styles.demoSubtitle}>
               Testez l'application sans créer de compte
             </Text>
+            
+            <View style={styles.demoToggleContainer}>
+              <Text style={styles.demoToggleLabel}>
+                Mode démo {demoModeEnabled ? 'activé' : 'désactivé'}
+              </Text>
+              <Switch
+                value={demoModeEnabled}
+                onValueChange={toggleDemoMode}
+                trackColor={{ false: '#E5E7EB', true: Colors.primaryLight }}
+                thumbColor={demoModeEnabled ? Colors.primary : '#9CA3AF'}
+              />
+            </View>
+            
             <Button
               title="Essayer en mode démo"
-              onPress={() => {
-                setEmail('demo@berserkercut.com');
-                setPassword('demo123');
-                handleSubmit();
-              }}
+              onPress={handleDemoLogin}
               variant="outline"
               style={[styles.demoButton, Platform.OS === 'android' && {
                 borderColor: Colors.primary,
@@ -204,5 +248,19 @@ const styles = StyleSheet.create({
       paddingVertical: 14,
       paddingHorizontal: 24,
     } : {}),
+  },
+  demoToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
+  },
+  demoToggleLabel: {
+    ...Typography.bodySmall,
+    color: Colors.text,
+    flex: 1,
+    marginRight: Spacing.md,
   },
 });

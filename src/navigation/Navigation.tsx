@@ -11,6 +11,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { PlanProvider } from '../hooks/usePlan';
 import { LoginScreen, ProfileScreen, OnboardingScreen, DashboardScreen } from '../screens';
+import { ModeBadge } from '../components';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -125,7 +126,10 @@ export const Navigation: React.FC = () => {
     >
       <AuthProvider>
         <PlanProvider>
-          <AppNavigator />
+          <View style={{ flex: 1 }}>
+            <AppNavigator />
+            <ModeBadge />
+          </View>
         </PlanProvider>
       </AuthProvider>
     </NavigationContainer>

@@ -1,6 +1,53 @@
 const { Schema, model } = require('mongoose');
 const { defaultUserProfile } = require('../utils/defaults');
 
+// Schéma pour les suppléments
+const SupplementSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    type: { 
+      type: String,
+      enum: ['pre_workout', 'post_workout', 'morning', 'evening', 'anytime', 'other'],
+      default: 'anytime'
+    },
+    dosage: { type: String },
+    timing: {
+      type: String,
+      enum: ['morning', 'pre_workout', 'post_workout', 'evening', 'with_meals'],
+      default: 'with_meals'
+    },
+    quantity: { type: Number },
+    unit: {
+      type: String,
+      enum: ['gram', 'capsule', 'milliliter'],
+      default: 'gram'
+    },
+    available: { type: Boolean, default: true }
+  },
+  { _id: false }
+);
+
+// Préférences pour les suppléments
+const SupplementPreferencesSchema = new Schema(
+  {
+    preferNatural: { type: Boolean, default: false },
+    preferredTiming: {
+      type: String,
+      enum: ['morning', 'pre_workout', 'post_workout', 'evening'],
+      default: 'morning'
+    },
+    budgetRange: { 
+      type: String, 
+      enum: ['low', 'medium', 'high'], 
+      default: 'medium' 
+    },
+    excludedTypes: { type: [String], default: [] },
+    allergies: { type: [String], default: [] },
+    notes: { type: String }
+  },
+  { _id: false }
+);
+
 const HealthDataSourceSchema = new Schema(
   {
     type: { type: String, default: 'manual' },
@@ -67,30 +114,7 @@ const TrainingProfileSchema = new Schema(
   { _id: false }
 );
 
-const SupplementSchema = new Schema(
-  {
-    id: { type: String, required: true },
-    name: { type: String, required: true },
-    type: { type: String, default: 'other' },
-    dosage: { type: String },
-    timing: {
-      type: String,
-      enum: ['morning', 'pre_workout', 'post_workout', 'evening', 'with_meals'],
-      default: 'with_meals',
-    },
-    available: { type: Boolean, default: true },
-  },
-  { _id: false }
-);
 
-const SupplementPreferencesSchema = new Schema(
-  {
-    preferNatural: { type: Boolean, default: false },
-    budgetRange: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
-    allergies: { type: [String], default: [] },
-  },
-  { _id: false }
-);
 
 const SupplementProfileSchema = new Schema(
   {

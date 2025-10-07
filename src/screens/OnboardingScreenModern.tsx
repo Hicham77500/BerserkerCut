@@ -9,12 +9,12 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   Keyboard,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 import {
   UserProfile,
@@ -305,14 +305,11 @@ const Step1: React.FC<Step1Props> = ({ basicInfo, setBasicInfo, onNext }) => {
 
       <View style={styles.actionRow}>
         <Button
-          title="OK"
-          onPress={() => Keyboard.dismiss()}
-          variant="outline"
-          style={styles.dismissButton}
-        />
-        <Button
           title="Continuer"
-          onPress={handleSubmit}
+          onPress={() => {
+            Keyboard.dismiss();
+            handleSubmit();
+          }}
           variant="primary"
           style={styles.continueButton}
         />
@@ -461,22 +458,38 @@ const Step4: React.FC<Step4Props> = ({
   };
 
   const handleAddSupplement = () => {
-    if (!newSupplement.name.trim() || !newSupplement.quantity.trim()) {
+    const trimmedName = newSupplement.name.trim();
+    const trimmedQuantity = newSupplement.quantity.trim();
+
+    if (!trimmedName || !trimmedQuantity) {
       Alert.alert('Champs requis', 'Merci de renseigner un nom et un dosage.');
       return;
     }
 
-    const unitData = SUPPLEMENT_UNITS.find((u) => u.value === newSupplement.unit)!;
-    const dosage = `${newSupplement.quantity.trim()} ${unitData.suffix}`;
+    const normalizedQuantity = trimmedQuantity.replace(',', '.');
+    const quantityValue = Number.parseFloat(normalizedQuantity);
 
-    const supplementEntry = {
+    if (!Number.isFinite(quantityValue) || quantityValue <= 0) {
+      Alert.alert('Dosage invalide', "Merci d'indiquer une quantité numérique positive.");
+      return;
+    }
+
+    const unitData = SUPPLEMENT_UNITS.find((u) => u.value === newSupplement.unit)!;
+    const displayQuantity = Number.isInteger(quantityValue)
+      ? quantityValue.toString()
+      : quantityValue.toFixed(2).replace(/\.0+$/, '').replace(/0+$/, '');
+    const dosage = `${displayQuantity} ${unitData.suffix}`;
+
+    const supplementEntry: Supplement = {
       id: `supp-${Date.now()}`,
-      name: newSupplement.name.trim(),
+      name: trimmedName,
       dosage,
       timing: newSupplement.timing,
-      type: 'other' as Supplement['type'],
+      type: 'other',
       available: true,
-    } as Supplement;
+      quantity: quantityValue,
+      unit: newSupplement.unit,
+    };
 
     const updated = [...supplements, supplementEntry];
     setSupplementData({
@@ -512,35 +525,35 @@ const Step4: React.FC<Step4Props> = ({
           onChangeText={(text) => setNewSupplement((prev) => ({ ...prev, name: text }))}
         />
 
-        <View style={styles.inlineInputs}>
-          <Input
-            placeholder="Quantité"
-            keyboardType="numeric"
-            value={newSupplement.quantity}
-            onChangeText={(text) => setNewSupplement((prev) => ({ ...prev, quantity: text }))}
-            style={[styles.input, styles.quantityInput]}
-          />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.unitChips}>
-            {SUPPLEMENT_UNITS.map((unit) => (
-              <TouchableOpacity
-                key={unit.value}
+        <Input
+          placeholder="Quantité"
+          keyboardType={Platform.select({ ios: 'decimal-pad', android: 'numeric', default: 'numeric' })}
+          inputMode="numeric"
+          returnKeyType="done"
+          value={newSupplement.quantity}
+          onChangeText={(text) => setNewSupplement((prev) => ({ ...prev, quantity: text }))}
+          style={styles.input}
+        />
+        <View style={styles.unitChipRow}>
+          {SUPPLEMENT_UNITS.map((unit) => (
+            <TouchableOpacity
+              key={unit.value}
+              style={[
+                styles.chip,
+                newSupplement.unit === unit.value && styles.chipActive,
+              ]}
+              onPress={() => setNewSupplement((prev) => ({ ...prev, unit: unit.value }))}
+            >
+              <Text
                 style={[
-                  styles.chip,
-                  newSupplement.unit === unit.value && styles.chipActive,
+                  styles.chipText,
+                  newSupplement.unit === unit.value && styles.chipTextActive,
                 ]}
-                onPress={() => setNewSupplement((prev) => ({ ...prev, unit: unit.value }))}
               >
-                <Text
-                  style={[
-                    styles.chipText,
-                    newSupplement.unit === unit.value && styles.chipTextActive,
-                  ]}
-                >
-                  {unit.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                {unit.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <Text style={styles.sectionLabel}>Timing</Text>
@@ -680,18 +693,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
   },
-  inlineInputs: {
+  unitChipRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  quantityInput: {
-    flex: 1,
-  },
-  unitChips: {
-    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.xs,
+    marginBottom: Spacing.md,
   },
   chip: {
     borderWidth: 1,
@@ -770,17 +776,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: Spacing.sm,
     marginTop: Spacing.xl,
   },
   continueButton: {
-    flex: 1,
-  },
-  dismissButton: {
-    flex: 0.5,
+    width: '100%',
   },
   backButton: {
     marginTop: Spacing.md,

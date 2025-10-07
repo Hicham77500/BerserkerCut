@@ -8,3 +8,4 @@ export { Input } from './Input';
 export { MacroCard } from './MacroCard';
 export { HealthStep } from './HealthStep';
 export { OnboardingTrainingStep } from './OnboardingTrainingStep';
+export { default as ModeBadge } from './ModeBadge';
