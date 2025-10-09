@@ -1,165 +1,136 @@
 # BerserkerCut 🔥
 
-Une application iOS native (React Native + Expo) pour générer des plans nutrition/suppléments personnalisés pendant une phase de sèche.
+Full-dark native iOS experience for personalised cutting plans.
 
-## 🎯 Objectifs
+## Table of contents
 
-BerserkerCut calcule et délivre quotidiennement :
-- un plan nutritionnel individualisé (calories, macros, repas)
-- un protocole de suppléments avec timing intelligent
-- des conseils contextualisés en fonction du jour (entraînement vs repos)
-
-Le calcul du métabolisme, de l'IMC, des macros et des plans repas est effectué **localement** dans l'application : aucune IA n'est sollicitée pour les formules déterministes.
-
-## 🚀 Fonctionnalités clés
-
-- Authentification email/mot de passe via API Node/MongoDB
-- Onboarding multi-étapes (données santé, entrainement, suppléments)
-- Génération quotidienne des plans (algorithmes internes)
-- Mode démo hors ligne (données stockées en AsyncStorage)
-- Interface iOS moderne (Expo + React Navigation)
-
-## 📦 Stack technique
-
-| Couche | Technologies |
-| --- | --- |
-| Interface | React Native, Expo, React Navigation |
-| Services | AuthService, PlanService, TrainingService (REST) |
-| Backend (attendu) | Node.js / Express + MongoDB Atlas (ou cluster self-hosted) |
-| Stockage local | AsyncStorage (mode démo) |
-| Langage | TypeScript end-to-end |
-
-> L’application mobile **n’accède jamais à MongoDB directement** : un backend REST sécurisé est requis (JWT recommandé). Le dépôt fourni correspond à l’application cliente Expo.
-
-## 🏗️ Architecture
-
-```
-src/
-├── components/     # UI réutilisable
-├── hooks/          # AuthProvider, PlanProvider…
-├── navigation/     # Routes & stacks
-├── screens/        # Écrans principaux
-├── services/       # AuthService, PlanService, apiClient, demo services
-├── types/          # Modèles TypeScript (User, DailyPlan…)
-└── utils/          # Configuration, debug helpers, thèmes
-```
-
-Documentation détaillée : `docs/ARCHITECTURE.md`.
-
-## 🔧 Installation & configuration
-
-1. **Cloner le projet**
-   ```bash
-   git clone <repository-url>
-   cd BerserkerCut
-   ```
-
-2. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
-
-3. **Configurer l’API backend (MongoDB)**
-   - Un serveur Express prêt à l'emploi est disponible dans `backend/`.
-   - Étapes de démarrage :
-     ```bash
-     cd backend
-     cp .env.example .env             # renseigner MONGODB_URI + JWT_SECRET
-     npm install
-     npm run dev                      # ou npm start pour la prod
-     ```
-   - Variables clés :
-     - `MONGODB_URI` → connexion Atlas (`mongodb+srv://adminH:...@cluster0...`)
-     - `JWT_SECRET` → secret de signature des tokens
-     - `CORS_ORIGIN` → origines front autorisées (`http://localhost:19006` pour Expo)
-   - Endpoints couverts :
-     - `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`
-     - `GET /users/:id`, `PATCH /users/:id/profile`
-     - `PUT /users/:id/training-profile`, `GET /users/:id/training-profile`
-     - `PUT /plans/:planId`, `GET /plans/today?userId=`, `POST /plans/:planId/supplements/:supplementId/taken`
-
-4. **Variables d’environnement Expo** (`.env`)
-   ```bash
-   EXPO_PUBLIC_API_BASE_URL=http://localhost:4000   # backend local
-   # EXPO_PUBLIC_API_BASE_URL=https://api.berserkercut.com   # backend prod
-   EXPO_PUBLIC_FORCE_DEMO_MODE=false  # true pour travailler 100% hors ligne
-   ```
-   Option alternative : renseigner `expo.extra.apiBaseUrl` dans `app.json`.
-
-5. **Lancer l’app**
-   ```bash
-   npm start          # Expo dev client / Expo Go
-   npm run ios        # build + lancement simulateur iOS
-   npm run android    # build + lancement émulateur Android
-   ```
-
-## ☁️ Backend MongoDB – recommandations
-
-- **Schema utilisateur** :
-  ```json
-  {
-    "_id": "ObjectId",
-    "email": "string",
-    "hashedPassword": "string",
-    "profile": { /* voir src/types */ },
-    "createdAt": "ISO string",
-    "updatedAt": "ISO string"
-  }
-  ```
-- **Sécurité** :
-  - Stocker les mots de passe hashés (bcrypt/argon2).
-  - Retourner uniquement les champs nécessaires au client.
-  - Protéger les routes avec un middleware JWT (Authorization: Bearer).
-- **Plans quotidiens** : collection `daily_plans` indexée sur `{ userId, date }`.
-- **IA & données sensibles** : seules les données nécessaires à l’IA doivent transiter. Par défaut, l’app n’envoie **aucune** donnée à un LLM ; prévoyez un microservice séparé si vous automatisez des recommandations IA. Garder BMI, macros, etc., dans le périmètre deterministic côté client.
-
-## ♻️ Modes de fonctionnement
-
-| Mode | Activation | Persistance |
-| --- | --- | --- |
-| `cloud` | `EXPO_PUBLIC_API_BASE_URL` défini & backend disponible | API REST → MongoDB |
-| `demo`  | `EXPO_PUBLIC_FORCE_DEMO_MODE=true` ou aucun backend configuré | AsyncStorage (local device) |
-
-Les services `DemoAuthService`, `DemoPlanService`, `saveTrainingProfile` (AsyncStorage) garantissent une expérience complète sans réseau.
-
-## 🧠 Logique métier
-
-- **Calculs énergétiques** : formule Harris-Benedict révisée, ajustements objectif + jour d’entraînement.
-- **Répartition macros** : protéines (1.8–2.2 g/kg), lipides (25–30%), glucides = reste.
-- **Plans repas** : base d’aliments typés (petit-déj/déjeuner/dîner/collation), quantités calculées proportionnellement.
-- **Suppléments** : tri par `type` et `timing`; marquage « pris » via API.
-- **Aucune IA n’est utilisée pour les calculs déterministes**. Les agents/LLM éventuels doivent être branchés depuis le backend et ne doivent recevoir que les données strictement nécessaires (ex : objectif, disponibilité de suppléments). 
-
-## 🔒 Sécurité & conformité
-
-- Sessions JWT stockées dans AsyncStorage (client) + Authorization header automatique (`apiClient`).
-- Nettoyage complet des sessions côté client (`clearSession`).
-- Validation stricte des entrées (`validateTrainingProfile`, vérifications côté backend requises).
-- Pas de données médicales sensibles envoyées sans consentement explicite.
-
-## 📊 État du projet
-
-| Avancement | Détails |
-| --- | --- |
-| ✅ Architecture mobile | Hooks, services, logique métier, mode démo |
-| ✅ Migration MongoDB | Suppression Firebase, nouveau client HTTP, stockage session |
-| 🔄 Backend à déployer | Doit être développé/déployé (Node/Mongo) pour activer le mode cloud |
-| 🔜 QA & tests | Tests automatisés + validation fonctionnelle à planifier |
-
-## 🧭 Feuille de route courte
-
-1. Déployer l’API Node/Mongo (auth + plans) et sécuriser les endpoints.
-2. Connecter l’app Expo en mode `cloud` (vérifier `apiClient.baseUrl`).
-3. Ajouter des tests (unitaires/services) + instrumentation monitoring.
-4. Préparer le packaging TestFlight / Play Store.
-
-## 🧩 Ressources utiles
-
-- `docs/ARCHITECTURE.md` – flux détaillés (auth, plans, mode démo).
-- `src/services/apiClient.ts` – configuration HTTP + auth automatique.
-- `src/services/sessionStorage.ts` – gestion token/utilisateur.
-- `src/utils/debug.ts` – diagnostics (`quickDiagnose()` en dev console).
+1. [Overview](#overview)
+2. [Key features](#key-features)
+3. [Architecture](#architecture)
+4. [Getting started](#getting-started)
+5. [Environment variables](#environment-variables)
+6. [Development workflow](#development-workflow)
+7. [Design system & theming](#design-system--theming)
+8. [Backend expectations](#backend-expectations)
+9. [Roadmap](#roadmap)
+10. [Resources](#resources)
 
 ---
 
-> Besoin d’étendre la logique (agents IA, analytics) ? Ajoutez un microservice dédié côté backend pour filtre/prétraiter les données avant appel LLM. Gardez dans l’app mobile uniquement les calculs déterministes (IMC, calories, macros) et l’UX. EOF
+## Overview
+
+BerserkerCut is an Expo + React Native TypeScript app focused on an iOS-first experience that helps athletes navigate a cutting phase. The app produces daily nutrition and supplement plans, adapts guidance to rest or training days, and preserves deterministic calculations locally on-device. Phase 1 targets a fully native-feeling dark interface; Phase 2 will extend the same code base to the web.
+
+- **Platform**: Expo SDK (React Native) — optimised for iOS, Android support secondary, web planned.
+- **Language**: TypeScript end-to-end.
+- **State & data**: React context providers (`useAuth`, `usePlan`) backed by a REST API or an offline demo data layer.
+- **Security**: JWT sessions stored locally, HTTPS backend expected.
+
+## Key features
+
+- 🔒 Email/password authentication (REST API via Node/Express + MongoDB).
+- 🧮 Local metabolic/macronutrient calculations using deterministic formulas.
+- 🥗 Daily meal plans with macro tracking and supplement timing guidance.
+- 💤 Contextual tips that adapt to rest/training days.
+- ✈️ Demo/offline mode powered by AsyncStorage for instant preview without backend.
+- 🌘 Dark theme everywhere — light mode was removed and UI toggles replaced with a consistent dark-native design language.
+- 📸 Photo capture & gallery management to document meals or progress.
+
+## Architecture
+
+```text
+src/
+├── components/        # Reusable UI building blocks (Buttons, Cards, iOS widgets)
+├── hooks/             # Theming, auth, plan providers & business logic
+├── navigation/        # Stack/tab navigation configuration
+├── screens/           # Feature screens (Dashboard, Nutrition, Profile…)
+├── services/          # REST + demo services, session helpers, photo storage
+├── types/             # Shared TypeScript models (User, DailyPlan, Supplement…)
+└── utils/             # Theme system, configuration, diagnostics, helpers
+```
+
+More detailed flows live in `docs/ARCHITECTURE.md`.
+
+## Getting started
+
+1. **Clone & install**
+   ```bash
+   git clone <repository-url>
+   cd BerserkerCut
+   npm install
+   ```
+
+2. **Run the Expo client** (iOS-first)
+   ```bash
+   npm start        # Launch Expo Dev Tools (press i for iOS simulator)
+   # Optional shortcuts
+   npm run ios      # Directly open iOS simulator
+   npm run android  # Android emulator (secondary support)
+   ```
+
+## Environment variables
+
+Create a `.env` file at the project root (or configure `app.json` → `expo.extra`).
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://localhost:4000   # REST backend base URL
+EXPO_PUBLIC_FORCE_DEMO_MODE=false                # true to force offline/demo mode
+```
+
+When `EXPO_PUBLIC_API_BASE_URL` is missing or unreachable, the demo services take over automatically.
+
+## Development workflow
+
+- **Type checking & linting**: The project relies on TypeScript; ESLint rules ship with Expo. Run `npx tsc --noEmit` or `npx eslint .` if needed.
+- **Unit tests**: Jest is configured (see `jest.config.js`).
+  ```bash
+  npm test
+  # or update specific snapshots
+  npm test -- --runTestsByPath __tests__/HomeDashboardScreen.test.tsx --updateSnapshot
+  ```
+- **Backend dev server** (optional, mutualised repo):
+  ```bash
+  cd backend
+  cp .env.example .env   # fill MONGODB_URI, JWT_SECRET, etc.
+  npm install
+  npm run dev
+  ```
+
+## Design system & theming
+
+- The app is dark-only. `useThemeMode` now delivers a static dark palette (`DarkColors`), and UI toggles were removed.
+- `src/utils/theme.ts` centralises the palette, typography, spacing, and shadows tuned for iOS.
+- Surfaces favour copper/anthracite tones with accessible contrast; cards and overlays rely on `colors.surface`, `colors.secondaryBackground`, and `colors.overlay`.
+- Component styling should consume `Spacing`, `Typography`, and `Colors` tokens from the design system to remain consistent.
+
+## Backend expectations
+
+A minimal Node/Express + MongoDB service is still required for cloud mode. The reference implementation lives in `backend/` (not auto-deployed). Key endpoints expected by the mobile app:
+
+- `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`
+- `GET /users/:id`, `PATCH /users/:id/profile`
+- `GET /plans/today?userId=`, `PUT /plans/:planId`
+- `POST /plans/:planId/supplements/:supplementId/taken`
+
+The mobile app never talks to MongoDB directly. Secure the API with JWT middleware, ensure CORS allows the Expo dev origin (`http://localhost:19006` by default), and return only the fields required by the client.
+
+## Roadmap
+
+| Status | Next steps |
+| ------ | ----------- |
+| ✅ | Dark-only redesign, demo mode parity, plan generation logic |
+| 🏗️ | Deploy & harden the REST backend (Node/Express + MongoDB Atlas) |
+| 🔬 | Expand automated tests + CI, instrument analytics/monitoring |
+| 🚀 | Prepare TestFlight build, later reuse codebase for the PWA phase |
+
+## Resources
+
+- `docs/ARCHITECTURE.md` – sequence diagrams, data models, domain logic.
+- `src/services/apiClient.ts` – REST client with automatic auth headers.
+- `src/services/sessionStorage.ts` – JWT/session helpers.
+- `src/utils/designSystem.ts` – layout constants and design tokens.
+- `src/utils/debug.ts` – developer diagnostics (`quickDiagnose()` for local checks).
+
+---
+
+> Need to plug additional intelligence (agents, analytics)? Extend the backend with a dedicated microservice; keep the mobile app focused on deterministic calculations and premium iOS UX.
