@@ -283,10 +283,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.xl, // Updated to use our XL radius for iOS style
     overflow: 'hidden', // Évite les débordements sur Android
-    // Ombres uniquement sur iOS pour éviter les problèmes Android
-    ...(Platform.OS === 'ios' ? Shadows.sm : {}),
+    // Improved shadows for iOS
+    ...(Platform.OS === 'ios' ? Shadows.md : {}),
   } as ViewStyle,
 
   /**
@@ -359,13 +359,11 @@ const styles = StyleSheet.create({
    * @description Style pour les actions alternatives sans dominer visuellement
    */
   outline: {
-    backgroundColor: Platform.OS === 'android' 
-      ? 'rgba(255, 107, 53, 0.02)' // Fond très léger sur Android pour la visibilité
+    backgroundColor: Platform.OS === 'android'
+      ? 'rgba(184, 115, 51, 0.08)'
       : 'transparent',
     borderWidth: 2,
-    borderColor: Platform.OS === 'android' 
-      ? 'rgba(255, 107, 53, 0.8)' // Bordure légèrement atténuée sur Android
-      : Colors.primary,
+    borderColor: Colors.primary,
     // Suppression complète des ombres sur Android pour éviter les artifacts
     ...(Platform.OS === 'android' ? { 
       shadowColor: 'transparent',
@@ -412,7 +410,7 @@ const styles = StyleSheet.create({
   md: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    minHeight: Platform.OS === 'android' ? 52 : 48,
+    minHeight: Platform.OS === 'android' ? 52 : 44, // Updated to iOS standard 44pt height
   } as ViewStyle,
 
   /**
@@ -422,7 +420,7 @@ const styles = StyleSheet.create({
   lg: {
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.lg,
-    minHeight: Platform.OS === 'android' ? 60 : 56,
+    minHeight: Platform.OS === 'android' ? 60 : 52, // Updated to iOS standard large control
   } as ViewStyle,
 
   // === ÉTATS ===
@@ -447,17 +445,20 @@ const styles = StyleSheet.create({
 
   /**
    * Style de base pour le texte
-   * @description Typographie fondamentale avec optimisations Android
+   * @description Typographie fondamentale avec optimisations iOS et Android
    */
   baseText: {
     ...Typography.button,
     textAlign: 'center',
-    // Améliorations pour la lisibilité sur Android
+    // Platform-specific typography optimizations
     ...(Platform.OS === 'android' ? { 
       fontWeight: '600',
       letterSpacing: 0.5,
       includeFontPadding: false, // Évite l'espacement vertical supplémentaire
-    } : {}),
+    } : {
+      letterSpacing: 0.35, // iOS-optimized letter spacing
+      fontWeight: '600',   // SF Pro medium weight
+    }),
   } as TextStyle,
 
   /**
@@ -465,7 +466,7 @@ const styles = StyleSheet.create({
    * @description Contraste optimal sur fond coloré
    */
   primaryText: {
-    color: Colors.textDark,
+    color: Colors.text,
     fontWeight: 'bold',
   } as TextStyle,
 
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
    * @description Lisibilité sur fond secondaire
    */
   secondaryText: {
-    color: Colors.textDark,
+    color: Colors.text,
     fontWeight: 'bold',
   } as TextStyle,
 
@@ -499,7 +500,7 @@ const styles = StyleSheet.create({
    * @description Couleur brand sur fond transparent
    */
   ghostText: {
-    color: Colors.primary,
+    color: Colors.text,
     fontWeight: '600',
   } as TextStyle,
 
@@ -508,7 +509,7 @@ const styles = StyleSheet.create({
    * @description Contraste sur fond d'erreur
    */
   dangerText: {
-    color: Colors.textDark,
+    color: Colors.text,
     fontWeight: 'bold',
   } as TextStyle,
 

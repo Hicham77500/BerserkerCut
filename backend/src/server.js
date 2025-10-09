@@ -25,6 +25,13 @@ app.use(
 
 app.use(express.json({ limit: '2mb' }));
 
+// Ajout d'un middleware de logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  next();
+});
+
 app.get('/health', (_, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

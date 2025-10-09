@@ -1,39 +1,40 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { isDemoMode } from '../services/appModeService';
-import { Colors, Typography, Spacing } from '../utils/theme';
+import { Typography, Spacing, BorderRadius } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 /**
  * Badge indiquant le mode actuel de l'application (démo ou production)
  */
-export const ModeBadge: React.FC = () => {
+interface ModeBadgeProps {
+  style?: ViewStyle;
+}
+
+export const ModeBadge: React.FC<ModeBadgeProps> = ({ style }) => {
+  const { colors } = useThemeMode();
   const demoMode = isDemoMode();
   
   if (!demoMode) return null; // Ne pas afficher le badge en mode production
   
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>MODE DÉMO</Text>
+    <View style={[styles.container, { backgroundColor: colors.primary }, style]}>
+      <Text style={[styles.text, { color: colors.background }]}>MODE DÉMO</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    backgroundColor: Colors.accentDark,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 4,
-    zIndex: 999,
+    paddingVertical: Spacing.xxs,
+    borderRadius: BorderRadius.xs,
   },
   text: {
     ...Typography.caption,
-    color: Colors.surface,
     fontWeight: '700',
     fontSize: 10,
+    letterSpacing: 0.5, // iOS-optimized letter spacing for small caps
   },
 });
 

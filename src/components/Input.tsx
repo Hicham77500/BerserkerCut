@@ -13,7 +13,7 @@ import {
   TextInputProps,
   TouchableOpacity
 } from 'react-native';
-import { Colors, Typography, BorderRadius, Spacing } from '../utils/theme';
+import { Colors, Typography, BorderRadius, Spacing, Shadows } from '../utils/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -116,41 +116,45 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
   } as ViewStyle,
 
-  // Variants
+  // Variants with improved iOS styling
   default: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    backgroundColor: 'transparent',
   } as ViewStyle,
 
   outlined: {
     borderWidth: 1,
     borderColor: Colors.border,
+    ...Shadows.xs, // Subtle shadow for depth
   } as ViewStyle,
 
   filled: {
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.backgroundDark,
+    ...Shadows.xs, // Subtle shadow for depth
   } as ViewStyle,
 
-  // Sizes
+  // Sizes with iOS standards
   sm: {
     minHeight: 36,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md, // Increased for better touch targets
   } as ViewStyle,
 
   md: {
-    minHeight: 48,
+    minHeight: 44, // iOS standard height
     paddingHorizontal: Spacing.md,
   } as ViewStyle,
 
   lg: {
-    minHeight: 56,
+    minHeight: 52, // iOS larger input
     paddingHorizontal: Spacing.lg,
   } as ViewStyle,
 
-  // States
+  // States with improved transitions
   focused: {
     borderColor: Colors.primary,
     borderWidth: 2,
+    ...Shadows.sm, // Enhanced shadow when focused
   } as ViewStyle,
 
   error: {
@@ -185,22 +189,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
   } as TextStyle,
 
-  // Labels and helpers
+  // Labels and helpers with iOS-optimized typography
   label: {
-    ...Typography.bodySmall,
+    ...Typography.label, // Using our new iOS-specific label style
     color: Colors.text,
     marginBottom: Spacing.xs,
-    fontWeight: '500',
   } as TextStyle,
 
   errorText: {
-    ...Typography.caption,
+    ...Typography.footnote, // Using our new iOS-specific footnote style
     color: Colors.error,
     marginTop: Spacing.xs,
   } as TextStyle,
 
   helperText: {
-    ...Typography.caption,
+    ...Typography.footnote, // Using our new iOS-specific footnote style
     color: Colors.textMuted,
     marginTop: Spacing.xs,
   } as TextStyle,

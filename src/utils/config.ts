@@ -2,8 +2,27 @@ import Constants from 'expo-constants';
 
 const expoExtra = Constants.expoConfig?.extra ?? {};
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || expoExtra.apiBaseUrl || '';
+const deriveLocalApiUrl = (): string | null => {
+  const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest2?.extra?.expoClient?.hostUri;
+  if (!hostUri) return null;
+  const host = hostUri.split(':')[0];
+  if (!host || host === 'localhost') return null;
+  return `http://${host}:4000`;
+};
+
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ||
+  expoExtra.apiBaseUrl ||
+  deriveLocalApiUrl() ||
+  '';
 const FORCE_DEMO = process.env.EXPO_PUBLIC_FORCE_DEMO_MODE === 'true';
+const ENABLE_NEW_UI_ENV = process.env.EXPO_PUBLIC_ENABLE_NEW_UI;
+const ENABLE_NEW_UI_EXTRA = expoExtra.enableNewUi;
+const ENABLE_NEW_UI = ENABLE_NEW_UI_ENV
+  ? ENABLE_NEW_UI_ENV === 'true'
+  : typeof ENABLE_NEW_UI_EXTRA === 'boolean'
+    ? ENABLE_NEW_UI_EXTRA
+    : true;
 
 /**
  * Configuration globale de l'application (mode démo vs backend cloud).
@@ -15,6 +34,7 @@ export const AppConfig = {
   ENABLE_LOCAL_STORAGE: true,
   API_TIMEOUT: 10000,
   DEMO_DELAY: 1000,
+  NEW_UI_ENABLED: ENABLE_NEW_UI,
   MESSAGES: {
     DEMO_MODE_ACTIVE: '🔧 Mode développement activé - Les données sont stockées localement',
     BACKEND_OFFLINE: '⚠️ Backend indisponible - Basculement en mode local',

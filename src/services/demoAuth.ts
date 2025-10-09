@@ -51,9 +51,27 @@ const DEMO_USER: User = {
     },
     training: {
       trainingDays: [
-        { dayOfWeek: 1, type: 'strength', timeSlot: 'morning', duration: 60 },
-        { dayOfWeek: 3, type: 'strength', timeSlot: 'morning', duration: 60 },
-        { dayOfWeek: 5, type: 'strength', timeSlot: 'morning', duration: 60 },
+        {
+          dayOfWeek: 1,
+          type: 'strength',
+          startTime: '06:30',
+          duration: 60,
+          timeSlot: 'morning',
+        },
+        {
+          dayOfWeek: 3,
+          type: 'strength',
+          startTime: '06:30',
+          duration: 60,
+          timeSlot: 'morning',
+        },
+        {
+          dayOfWeek: 5,
+          type: 'strength',
+          startTime: '06:30',
+          duration: 60,
+          timeSlot: 'morning',
+        },
       ],
       experienceLevel: 'intermediate',
       preferredTimeSlots: ['morning'],

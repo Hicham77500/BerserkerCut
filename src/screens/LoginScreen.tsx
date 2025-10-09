@@ -1,8 +1,8 @@
- /**
+/**
  * Écran de connexion avec design moderne
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ export const LoginScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [demoModeEnabled, setDemoModeEnabled] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   
   const { login, register } = useAuth();
   
@@ -33,9 +34,29 @@ export const LoginScreen: React.FC = () => {
     setDemoModeEnabled(isDemoMode());
   }, []);
 
+  useEffect(() => {
+    setSubmitted(false);
+  }, [isLogin]);
+
+  const emailError = useMemo(() => {
+    if (!email) return 'Veuillez renseigner votre email';
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email) ? null : 'Email invalide';
+  }, [email]);
+
+  const passwordError = useMemo(() => {
+    if (!password) return 'Veuillez saisir votre mot de passe';
+    if (!isLogin && password.length < 8) {
+      return 'Le mot de passe doit contenir au moins 8 caractères';
+    }
+    return null;
+  }, [password, isLogin]);
+
   const handleSubmit = async () => {
-    if (!email || !password) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+    setSubmitted(true);
+
+    if (emailError || passwordError) {
+      Alert.alert('Informations manquantes', emailError || passwordError || '');
       return;
     }
 
@@ -113,6 +134,7 @@ export const LoginScreen: React.FC = () => {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              error={submitted && emailError ? emailError : undefined}
             />
 
             <Input
@@ -120,7 +142,9 @@ export const LoginScreen: React.FC = () => {
               value={password}
               onChangeText={setPassword}
               placeholder="••••••••"
-              secureTextEntry
+              isPassword
+              helper={!isLogin ? '8 caractères minimum' : undefined}
+              error={submitted && passwordError ? passwordError : undefined}
             />
 
             <Button
@@ -128,6 +152,7 @@ export const LoginScreen: React.FC = () => {
               onPress={handleSubmit}
               loading={loading}
               style={styles.submitButton}
+              disabled={Boolean(emailError || passwordError)}
             />
 
             <Button
@@ -182,7 +207,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     padding: Spacing.lg,
   },
   header: {

@@ -40,10 +40,20 @@
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
-      <false/>
-      <key>NSAllowsLocalNetworking</key>
       <true/>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>localhost</key>
+        <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+        </dict>
+      </dict>
     </dict>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>BerserkerCut a besoin d'accéder à votre photothèque pour synchroniser vos photos de progression.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>BerserkerCut enregistre vos photos dans votre album iCloud BerserkerCut.</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>

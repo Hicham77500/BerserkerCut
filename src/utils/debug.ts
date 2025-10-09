@@ -2,9 +2,9 @@
  * Utilitaires de debug pour BerserkerCut (backend MongoDB + mode démo).
  */
 
-import { getCurrentMode, checkBackendConnection, listLocalProfiles } from '../services/trainingService';
-import { AppConfig, isBackendConfigured } from './config';
-import { apiClient } from '../services/apiClient';
+import { getCurrentMode, checkBackendConnection, listLocalProfiles } from '@/services/trainingService';
+import { AppConfig, isBackendConfigured } from '@/utils/config';
+import { apiClient } from '@/services/apiClient';
 
 /**
  * Diagnostique complet de l'état de l'application.

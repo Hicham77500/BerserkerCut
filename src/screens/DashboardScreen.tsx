@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 import { usePlan } from '../hooks/usePlan';
 import { SupplementIntake, Meal, SupplementPlan } from '../types';
@@ -99,15 +98,21 @@ const MEAL_FILTERS: Array<{ label: string; value: 'all' | 'breakfast' | 'lunch' 
 
 export const DashboardScreen: React.FC = () => {
   const { user } = useAuth();
-  const { currentPlan, loading, error, generateDailyPlan, markSupplementTaken } = usePlan();
+  const {
+    currentPlan,
+    loading,
+    error,
+    generateDailyPlan,
+    toggleSupplement,
+    supplementStatus,
+    supplementProgress,
+  } = usePlan();
   const [refreshing, setRefreshing] = useState(false);
   const [activeMealFilter, setActiveMealFilter] = useState<'all' | 'breakfast' | 'lunch' | 'snack' | 'dinner'>('all');
   const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
   const [consumedMeals, setConsumedMeals] = useState<Record<string, boolean>>({});
   const [sectionConfigs, setSectionConfigs] = useState<SectionConfig[]>(DEFAULT_SECTIONS);
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const insets = useSafeAreaInsets();
-
   const persistSections = useCallback(async (configs: SectionConfig[]) => {
     setSectionConfigs(configs);
     try {
@@ -161,9 +166,9 @@ export const DashboardScreen: React.FC = () => {
 
   const handleSupplementTaken = async (supplementId: string) => {
     try {
-      await markSupplementTaken(supplementId);
+      await toggleSupplement(supplementId);
     } catch (err) {
-      Alert.alert('Erreur', 'Impossible de marquer le supplément comme pris');
+      Alert.alert('Erreur', 'Impossible de mettre à jour le supplément');
     }
   };
 
@@ -268,20 +273,24 @@ export const DashboardScreen: React.FC = () => {
             ? '🏃‍♂️ Post-entraînement'
             : '🌙 Soir'}
         </Text>
-        {supplements.map((intake: SupplementIntake) => (
-          <TouchableOpacity
-            key={intake.supplementId}
-            style={[styles.supplementCard, intake.taken && styles.supplementTaken]}
-            onPress={() => handleSupplementTaken(intake.supplementId)}
-          >
-            <View style={styles.supplementContent}>
-              <Text style={styles.supplementName}>
-                {intake.taken ? '✅' : '⏺️'} {intake.name}
-              </Text>
-              <Text style={styles.supplementDosage}>{intake.dosage}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+        {supplements.map((intake: SupplementIntake) => {
+          const isTaken = supplementStatus[intake.supplementId] ?? intake.taken ?? false;
+          return (
+            <TouchableOpacity
+              key={intake.supplementId}
+              style={[styles.supplementCard, isTaken && styles.supplementTaken]}
+              onPress={() => handleSupplementTaken(intake.supplementId)}
+              activeOpacity={0.85}
+            >
+              <View style={styles.supplementContent}>
+                <Text style={styles.supplementName}>
+                  {isTaken ? '✅' : '⏺️'} {intake.name}
+                </Text>
+                <Text style={styles.supplementDosage}>{intake.dosage}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     );
   };
@@ -392,6 +401,13 @@ export const DashboardScreen: React.FC = () => {
     if (!currentPlan) return null;
     return (
       <View style={styles.supplementsGrid}>
+        {supplementProgress.total > 0 && (
+          <View style={styles.supplementProgressHeader}>
+            <Text style={styles.supplementProgressText}>
+              {supplementProgress.completed}/{supplementProgress.total} complétés ({supplementProgress.percentage}%)
+            </Text>
+          </View>
+        )}
         {(['morning', 'preWorkout', 'postWorkout', 'evening'] as Array<keyof SupplementPlan>).map((timing) => (
           <Card key={timing} style={styles.supplementTimingCard}>
             {renderSupplementsByTiming(timing) || (
@@ -430,7 +446,7 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const Header = () => (
-    <View style={[styles.header, { paddingTop: insets.top + Spacing.xs }] }>
+    <View style={[styles.header, { paddingTop: Spacing.xs }] }>
       <View style={styles.headerTextGroup}>
         <Text style={styles.screenTitle}>Dashboard</Text>
         <Text style={styles.screenSubtitle}>Organise ta journée comme tu le souhaites</Text>
@@ -548,7 +564,7 @@ export const DashboardScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.background,
   },
   container: {
     flex: 1,
@@ -568,12 +584,11 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     ...Typography.h2,
-    color: Colors.textDark,
+    color: Colors.text,
   },
   screenSubtitle: {
     ...Typography.body,
-    color: Colors.textDark,
-    opacity: 0.75,
+    color: Colors.textLight,
   },
   settingsButton: {
     backgroundColor: Colors.primary,
@@ -589,6 +604,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   contentContainer: {
+    flexGrow: 1,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xl * 2,
     paddingHorizontal: Spacing.lg,
@@ -773,6 +789,15 @@ const styles = StyleSheet.create({
   },
   supplementsGrid: {
     gap: Spacing.md,
+  },
+  supplementProgressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  supplementProgressText: {
+    ...Typography.bodySmall,
+    color: Colors.textLight,
   },
   supplementTimingCard: {
     padding: Spacing.md,

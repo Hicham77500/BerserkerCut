@@ -11,11 +11,16 @@ export function enableDemoModeAfterNetworkError(error: any): boolean {
     error?.message?.includes('Network error') ||
     error?.status === 0;
 
-  if (__DEV__ && isNetworkError) {
+  if (!isNetworkError) {
+    return false;
+  }
+
+  if (__DEV__) {
     console.warn('⚠️ Erreur réseau détectée. Mode actuel :', AppConfig.DEMO_MODE ? 'DÉMO' : 'PRODUCTION');
   }
 
-  return false;
+  // Signale au service appelant qu'il peut activer le mode démo automatiquement
+  return !AppConfig.DEMO_MODE;
 }
 
 export async function checkPreviousDemoModePreference(): Promise<boolean> {

@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   base: {
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
+    overflow: 'hidden', // Ensures content respects border radius
   } as ViewStyle,
 
   default: {
@@ -44,12 +45,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 
   elevated: {
-    ...Shadows.lg,
+    ...Shadows.md, // Use medium shadow for better hierarchy
   } as ViewStyle,
 
   outlined: {
+    // No shadow for outlined variant, only border
     borderWidth: 1,
     borderColor: Colors.border,
-    ...Shadows.sm,
   } as ViewStyle,
 });

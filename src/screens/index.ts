@@ -4,5 +4,15 @@
 
 export { LoginScreen } from './LoginScreen';
 export { OnboardingScreen } from './OnboardingScreenModern';
-export { DashboardScreen } from './DashboardScreen';
-export { ProfileScreen } from './ProfileScreen';
+export { HomeDashboardScreen } from './home/HomeDashboardScreen';
+export { ProfileOverviewScreen } from './profile/ProfileOverviewScreen';
+export { ProfileHealthScreen } from './profile/ProfileHealthScreen';
+export { ProfileGoalsScreen } from './profile/ProfileGoalsScreen';
+export { ProfileTrainingScreen } from './profile/ProfileTrainingScreen';
+export { ProfileSupplementsScreen } from './profile/ProfileSupplementsScreen';
+export { ProfilePhotosScreen } from './profile/ProfilePhotosScreen';
+export { ProfilePrivacyScreen } from './profile/ProfilePrivacyScreen';
+export { NutritionScreen } from './nutrition/NutritionScreen';
+export { NutritionCalendarScreen } from './nutrition/NutritionCalendarScreen';
+export { TrainingScreen } from './training/TrainingScreen';
+export { SupplementsScreen } from './supplements/SupplementsScreen';

@@ -1,25 +1,35 @@
-/** Contexte global d'authentification basé sur `AuthService`. */
-
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { AuthService } from '../services/auth';
-import { DemoAuthService } from '../services/demoAuth';
-import { User, AuthContextType, UserProfile } from '../types';
-import { isDemoMode, addModeChangeListener, initializeAppMode } from '../services/appModeService';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
+import { AuthService } from '@/services/auth';
+import { DemoAuthService } from '@/services/demoAuth';
+import { User, AuthContextType, UserProfile } from '@/types';
+import { getSecureItem, setSecureItem } from '@/utils/storage/secureStorage';
+import { PRIVACY_CONSENT_SHOWN, CLOUD_CONSENT_STORAGE_KEY } from '@/constants/storageKeys';
+import { PrivacyConsentModal } from '@/components';
+import {
+  isDemoMode,
+  addModeChangeListener,
+  initializeAppMode,
+} from '@/services/appModeService';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-let demoAuthInitialized = false;
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-/**
- * Fournit l'état d'authentification et les actions associées aux descendants.
- */
+let demoAuthInitialized = false;
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
+  const [initialCloudConsent, setInitialCloudConsent] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -34,9 +44,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await DemoAuthService.initialize();
         }
 
-        unsubscribeAuth = AuthService.onAuthStateChanged((currentUser) => {
+        unsubscribeAuth = AuthService.onAuthStateChanged(async (currentUser) => {
           if (!isMounted) return;
+          
           setUser(currentUser);
+          
+          // Si l'utilisateur est connecté, vérifier s'il a déjà vu la modal de consentement
+          if (currentUser) {
+            const [storedConsent, hasShownConsent] = await Promise.all([
+              getSecureItem(CLOUD_CONSENT_STORAGE_KEY),
+              getSecureItem(PRIVACY_CONSENT_SHOWN),
+            ]);
+
+            setInitialCloudConsent(storedConsent === 'true');
+
+            if (!hasShownConsent) {
+              setShowPrivacyConsent(true);
+            } else {
+              setShowPrivacyConsent(false);
+            }
+          } else {
+            setShowPrivacyConsent(false);
+          }
+          
           setLoading(false);
         });
       } catch (error) {
@@ -97,7 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const updateProfile = async (profileUpdates: Partial<UserProfile>): Promise<void> => {
     if (!user) throw new Error('Utilisateur non connecté');
-    
+
     try {
       const updatedUser = await AuthService.updateProfile(user.id, profileUpdates);
       setUser(updatedUser);
@@ -113,13 +143,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
-    updateProfile
+    updateProfile,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const handlePrivacyConsent = async (cloudConsent: boolean) => {
+    await setSecureItem(CLOUD_CONSENT_STORAGE_KEY, cloudConsent ? 'true' : 'false');
+    await setSecureItem(PRIVACY_CONSENT_SHOWN, 'true');
+    setInitialCloudConsent(cloudConsent);
+    setShowPrivacyConsent(false);
+  };
+
+  return (
+    <>
+      <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+      <PrivacyConsentModal
+        visible={showPrivacyConsent}
+        initialCloudConsent={initialCloudConsent}
+        onClose={() => setShowPrivacyConsent(false)}
+        onConsent={handlePrivacyConsent}
+      />
+    </>
+  );
 };
 
-/** Récupère le contexte d'authentification typé. */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {

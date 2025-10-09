@@ -80,9 +80,10 @@ export interface HealthDataSource {
 
 export interface TrainingDay {
   dayOfWeek: number; // 0-6 (dimanche-samedi)
-  type: 'strength' | 'cardio' | 'mixed' | 'rest';
-  timeSlot: 'morning' | 'afternoon' | 'evening';
-  duration: number; // en minutes
+  type: 'strength' | 'cardio' | 'mixed' | 'rest' | 'active_recovery';
+  timeSlot?: 'morning' | 'afternoon' | 'evening';
+  startTime?: string; // format HH:MM
+  duration?: number; // en minutes
 }
 
 export interface Supplement {
@@ -106,6 +107,21 @@ export interface DailyPlan {
   dailyTip: string;
   completed: boolean;
   createdAt: Date;
+}
+
+export interface WeeklyTrainingSession {
+  date: Date;
+  dayOfWeek: number;
+  label: string;
+  isTrainingDay: boolean;
+  training?: TrainingDay;
+  isToday: boolean;
+}
+
+export interface SupplementProgress {
+  total: number;
+  completed: number;
+  percentage: number;
 }
 
 export interface NutritionPlan {
@@ -203,5 +219,9 @@ export interface PlanContextType {
   generateDailyPlan: () => Promise<void>;
   updatePlan: (planId: string, updates: Partial<DailyPlan>) => Promise<void>;
   markSupplementTaken: (supplementId: string) => Promise<void>;
+  toggleSupplement: (supplementId: string) => Promise<void>;
+  supplementStatus: Record<string, boolean>;
+  supplementProgress: SupplementProgress;
+  weeklySchedule: WeeklyTrainingSession[];
 }
 export type SupplementFormType = 'capsule' | 'gram' | 'milliliter';

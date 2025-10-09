@@ -20,6 +20,7 @@ const isDemoEnvironment = () => isDemoMode();
 type AuthResponse = {
   user: User;
   token: string;
+  refreshToken: string;
 };
 
 type AuthListener = (user: User | null) => void;
@@ -317,14 +318,14 @@ export class AuthService {
 
     try {
       const defaultProfile = createDefaultProfile();
-      const { user: rawUser, token } = await apiClient.post<AuthResponse>('/auth/register', {
+      const { user: rawUser, token, refreshToken } = await apiClient.post<AuthResponse>('/auth/register', {
         email,
         password,
         profile: defaultProfile,
       });
 
       const user = normalizeUser(rawUser);
-      await saveSession(token, user);
+      await saveSession(token, refreshToken, user);
       notifyAuthListeners(user);
       return user;
     } catch (error: any) {
@@ -349,13 +350,13 @@ export class AuthService {
     }
 
     try {
-      const { user: rawUser, token } = await apiClient.post<AuthResponse>('/auth/login', {
+      const { user: rawUser, token, refreshToken } = await apiClient.post<AuthResponse>('/auth/login', {
         email,
         password,
       });
 
       const user = normalizeUser(rawUser);
-      await saveSession(token, user);
+      await saveSession(token, refreshToken, user);
       notifyAuthListeners(user);
       return user;
     } catch (error: any) {

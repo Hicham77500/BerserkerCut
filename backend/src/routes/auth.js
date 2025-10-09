@@ -16,8 +16,19 @@ function getJwtSecret() {
   return secret;
 }
 
-function createToken(userId) {
-  return jwt.sign({ userId }, getJwtSecret(), { expiresIn: '7d' });
+function createTokens(userId) {
+  const accessToken = jwt.sign({ userId }, getJwtSecret(), { expiresIn: '1h' });
+  const refreshToken = jwt.sign({ userId, type: 'refresh' }, getJwtSecret(), { expiresIn: '7d' });
+  return { accessToken, refreshToken };
+}
+
+function verifyRefreshToken(token) {
+  try {
+    const decoded = jwt.verify(token, getJwtSecret());
+    return decoded.type === 'refresh' ? decoded : null;
+  } catch (err) {
+    return null;
+  }
 }
 
 function normalizeProfileOverrides(profileOverrides = {}) {
@@ -82,6 +93,31 @@ router.post('/login', async (req, res) => {
 router.post('/logout', (_, res) => {
   // Stateless JWTs: logout is handled client-side by discarding the token.
   return res.status(204).send();
+});
+
+router.post('/refresh', async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(400).json({ message: 'Refresh token is required' });
+  }
+
+  const decoded = verifyRefreshToken(refreshToken);
+  if (!decoded) {
+    return res.status(401).json({ message: 'Invalid refresh token' });
+  }
+
+  const user = await User.findById(decoded.userId);
+  if (!user) {
+    return res.status(401).json({ message: 'User not found' });
+  }
+
+  const tokens = createTokens(user.id);
+  return res.json({
+    token: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
+    user: toClientUser(user)
+  });
 });
 
 module.exports = router;

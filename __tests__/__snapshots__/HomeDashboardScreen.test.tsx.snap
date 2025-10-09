@@ -1,0 +1,1092 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HomeDashboardScreen rend les cartes principales et correspond au snapshot 1`] = `
+<RNCSafeAreaProvider
+  onInsetsChange={[Function]}
+  style={
+    [
+      {
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <RNCSafeAreaView
+    edges={
+      {
+        "bottom": "additive",
+        "left": "additive",
+        "right": "additive",
+        "top": "off",
+      }
+    }
+    style={
+      {
+        "backgroundColor": "#1C1A18",
+        "flex": 1,
+      }
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        {
+          "backgroundColor": "#1C1A18",
+          "flexGrow": 1,
+          "gap": 32,
+          "paddingBottom": 24,
+          "paddingHorizontal": 24,
+          "paddingTop": 24,
+        }
+      }
+      showsVerticalScrollIndicator={false}
+    >
+      <View>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+            }
+          }
+        >
+          <View>
+            <Text
+              style={
+                {
+                  "color": "#F5F2F0",
+                  "fontSize": 32,
+                  "fontWeight": "700",
+                  "letterSpacing": 0.35,
+                  "lineHeight": 40,
+                }
+              }
+            >
+              Bonjour 
+              Test User
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 16,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.5,
+                  "lineHeight": 24,
+                  "textTransform": "capitalize",
+                }
+              }
+            >
+              jeudi 9 octobre
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "borderRadius": 16,
+                  "elevation": 3,
+                  "justifyContent": "center",
+                  "minHeight": 48,
+                  "paddingHorizontal": 24,
+                  "paddingVertical": 16,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 2,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.15,
+                  "shadowRadius": 3,
+                },
+                {
+                  "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                  "borderColor": "transparent",
+                  "borderWidth": 1,
+                },
+                false,
+                false,
+                false,
+                undefined,
+              ]
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                  {
+                    "justifyContent": "flex-start",
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#F5F2F0",
+                      "fontSize": 16,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5,
+                      "lineHeight": 24,
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#C2633A",
+                    },
+                  ]
+                }
+              >
+                Profil
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "gap": 16,
+            }
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "overflow": "hidden",
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 2,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.15,
+                  "shadowRadius": 3,
+                },
+                {
+                  "padding": 16,
+                },
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "gap": 16,
+                  "padding": 24,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 12,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.4,
+                  "lineHeight": 16,
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Plan du jour
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#F5F2F0",
+                  "fontSize": 24,
+                  "fontWeight": "600",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 32,
+                }
+              }
+            >
+              Séance prévue
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 16,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.5,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Hydrate-toi bien
+            </Text>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                [
+                  {
+                    "borderRadius": 16,
+                    "elevation": 3,
+                    "justifyContent": "center",
+                    "minHeight": 48,
+                    "paddingHorizontal": 24,
+                    "paddingVertical": 16,
+                    "shadowColor": "#000",
+                    "shadowOffset": {
+                      "height": 2,
+                      "width": 0,
+                    },
+                    "shadowOpacity": 0.15,
+                    "shadowRadius": 3,
+                  },
+                  {
+                    "backgroundColor": "#C2633A",
+                  },
+                  false,
+                  false,
+                  false,
+                  undefined,
+                ]
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    },
+                    {
+                      "justifyContent": "flex-start",
+                    },
+                  ]
+                }
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                        "letterSpacing": 0.5,
+                        "lineHeight": 24,
+                      },
+                      {
+                        "textAlign": "center",
+                      },
+                      {
+                        "color": "#F5F2F0",
+                      },
+                    ]
+                  }
+                >
+                  Voir ma séance
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "overflow": "hidden",
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 2,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.15,
+                  "shadowRadius": 3,
+                },
+                {
+                  "padding": 16,
+                },
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "gap": 16,
+                  "padding": 24,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 12,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.4,
+                  "lineHeight": 16,
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Nutrition
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#F5F2F0",
+                  "fontSize": 24,
+                  "fontWeight": "600",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 32,
+                }
+              }
+            >
+              2200 kcal
+            </Text>
+            <View
+              style={
+                {
+                  "gap": 8,
+                }
+              }
+            >
+              <View
+                style={
+                  {
+                    "gap": 4,
+                  }
+                }
+              >
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                      "justifyContent": "space-between",
+                    }
+                  }
+                >
+                  <Text
+                    style={
+                      {
+                        "color": "#C4BDB9",
+                        "fontSize": 14,
+                        "fontWeight": "400",
+                        "letterSpacing": 0.25,
+                        "lineHeight": 20,
+                      }
+                    }
+                  >
+                    Protéines
+                  </Text>
+                  <Text
+                    style={
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 14,
+                        "fontWeight": "400",
+                        "letterSpacing": 0.25,
+                        "lineHeight": 20,
+                      }
+                    }
+                  >
+                    180
+                     g
+                  </Text>
+                </View>
+                <View
+                  style={
+                    {
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      [
+                        {
+                          "borderRadius": 4,
+                          "overflow": "hidden",
+                          "width": "100%",
+                        },
+                        {
+                          "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                          "height": 4,
+                        },
+                      ]
+                    }
+                  >
+                    <View
+                      collapsable={false}
+                      style={
+                        {
+                          "backgroundColor": "#C25E44",
+                          "borderRadius": 4,
+                          "height": 4,
+                          "width": "37.5%",
+                        }
+                      }
+                    />
+                  </View>
+                </View>
+              </View>
+              <View
+                style={
+                  {
+                    "gap": 4,
+                  }
+                }
+              >
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                      "justifyContent": "space-between",
+                    }
+                  }
+                >
+                  <Text
+                    style={
+                      {
+                        "color": "#C4BDB9",
+                        "fontSize": 14,
+                        "fontWeight": "400",
+                        "letterSpacing": 0.25,
+                        "lineHeight": 20,
+                      }
+                    }
+                  >
+                    Glucides
+                  </Text>
+                  <Text
+                    style={
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 14,
+                        "fontWeight": "400",
+                        "letterSpacing": 0.25,
+                        "lineHeight": 20,
+                      }
+                    }
+                  >
+                    230
+                     g
+                  </Text>
+                </View>
+                <View
+                  style={
+                    {
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      [
+                        {
+                          "borderRadius": 4,
+                          "overflow": "hidden",
+                          "width": "100%",
+                        },
+                        {
+                          "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                          "height": 4,
+                        },
+                      ]
+                    }
+                  >
+                    <View
+                      collapsable={false}
+                      style={
+                        {
+                          "backgroundColor": "#6B8E9F",
+                          "borderRadius": 4,
+                          "height": 4,
+                          "width": "47.91666666666667%",
+                        }
+                      }
+                    />
+                  </View>
+                </View>
+              </View>
+              <View
+                style={
+                  {
+                    "gap": 4,
+                  }
+                }
+              >
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                      "justifyContent": "space-between",
+                    }
+                  }
+                >
+                  <Text
+                    style={
+                      {
+                        "color": "#C4BDB9",
+                        "fontSize": 14,
+                        "fontWeight": "400",
+                        "letterSpacing": 0.25,
+                        "lineHeight": 20,
+                      }
+                    }
+                  >
+                    Lipides
+                  </Text>
+                  <Text
+                    style={
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 14,
+                        "fontWeight": "400",
+                        "letterSpacing": 0.25,
+                        "lineHeight": 20,
+                      }
+                    }
+                  >
+                    70
+                     g
+                  </Text>
+                </View>
+                <View
+                  style={
+                    {
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      [
+                        {
+                          "borderRadius": 4,
+                          "overflow": "hidden",
+                          "width": "100%",
+                        },
+                        {
+                          "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                          "height": 4,
+                        },
+                      ]
+                    }
+                  >
+                    <View
+                      collapsable={false}
+                      style={
+                        {
+                          "backgroundColor": "#DFA147",
+                          "borderRadius": 4,
+                          "height": 4,
+                          "width": "14.583333333333334%",
+                        }
+                      }
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                [
+                  {
+                    "borderRadius": 16,
+                    "elevation": 3,
+                    "justifyContent": "center",
+                    "minHeight": 48,
+                    "paddingHorizontal": 24,
+                    "paddingVertical": 16,
+                    "shadowColor": "#000",
+                    "shadowOffset": {
+                      "height": 2,
+                      "width": 0,
+                    },
+                    "shadowOpacity": 0.15,
+                    "shadowRadius": 3,
+                  },
+                  {
+                    "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                    "borderColor": "transparent",
+                    "borderWidth": 1,
+                  },
+                  false,
+                  false,
+                  false,
+                  undefined,
+                ]
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    },
+                    {
+                      "justifyContent": "flex-start",
+                    },
+                  ]
+                }
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                        "letterSpacing": 0.5,
+                        "lineHeight": 24,
+                      },
+                      {
+                        "textAlign": "center",
+                      },
+                      {
+                        "color": "#C2633A",
+                      },
+                    ]
+                  }
+                >
+                  Adapter mon plan
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "overflow": "hidden",
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 2,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.15,
+                  "shadowRadius": 3,
+                },
+                {
+                  "padding": 16,
+                },
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "gap": 16,
+                  "padding": 24,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 12,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.4,
+                  "lineHeight": 16,
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Suppléments
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#F5F2F0",
+                  "fontSize": 24,
+                  "fontWeight": "600",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 32,
+                }
+              }
+            >
+              0/0 à prendre
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 16,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.5,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Suivez votre checklist pour optimiser vos performances.
+            </Text>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                [
+                  {
+                    "borderRadius": 16,
+                    "elevation": 3,
+                    "justifyContent": "center",
+                    "minHeight": 48,
+                    "paddingHorizontal": 24,
+                    "paddingVertical": 16,
+                    "shadowColor": "#000",
+                    "shadowOffset": {
+                      "height": 2,
+                      "width": 0,
+                    },
+                    "shadowOpacity": 0.15,
+                    "shadowRadius": 3,
+                  },
+                  {
+                    "backgroundColor": "#251C17",
+                    "borderColor": "#3E2F26",
+                    "borderWidth": 1,
+                  },
+                  false,
+                  false,
+                  false,
+                  undefined,
+                ]
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    },
+                    {
+                      "justifyContent": "flex-start",
+                    },
+                  ]
+                }
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                        "letterSpacing": 0.5,
+                        "lineHeight": 24,
+                      },
+                      {
+                        "textAlign": "center",
+                      },
+                      {
+                        "color": "#F5F2F0",
+                      },
+                    ]
+                  }
+                >
+                  Ouvrir la checklist
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "overflow": "hidden",
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 2,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.15,
+                  "shadowRadius": 3,
+                },
+                {
+                  "padding": 16,
+                },
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "gap": 16,
+                  "padding": 24,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 12,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.4,
+                  "lineHeight": 16,
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Profil santé
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#F5F2F0",
+                  "fontSize": 24,
+                  "fontWeight": "600",
+                  "letterSpacing": 0.25,
+                  "lineHeight": 32,
+                }
+              }
+            >
+              Sèche
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 16,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.5,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Actualisez vos paramètres corporels pour garder un plan cohérent.
+            </Text>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                [
+                  {
+                    "borderRadius": 16,
+                    "elevation": 3,
+                    "justifyContent": "center",
+                    "minHeight": 48,
+                    "paddingHorizontal": 24,
+                    "paddingVertical": 16,
+                    "shadowColor": "#000",
+                    "shadowOffset": {
+                      "height": 2,
+                      "width": 0,
+                    },
+                    "shadowOpacity": 0.15,
+                    "shadowRadius": 3,
+                  },
+                  {
+                    "backgroundColor": "#C2633A",
+                  },
+                  false,
+                  false,
+                  false,
+                  undefined,
+                ]
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    },
+                    {
+                      "justifyContent": "flex-start",
+                    },
+                  ]
+                }
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                        "letterSpacing": 0.5,
+                        "lineHeight": 24,
+                      },
+                      {
+                        "textAlign": "center",
+                      },
+                      {
+                        "color": "#F5F2F0",
+                      },
+                    ]
+                  }
+                >
+                  Mettre à jour
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </RNCSafeAreaView>
+</RNCSafeAreaProvider>
+`;

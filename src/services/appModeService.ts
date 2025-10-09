@@ -2,7 +2,7 @@
  * Gestion simple du mode application (démo / production).
  * Le choix de l'utilisateur n'est plus persisté automatiquement pour éviter les bascules forcées.
  */
-import { AppConfig } from '../utils/config';
+import { AppConfig } from '@/utils/config';
 
 export type ModeChangeListener = (isDemoMode: boolean) => void;
 

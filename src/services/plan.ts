@@ -7,6 +7,7 @@ import { DailyPlan, User, NutritionPlan, SupplementPlan, Meal, Food, TrainingDay
 import { DemoPlanService } from './demoPlan';
 import { apiClient } from './apiClient';
 import { isDemoMode } from './appModeService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /** Valeurs de référence utilisées pour les calculs nutritionnels. */
 const NUTRITION_CONSTANTS = {
@@ -94,6 +95,71 @@ function normalizeSupplementTiming(timing: Supplement['timing'] | string | undef
  * - Recommandations intelligentes basées sur les données historiques
  */
 const useDemoMode = () => isDemoMode();
+
+interface ApiDailyPlan extends Omit<DailyPlan, 'date' | 'createdAt'> {
+  date: string;
+  createdAt: string;
+}
+
+export const PLAN_RANGE_CACHE_KEY = 'BERSERKER_PLAN_RANGE_CACHE';
+
+const parseApiPlan = (plan: ApiDailyPlan | DailyPlan): DailyPlan => ({
+  ...plan,
+  date: plan.date instanceof Date ? plan.date : new Date(plan.date),
+  createdAt: plan.createdAt instanceof Date ? plan.createdAt : new Date(plan.createdAt),
+});
+
+const ensureDateOrdering = (from: string, to: string): { start: Date; end: Date } => {
+  const start = new Date(from);
+  const end = new Date(to);
+  if (!Number.isFinite(start.valueOf()) || !Number.isFinite(end.valueOf())) {
+    const today = new Date();
+    const fallbackEnd = new Date(today);
+    fallbackEnd.setDate(today.getDate() + 6);
+    return { start: today, end: fallbackEnd };
+  }
+  return start <= end ? { start, end } : { start: end, end: start };
+};
+
+const buildLocalRangeMock = (userId: string, from: string, to: string): DailyPlan[] => {
+  const { start, end } = ensureDateOrdering(from, to);
+  const results: DailyPlan[] = [];
+  const cursor = new Date(start);
+
+  while (cursor <= end && results.length < 14) {
+    const iso = cursor.toISOString().split('T')[0];
+    const isTraining = cursor.getDay() % 2 === 0;
+    const calories = isTraining ? 2200 : 1900;
+    const protein = isTraining ? 180 : 150;
+    const carbs = isTraining ? 230 : 160;
+    const fat = isTraining ? 70 : 60;
+
+    results.push({
+      id: `local_${userId}_${iso}`,
+      userId,
+      date: new Date(cursor),
+      dayType: isTraining ? 'training' : 'rest',
+      nutritionPlan: {
+        totalCalories: calories,
+        macros: { protein, carbs, fat },
+        meals: [],
+      },
+      supplementPlan: {
+        morning: [],
+        preWorkout: [],
+        postWorkout: [],
+        evening: [],
+      },
+      dailyTip: 'Synchronisation nécessaire (TODO backend)',
+      completed: false,
+      createdAt: new Date(),
+    });
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return results;
+};
 
 export class PlanService {
   
@@ -188,6 +254,81 @@ export class PlanService {
     } catch (error: any) {
       console.error('Erreur lors de la récupération du plan du jour:', error);
       return null; // Retour gracieux en cas d'erreur
+    }
+  }
+
+  static async getPlansRange(userId: string, from: string, to: string): Promise<DailyPlan[]> {
+    if (!userId) {
+      return [];
+    }
+
+    try {
+      const apiPlans = await apiClient.get<ApiDailyPlan[] | DailyPlan[] | null>('/plans', {
+        query: { userId, from, to },
+      });
+
+      if (!apiPlans || !Array.isArray(apiPlans)) {
+        console.warn('[PlanService] getPlansRange – réponse vide (TODO backend)');
+        return buildLocalRangeMock(userId, from, to);
+      }
+
+      const normalized = apiPlans.map(parseApiPlan);
+      await AsyncStorage.setItem(
+        PLAN_RANGE_CACHE_KEY,
+        JSON.stringify({
+          userId,
+          from,
+          to,
+          updatedAt: new Date().toISOString(),
+          plans: normalized.map((plan) => ({
+            ...plan,
+            date: plan.date.toISOString(),
+            createdAt: plan.createdAt.toISOString(),
+          })),
+        })
+      );
+      return normalized;
+    } catch (error) {
+      console.warn('[PlanService] getPlansRange error', error);
+      const cached = await AsyncStorage.getItem(PLAN_RANGE_CACHE_KEY);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed?.plans) {
+            return parsed.plans.map(parseApiPlan);
+          }
+        } catch (parseError) {
+          console.warn('[PlanService] cache parse error', parseError);
+        }
+      }
+      return buildLocalRangeMock(userId, from, to);
+    }
+  }
+
+  static async updateDailyPlan(
+    planId: string,
+    updates: Partial<DailyPlan>,
+  ): Promise<DailyPlan> {
+    if (useDemoMode()) {
+      return DemoPlanService.updateDailyPlan(planId, updates);
+    }
+
+    try {
+      const response = await apiClient.patch(`/plans/${planId}`, updates);
+      const payload = response?.data?.plan ?? response?.data;
+
+      if (!payload) {
+        throw new Error('Réponse vide du serveur');
+      }
+
+      return parseApiPlan(payload as ApiDailyPlan);
+    } catch (error: any) {
+      console.error('[PlanService] updateDailyPlan error', error);
+      throw new Error(
+        error?.message
+          ? `Impossible de mettre à jour le plan quotidien: ${error.message}`
+          : 'Impossible de mettre à jour le plan quotidien',
+      );
     }
   }
 

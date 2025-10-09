@@ -1,0 +1,566 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProfileHealthScreen soumet les valeurs converties lors de la sauvegarde et correspond au snapshot 1`] = `
+<RNCSafeAreaView
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "off",
+    }
+  }
+  style={
+    {
+      "backgroundColor": "#1C1A18",
+      "flex": 1,
+    }
+  }
+>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "flexGrow": 1,
+        "gap": 16,
+        "padding": 24,
+      }
+    }
+  >
+    <View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#251C17",
+              "borderRadius": 12,
+              "overflow": "hidden",
+            },
+            {
+              "elevation": 3,
+              "shadowColor": "#000",
+              "shadowOffset": {
+                "height": 2,
+                "width": 0,
+              },
+              "shadowOpacity": 0.15,
+              "shadowRadius": 3,
+            },
+            {
+              "padding": 16,
+            },
+            {
+              "backgroundColor": "#251C17",
+              "borderRadius": 12,
+              "gap": 16,
+              "padding": 24,
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#F5F2F0",
+              "fontSize": 20,
+              "fontWeight": "600",
+              "letterSpacing": 0.15,
+              "lineHeight": 28,
+              "marginBottom": 16,
+            }
+          }
+        >
+          Mesures biométriques
+        </Text>
+        <View
+          style={
+            {
+              "marginBottom": 16,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#F5F2F0",
+                "fontSize": 15,
+                "fontWeight": "500",
+                "letterSpacing": -0.24,
+                "lineHeight": 20,
+                "marginBottom": 4,
+              }
+            }
+          >
+            Poids (kg)
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 8,
+                  "flexDirection": "row",
+                },
+                {
+                  "borderColor": "#3E2F26",
+                  "borderWidth": 1,
+                  "elevation": 1,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 1,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.12,
+                  "shadowRadius": 2,
+                },
+                {
+                  "minHeight": 44,
+                  "paddingHorizontal": 16,
+                },
+                false,
+                undefined,
+                undefined,
+              ]
+            }
+          >
+            <TextInput
+              blurOnSubmit={true}
+              keyboardType="decimal-pad"
+              onBlur={[Function]}
+              onChangeText={[Function]}
+              onFocus={[Function]}
+              placeholderTextColor="#A99280"
+              returnKeyType="done"
+              secureTextEntry={false}
+              style={
+                [
+                  {
+                    "color": "#F5F2F0",
+                    "flex": 1,
+                    "fontSize": 16,
+                    "fontWeight": "400",
+                    "letterSpacing": 0.5,
+                    "lineHeight": 24,
+                  },
+                ]
+              }
+              testID="profile-health-weight"
+              value="80"
+            />
+          </View>
+        </View>
+        <Text
+          style={
+            {
+              "color": "#C4BDB9",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "letterSpacing": 0.4,
+              "lineHeight": 16,
+              "marginBottom": 8,
+              "marginTop": -4,
+            }
+          }
+        >
+          Votre poids actuel en kilogrammes
+        </Text>
+        <View
+          style={
+            {
+              "marginBottom": 16,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#F5F2F0",
+                "fontSize": 15,
+                "fontWeight": "500",
+                "letterSpacing": -0.24,
+                "lineHeight": 20,
+                "marginBottom": 4,
+              }
+            }
+          >
+            Taille (cm)
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 8,
+                  "flexDirection": "row",
+                },
+                {
+                  "borderColor": "#3E2F26",
+                  "borderWidth": 1,
+                  "elevation": 1,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 1,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.12,
+                  "shadowRadius": 2,
+                },
+                {
+                  "minHeight": 44,
+                  "paddingHorizontal": 16,
+                },
+                false,
+                undefined,
+                undefined,
+              ]
+            }
+          >
+            <TextInput
+              blurOnSubmit={true}
+              keyboardType="decimal-pad"
+              onBlur={[Function]}
+              onChangeText={[Function]}
+              onFocus={[Function]}
+              placeholderTextColor="#A99280"
+              returnKeyType="done"
+              secureTextEntry={false}
+              style={
+                [
+                  {
+                    "color": "#F5F2F0",
+                    "flex": 1,
+                    "fontSize": 16,
+                    "fontWeight": "400",
+                    "letterSpacing": 0.5,
+                    "lineHeight": 24,
+                  },
+                ]
+              }
+              testID="profile-health-height"
+              value="182"
+            />
+          </View>
+        </View>
+        <Text
+          style={
+            {
+              "color": "#C4BDB9",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "letterSpacing": 0.4,
+              "lineHeight": 16,
+              "marginBottom": 8,
+              "marginTop": -4,
+            }
+          }
+        >
+          Votre taille en centimètres
+        </Text>
+        <View
+          style={
+            {
+              "marginBottom": 16,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#F5F2F0",
+                "fontSize": 15,
+                "fontWeight": "500",
+                "letterSpacing": -0.24,
+                "lineHeight": 20,
+                "marginBottom": 4,
+              }
+            }
+          >
+            Âge
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 8,
+                  "flexDirection": "row",
+                },
+                {
+                  "borderColor": "#3E2F26",
+                  "borderWidth": 1,
+                  "elevation": 1,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 1,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.12,
+                  "shadowRadius": 2,
+                },
+                {
+                  "minHeight": 44,
+                  "paddingHorizontal": 16,
+                },
+                false,
+                undefined,
+                undefined,
+              ]
+            }
+          >
+            <TextInput
+              blurOnSubmit={true}
+              keyboardType="number-pad"
+              onBlur={[Function]}
+              onChangeText={[Function]}
+              onFocus={[Function]}
+              placeholderTextColor="#A99280"
+              returnKeyType="done"
+              secureTextEntry={false}
+              style={
+                [
+                  {
+                    "color": "#F5F2F0",
+                    "flex": 1,
+                    "fontSize": 16,
+                    "fontWeight": "400",
+                    "letterSpacing": 0.5,
+                    "lineHeight": 24,
+                  },
+                ]
+              }
+              testID="profile-health-age"
+              value="31"
+            />
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 16,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#F5F2F0",
+                "fontSize": 15,
+                "fontWeight": "500",
+                "letterSpacing": -0.24,
+                "lineHeight": 20,
+                "marginBottom": 4,
+              }
+            }
+          >
+            Sommeil moyen (h)
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 8,
+                  "flexDirection": "row",
+                },
+                {
+                  "borderColor": "#3E2F26",
+                  "borderWidth": 1,
+                  "elevation": 1,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 1,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.12,
+                  "shadowRadius": 2,
+                },
+                {
+                  "minHeight": 44,
+                  "paddingHorizontal": 16,
+                },
+                false,
+                undefined,
+                undefined,
+              ]
+            }
+          >
+            <TextInput
+              blurOnSubmit={true}
+              keyboardType="decimal-pad"
+              onBlur={[Function]}
+              onChangeText={[Function]}
+              onFocus={[Function]}
+              placeholderTextColor="#A99280"
+              returnKeyType="done"
+              secureTextEntry={false}
+              style={
+                [
+                  {
+                    "color": "#F5F2F0",
+                    "flex": 1,
+                    "fontSize": 16,
+                    "fontWeight": "400",
+                    "letterSpacing": 0.5,
+                    "lineHeight": 24,
+                  },
+                ]
+              }
+              testID="profile-health-sleep"
+              value="7.5"
+            />
+          </View>
+        </View>
+        <Text
+          style={
+            {
+              "color": "#C4BDB9",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "letterSpacing": 0.4,
+              "lineHeight": 16,
+              "marginBottom": 8,
+              "marginTop": -4,
+            }
+          }
+        >
+          Nombre d'heures de sommeil par nuit en moyenne
+        </Text>
+        <View
+          style={
+            {
+              "marginBottom": 16,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#F5F2F0",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "letterSpacing": 0.5,
+                "lineHeight": 24,
+                "marginBottom": 8,
+              }
+            }
+          >
+            Niveau d'activité
+          </Text>
+          <Text
+            style={
+              {
+                "color": "#C4BDB9",
+                "fontSize": 12,
+                "fontWeight": "400",
+                "letterSpacing": 0.4,
+                "lineHeight": 16,
+                "marginBottom": 8,
+                "marginTop": -4,
+              }
+            }
+          >
+            Sélectionnez le niveau qui correspond le mieux à votre mode de vie actuel
+          </Text>
+        </View>
+        <View
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": false,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            [
+              {
+                "borderRadius": 16,
+                "elevation": 3,
+                "justifyContent": "center",
+                "minHeight": 48,
+                "paddingHorizontal": 24,
+                "paddingVertical": 16,
+                "shadowColor": "#000",
+                "shadowOffset": {
+                  "height": 2,
+                  "width": 0,
+                },
+                "shadowOpacity": 0.15,
+                "shadowRadius": 3,
+              },
+              {
+                "backgroundColor": "#C2633A",
+              },
+              false,
+              false,
+              false,
+              undefined,
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                },
+                {
+                  "justifyContent": "center",
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#F5F2F0",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "letterSpacing": 0.5,
+                    "lineHeight": 24,
+                  },
+                  {
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#F5F2F0",
+                  },
+                ]
+              }
+            >
+              Enregistrer
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</RNCSafeAreaView>
+`;

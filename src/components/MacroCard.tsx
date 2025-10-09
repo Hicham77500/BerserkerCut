@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 
   macroItem: {
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md, // Standardized spacing
   } as ViewStyle,
 
   macroHeader: {
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   macroColor: {
     width: 12,
     height: 12,
-    borderRadius: 6,
+    borderRadius: BorderRadius.xs, // Standardized border radius
     marginRight: Spacing.sm,
   } as ViewStyle,
 
@@ -146,12 +146,14 @@ const styles = StyleSheet.create({
     ...Typography.bodySmall,
     color: Colors.text,
     flex: 1,
+    letterSpacing: 0.25, // iOS typography enhancement
   } as TextStyle,
 
   macroValue: {
     ...Typography.bodySmall,
     color: Colors.text,
     fontWeight: '600',
+    letterSpacing: 0.25, // iOS typography enhancement
   } as TextStyle,
 
   macroPercentage: {
@@ -166,12 +168,12 @@ const styles = StyleSheet.create({
 
   macroBar: {
     height: 6,
-    borderRadius: 3,
+    borderRadius: BorderRadius.xs, // Standardized border radius
     overflow: 'hidden',
   } as ViewStyle,
 
   macroBarFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: BorderRadius.xs, // Standardized border radius
   } as ViewStyle,
 });

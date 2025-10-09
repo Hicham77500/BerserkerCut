@@ -5,6 +5,46 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DailyPlan, User } from '../types';
 
+const mergeDailyPlan = (plan: DailyPlan, updates: Partial<DailyPlan>): DailyPlan => {
+  const nextPlan: DailyPlan = {
+    ...plan,
+    ...updates,
+  };
+
+  if (updates.date) {
+    nextPlan.date = updates.date instanceof Date ? updates.date : new Date(updates.date);
+  }
+
+  if (updates.createdAt) {
+    nextPlan.createdAt =
+      updates.createdAt instanceof Date ? updates.createdAt : new Date(updates.createdAt);
+  }
+
+  if (updates.nutritionPlan) {
+    nextPlan.nutritionPlan = {
+      ...plan.nutritionPlan,
+      ...updates.nutritionPlan,
+      macros: updates.nutritionPlan.macros
+        ? {
+            ...plan.nutritionPlan.macros,
+            ...updates.nutritionPlan.macros,
+          }
+        : plan.nutritionPlan.macros,
+      meals:
+        updates.nutritionPlan.meals ?? plan.nutritionPlan.meals,
+    };
+  }
+
+  if (updates.supplementPlan) {
+    nextPlan.supplementPlan = {
+      ...plan.supplementPlan,
+      ...updates.supplementPlan,
+    };
+  }
+
+  return nextPlan;
+};
+
 export class DemoPlanService {
   /**
    * Générer un plan quotidien de démonstration
@@ -252,5 +292,25 @@ export class DemoPlanService {
       
       await AsyncStorage.setItem(`plan_${planId}`, JSON.stringify(plan));
     }
+  }
+
+  static async updateDailyPlan(
+    planId: string,
+    updates: Partial<DailyPlan>,
+  ): Promise<DailyPlan> {
+    const storageKey = `plan_${planId}`;
+    const storedPlan = await AsyncStorage.getItem(storageKey);
+    if (!storedPlan) {
+      throw new Error(`[DemoPlanService] Plan introuvable (${planId})`);
+    }
+
+    const parsedPlan: DailyPlan = JSON.parse(storedPlan);
+    parsedPlan.date = new Date(parsedPlan.date);
+    parsedPlan.createdAt = new Date(parsedPlan.createdAt);
+
+    const mergedPlan = mergeDailyPlan(parsedPlan, updates);
+
+    await AsyncStorage.setItem(storageKey, JSON.stringify(mergedPlan));
+    return mergedPlan;
   }
 }

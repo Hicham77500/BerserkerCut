@@ -370,6 +370,16 @@ const mapWeeklyScheduleToTrainingDays = (
   );
 
   const defaultSlot = selectedSlots[0] ?? 'evening';
+  const mapSlotToStartTime = (slot: 'morning' | 'afternoon' | 'evening'): string => {
+    switch (slot) {
+      case 'morning':
+        return '07:00';
+      case 'afternoon':
+        return '13:00';
+      default:
+        return '18:30';
+    }
+  };
 
   return (Object.entries(schedule) as Array<[keyof WeeklyTrainingSchedule, boolean]>)
     .filter(([, isSelected]) => isSelected)
@@ -378,6 +388,7 @@ const mapWeeklyScheduleToTrainingDays = (
       type: 'mixed',
       timeSlot: defaultSlot,
       duration: 60,
+      startTime: mapSlotToStartTime(defaultSlot),
     }));
 };
 
