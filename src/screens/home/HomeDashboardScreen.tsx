@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
 import { usePlan } from '@/hooks/usePlan';
 import { useThemeMode } from '@/hooks/useThemeMode';
@@ -17,7 +17,7 @@ import { Typography, Spacing, ThemePalette } from '@/utils/theme';
 export const HomeDashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
-  const { currentPlan, loading, supplementProgress } = usePlan();
+  const { currentPlan, loading, supplementProgress, generateDailyPlan } = usePlan();
   const name = user?.profile?.name?.trim() || user?.email?.split('@')[0] || 'Athlète';
   const today = new Date();
   const formattedDate = today.toLocaleDateString('fr-FR', {
@@ -27,6 +27,14 @@ export const HomeDashboardScreen: React.FC = () => {
   });
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  
+  // Recharger le plan et le statut des suppléments quand l'écran devient actif
+  useFocusEffect(
+    React.useCallback(() => {
+      // Recharger le plan quotidien pour mettre à jour le compteur de suppléments
+      generateDailyPlan();
+    }, [generateDailyPlan])
+  );
 
   const caloriesTarget = currentPlan?.nutritionPlan.totalCalories
     ? `${currentPlan.nutritionPlan.totalCalories} kcal`

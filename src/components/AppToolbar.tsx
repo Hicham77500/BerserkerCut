@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ModeBadge } from '@/components/ModeBadge';
 import { useThemeMode } from '@/hooks/useThemeMode';
@@ -7,6 +7,12 @@ import { Spacing, Typography, BorderRadius } from '@/utils/theme';
 
 export const AppToolbar: React.FC = () => {
   const { colors } = useThemeMode();
+
+  const handleOpenDrawer = useCallback(() => {
+    if (typeof global !== 'undefined' && global.navigation?.openDrawer) {
+      global.navigation.openDrawer();
+    }
+  }, []);
 
   return (
     <SafeAreaView
@@ -22,6 +28,13 @@ export const AppToolbar: React.FC = () => {
           },
         ]}
       >
+        <TouchableOpacity 
+          onPress={handleOpenDrawer}
+          style={styles.menuButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={[styles.menuIcon, { color: colors.text }]}>☰</Text>
+        </TouchableOpacity>
         <View style={styles.leftGroup}>
           <ModeBadge style={styles.badge} />
           <Text style={[styles.brand, { color: colors.text }]}>BerserkerCut</Text>
@@ -48,6 +61,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
+    flex: 1,
+    justifyContent: 'center',
   },
   brand: {
     ...Typography.h3,
@@ -56,8 +71,17 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
   },
   placeholder: {
-    width: 1,
-    height: 1,
+    width: 24,
+    height: 24,
+  },
+  menuButton: {
+    padding: Spacing.xs,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuIcon: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
 

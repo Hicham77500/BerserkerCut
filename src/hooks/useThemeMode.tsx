@@ -1,5 +1,10 @@
 import React, { createContext, useContext } from 'react';
-import { DarkNavigationTheme, ThemePalette, Colors, ThemeMode } from '@/utils/theme';
+import { DarkNavigationTheme, ThemePalette, Colors, ThemeMode, DarkColors } from '@/utils/theme';
+
+/**
+ * Hook ThemeMode - Mode sombre exclusivement
+ * Configuration du thème uniforme pour toute l'application
+ */
 
 interface ThemeModeContextValue {
   mode: ThemeMode;
@@ -9,10 +14,11 @@ interface ThemeModeContextValue {
   ready: boolean;
 }
 
+// Valeur par défaut - Mode sombre uniquement
 const DEFAULT_VALUE: ThemeModeContextValue = {
   mode: 'dark',
   isDark: true,
-  colors: Colors,
+  colors: DarkColors,
   navigationTheme: DarkNavigationTheme,
   ready: true,
 };
