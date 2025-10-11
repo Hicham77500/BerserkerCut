@@ -78,7 +78,7 @@ exports[`HomeDashboardScreen rend les cartes principales et correspond au snapsh
                 }
               }
             >
-              jeudi 9 octobre
+              mercredi 9 octobre
             </Text>
           </View>
           <View
@@ -346,6 +346,102 @@ exports[`HomeDashboardScreen rend les cartes principales et correspond au snapsh
                   }
                 >
                   Voir ma séance
+                </Text>
+              </View>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                [
+                  {
+                    "borderRadius": 16,
+                    "elevation": 3,
+                    "justifyContent": "center",
+                    "minHeight": 48,
+                    "paddingHorizontal": 24,
+                    "paddingVertical": 16,
+                    "shadowColor": "#000",
+                    "shadowOffset": {
+                      "height": 2,
+                      "width": 0,
+                    },
+                    "shadowOpacity": 0.15,
+                    "shadowRadius": 3,
+                  },
+                  {
+                    "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                    "borderColor": "transparent",
+                    "borderWidth": 1,
+                  },
+                  false,
+                  false,
+                  false,
+                  undefined,
+                ]
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    },
+                    {
+                      "justifyContent": "flex-start",
+                    },
+                  ]
+                }
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "color": "#F5F2F0",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                        "letterSpacing": 0.5,
+                        "lineHeight": 24,
+                      },
+                      {
+                        "textAlign": "center",
+                      },
+                      {
+                        "color": "#C2633A",
+                      },
+                    ]
+                  }
+                >
+                  Voir l'agenda
                 </Text>
               </View>
             </View>
@@ -1081,6 +1177,464 @@ exports[`HomeDashboardScreen rend les cartes principales et correspond au snapsh
                 >
                   Mettre à jour
                 </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "overflow": "hidden",
+                },
+                {
+                  "elevation": 3,
+                  "shadowColor": "#000",
+                  "shadowOffset": {
+                    "height": 2,
+                    "width": 0,
+                  },
+                  "shadowOpacity": 0.15,
+                  "shadowRadius": 3,
+                },
+                {
+                  "padding": 16,
+                },
+                {
+                  "backgroundColor": "#251C17",
+                  "borderRadius": 12,
+                  "gap": 16,
+                  "padding": 24,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 12,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.4,
+                  "lineHeight": 16,
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Rappels intelligents
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#C4BDB9",
+                  "fontSize": 16,
+                  "fontWeight": "400",
+                  "letterSpacing": 0.5,
+                  "lineHeight": 24,
+                }
+              }
+            >
+              Programme des notifications iOS pour garder le focus sur ta nutrition et tes suppléments.
+            </Text>
+            <View
+              style={
+                {
+                  "gap": 8,
+                }
+              }
+            >
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": false,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  [
+                    {
+                      "borderRadius": 16,
+                      "elevation": 3,
+                      "justifyContent": "center",
+                      "minHeight": 48,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 16,
+                      "shadowColor": "#000",
+                      "shadowOffset": {
+                        "height": 2,
+                        "width": 0,
+                      },
+                      "shadowOpacity": 0.15,
+                      "shadowRadius": 3,
+                    },
+                    {
+                      "backgroundColor": "#251C17",
+                      "borderColor": "#3E2F26",
+                      "borderWidth": 1,
+                    },
+                    false,
+                    false,
+                    false,
+                    undefined,
+                  ]
+                }
+              >
+                <View
+                  style={
+                    [
+                      {
+                        "alignItems": "center",
+                        "flexDirection": "row",
+                      },
+                      {
+                        "justifyContent": "flex-start",
+                      },
+                    ]
+                  }
+                >
+                  <Text
+                    style={
+                      [
+                        {
+                          "color": "#F5F2F0",
+                          "fontSize": 16,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5,
+                          "lineHeight": 24,
+                        },
+                        {
+                          "textAlign": "center",
+                        },
+                        {
+                          "color": "#F5F2F0",
+                        },
+                      ]
+                    }
+                  >
+                    Rappel matin 7h30
+                  </Text>
+                </View>
+              </View>
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": false,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  [
+                    {
+                      "borderRadius": 16,
+                      "elevation": 3,
+                      "justifyContent": "center",
+                      "minHeight": 48,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 16,
+                      "shadowColor": "#000",
+                      "shadowOffset": {
+                        "height": 2,
+                        "width": 0,
+                      },
+                      "shadowOpacity": 0.15,
+                      "shadowRadius": 3,
+                    },
+                    {
+                      "backgroundColor": "#251C17",
+                      "borderColor": "#3E2F26",
+                      "borderWidth": 1,
+                    },
+                    false,
+                    false,
+                    false,
+                    undefined,
+                  ]
+                }
+              >
+                <View
+                  style={
+                    [
+                      {
+                        "alignItems": "center",
+                        "flexDirection": "row",
+                      },
+                      {
+                        "justifyContent": "flex-start",
+                      },
+                    ]
+                  }
+                >
+                  <Text
+                    style={
+                      [
+                        {
+                          "color": "#F5F2F0",
+                          "fontSize": 16,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5,
+                          "lineHeight": 24,
+                        },
+                        {
+                          "textAlign": "center",
+                        },
+                        {
+                          "color": "#F5F2F0",
+                        },
+                      ]
+                    }
+                  >
+                    Rappel soir 21h
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View
+              style={
+                {
+                  "gap": 8,
+                }
+              }
+            >
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": false,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  [
+                    {
+                      "borderRadius": 16,
+                      "elevation": 3,
+                      "justifyContent": "center",
+                      "minHeight": 48,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 16,
+                      "shadowColor": "#000",
+                      "shadowOffset": {
+                        "height": 2,
+                        "width": 0,
+                      },
+                      "shadowOpacity": 0.15,
+                      "shadowRadius": 3,
+                    },
+                    {
+                      "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                      "borderColor": "transparent",
+                      "borderWidth": 1,
+                    },
+                    false,
+                    false,
+                    false,
+                    undefined,
+                  ]
+                }
+              >
+                <View
+                  style={
+                    [
+                      {
+                        "alignItems": "center",
+                        "flexDirection": "row",
+                      },
+                      {
+                        "justifyContent": "flex-start",
+                      },
+                    ]
+                  }
+                >
+                  <Text
+                    style={
+                      [
+                        {
+                          "color": "#F5F2F0",
+                          "fontSize": 16,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5,
+                          "lineHeight": 24,
+                        },
+                        {
+                          "textAlign": "center",
+                        },
+                        {
+                          "color": "#C2633A",
+                        },
+                      ]
+                    }
+                  >
+                    Notification test (5s)
+                  </Text>
+                </View>
+              </View>
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": false,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  [
+                    {
+                      "borderRadius": 16,
+                      "elevation": 3,
+                      "justifyContent": "center",
+                      "minHeight": 48,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 16,
+                      "shadowColor": "#000",
+                      "shadowOffset": {
+                        "height": 2,
+                        "width": 0,
+                      },
+                      "shadowOpacity": 0.15,
+                      "shadowRadius": 3,
+                    },
+                    {
+                      "backgroundColor": "rgba(23, 18, 15, 0.4)",
+                      "borderColor": "transparent",
+                      "borderWidth": 1,
+                    },
+                    false,
+                    false,
+                    false,
+                    undefined,
+                  ]
+                }
+              >
+                <View
+                  style={
+                    [
+                      {
+                        "alignItems": "center",
+                        "flexDirection": "row",
+                      },
+                      {
+                        "justifyContent": "flex-start",
+                      },
+                    ]
+                  }
+                >
+                  <Text
+                    style={
+                      [
+                        {
+                          "color": "#F5F2F0",
+                          "fontSize": 16,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5,
+                          "lineHeight": 24,
+                        },
+                        {
+                          "textAlign": "center",
+                        },
+                        {
+                          "color": "#C2633A",
+                        },
+                      ]
+                    }
+                  >
+                    Réinitialiser les rappels
+                  </Text>
+                </View>
               </View>
             </View>
           </View>

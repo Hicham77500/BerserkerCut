@@ -1,7 +1,13 @@
+// Déclare les navigateurs de pile liés aux différentes sections de l'app.
+
+// React requis pour déclarer des composants fonctionnels.
 import React from 'react';
+// Stack Navigator et presets de transitions fournis par React Navigation.
 import { TransitionPresets, createStackNavigator } from '@react-navigation/stack';
+// Hook maison pour récupérer la palette de couleurs en fonction du thème.
 import { useThemeMode } from '@/hooks/useThemeMode';
 
+// Écrans rattachés à chaque pile (home, profil, nutrition, entraînement).
 import {
   HomeDashboardScreen,
   ProfileOverviewScreen,
@@ -14,9 +20,10 @@ import {
   NutritionScreen,
   NutritionCalendarScreen,
   TrainingScreen,
+  AgendaScreen,
 } from '@/screens';
 
-// Types pour les navigateurs de pile
+// Types pour les navigateurs de pile (définissent les routes autorisées et leurs params).
 export type ProfileStackParamList = {
   Profil: undefined;
   'Profil santé': undefined;
@@ -40,11 +47,16 @@ export type HomeStackParamList = {
   Home: undefined;
 };
 
-// Création des navigateurs
+export type AgendaStackParamList = {
+  Agenda: undefined;
+};
+
+// Création des navigateurs typés pour assurer la sécurité des routes.
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
 const NutritionStack = createStackNavigator<NutritionStackParamList>();
 const TrainingStack = createStackNavigator<TrainingStackParamList>();
 const HomeStack = createStackNavigator<HomeStackParamList>();
+const AgendaStack = createStackNavigator<AgendaStackParamList>();
 
 /**
  * Navigateur de pile pour l'écran d'accueil
@@ -138,5 +150,24 @@ export const TrainingStackNavigator: React.FC = () => {
     >
       <TrainingStack.Screen name="Entraînement" component={TrainingScreen} />
     </TrainingStack.Navigator>
+  );
+};
+
+export const AgendaStackNavigator: React.FC = () => {
+  const { colors } = useThemeMode();
+
+  return (
+    <AgendaStack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTintColor: colors.primary,
+        headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: { color: colors.text },
+        ...TransitionPresets.SlideFromRightIOS,
+        cardStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <AgendaStack.Screen name="Agenda" component={AgendaScreen} />
+    </AgendaStack.Navigator>
   );
 };

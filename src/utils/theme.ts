@@ -1,4 +1,4 @@
-import { DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
+import { DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationLightTheme } from '@react-navigation/native';
 
 /**
  * BerserkerCut Theme System
@@ -113,6 +113,49 @@ export const DarkColors: ThemePalette = {
 
 export const Colors: ThemePalette = { ...DarkColors };
 
+// Light Theme Palette (iOS surfaces)
+export const LightColors: ThemePalette = {
+  primary: '#C2633A',
+  primaryDark: '#9A4C2C',
+  primaryLight: '#E08B62',
+
+  secondary: '#EDE9E5',
+  secondaryDark: '#D4CFCB',
+  secondaryLight: '#F8F5F2',
+
+  accent: '#807C5A',
+  accentDark: '#5D5942',
+  accentLight: '#A5A07A',
+
+  background: '#FBF8F5',
+  backgroundDark: '#F1ECE7',
+  secondaryBackground: '#F5F1ED',
+  surface: '#FFFFFF',
+  surfaceDark: '#F1ECE7',
+
+  text: '#2C2622',
+  textLight: '#6B5F58',
+  textDark: '#110C0A',
+  textMuted: '#8A7C71',
+  label: '#2C2622',
+  secondaryLabel: '#6B5F58',
+
+  success: '#4F8756',
+  warning: '#D48A28',
+  error: '#B24A32',
+  info: '#3F6D82',
+
+  protein: '#B24A32',
+  carbs: '#3F6D82',
+  fat: '#D48A28',
+  calories: '#7456A4',
+
+  overlay: 'rgba(17, 12, 10, 0.05)',
+  overlayLight: 'rgba(17, 12, 10, 0.03)',
+  border: '#E1D9D2',
+  borderDark: '#C8BEB5',
+};
+
 // Typography system with consistent scaling
 const createTypography = (palette: ThemePalette) => ({
   // Headings
@@ -198,6 +241,11 @@ export const DarkTheme = {
   mode: 'dark' as ThemeMode,
 };
 
+export const LightTheme = {
+  colors: LightColors,
+  mode: 'light' as ThemeMode,
+};
+
 export const DarkNavigationTheme = {
   ...NavigationDarkTheme,
   colors: {
@@ -208,6 +256,19 @@ export const DarkNavigationTheme = {
     text: DarkColors.text,
     border: DarkColors.border,
     notification: DarkColors.accent,
+  },
+};
+
+export const LightNavigationTheme = {
+  ...NavigationLightTheme,
+  colors: {
+    ...NavigationLightTheme.colors,
+    primary: LightColors.primary,
+    background: LightColors.background,
+    card: LightColors.surface,
+    text: LightColors.text,
+    border: LightColors.border,
+    notification: LightColors.accent,
   },
 };
 

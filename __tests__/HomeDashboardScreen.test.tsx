@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HomeDashboardScreen } from '../src/screens/home/HomeDashboardScreen';
 import { ThemeModeProvider } from '../src/hooks/useThemeMode';
@@ -59,7 +59,15 @@ const mockSafeAreaMetrics = {
 };
 
 describe('HomeDashboardScreen', () => {
-  it('rend les cartes principales et correspond au snapshot', () => {
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-10-09T07:30:00.000Z'));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  it('rend les cartes principales et correspond au snapshot', async () => {
     const { getByText, toJSON } = render(
       <ThemeModeProvider>
         <SafeAreaProvider initialMetrics={mockSafeAreaMetrics}>
@@ -68,10 +76,12 @@ describe('HomeDashboardScreen', () => {
       </ThemeModeProvider>
     );
 
-  expect(getByText('Plan du jour')).toBeTruthy();
-  expect(getByText('Nutrition')).toBeTruthy();
-  expect(getByText('Suppléments')).toBeTruthy();
-  expect(getByText('Profil santé')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('Plan du jour')).toBeTruthy();
+      expect(getByText('Nutrition')).toBeTruthy();
+      expect(getByText('Suppléments')).toBeTruthy();
+      expect(getByText('Profil santé')).toBeTruthy();
+    });
 
     expect(toJSON()).toMatchSnapshot();
   });

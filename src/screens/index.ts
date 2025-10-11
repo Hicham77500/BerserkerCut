@@ -16,3 +16,4 @@ export { NutritionScreen } from './nutrition/NutritionScreen';
 export { NutritionCalendarScreen } from './nutrition/NutritionCalendarScreen';
 export { TrainingScreen } from './training/TrainingScreen';
 export { SupplementsScreen } from './supplements/SupplementsScreen';
+export { AgendaScreen } from './agenda/AgendaScreen';

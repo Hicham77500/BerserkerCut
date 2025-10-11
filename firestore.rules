@@ -1,18 +1,23 @@
+// Spécifie la version du langage de règles Firestore utilisée par l'application.
 rules_version = '2';
+
+// Définition du service ciblé : base de données Cloud Firestore.
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only access their own data
+    // Règle principale pour la collection users :
+    // - lecture/écriture uniquement pour l'utilisateur authentifié correspondant à son UID.
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Daily plans can only be accessed by their owner
+    // Règle pour la collection dailyPlans :
+    // - accès restreint au propriétaire du plan (UID stocké dans le document).
     match /dailyPlans/{planId} {
       allow read, write: if request.auth != null && 
         request.auth.uid == resource.data.userId;
     }
     
-    // Prevent access to all other documents
+    // Catch-all final : toutes les autres collections/documents sont interdits.
     match /{document=**} {
       allow read, write: if false;
     }

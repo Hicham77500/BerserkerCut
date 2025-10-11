@@ -1,8 +1,9 @@
+// Importe la fonction Expo qui enregistre le composant racine auprès de React Native.
 import { registerRootComponent } from 'expo';
 
+// Importe le composant principal de l'application.
 import App from './App';
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
+// Enregistre le composant App pour qu'il soit utilisé comme point d'entrée.
+// Cette fonction encapsule AppRegistry.registerComponent et gère les spécificités Expo.
 registerRootComponent(App);
