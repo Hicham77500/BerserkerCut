@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/models/User.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const { Schema, model } = require('mongoose');
 const { defaultUserProfile } = require('../utils/defaults');
 

@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/profile/ProfileGoalsScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useState } from 'react';
 import { ScrollView, Text, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,12 +18,24 @@ const OBJECTIVE_OPTIONS = [
 
 type ObjectiveKey = (typeof OBJECTIVE_OPTIONS)[number]['key'];
 
+/**
+ * Composant: ProfileGoalsScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfileGoalsScreen: React.FC = () => {
   const { user, updateProfile } = useAuth();
+/**
+ * Fonction: currentObjective
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const currentObjective = (user?.profile?.objective ?? 'cutting') as ObjectiveKey;
   const [objective, setObjective] = useState<ObjectiveKey>(currentObjective);
   const [loading, setLoading] = useState(false);
 
+/**
+ * Fonction: handleSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSave = async () => {
     setLoading(true);
     try {

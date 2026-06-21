@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/IOSButton.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React from 'react';
 import {
   ActivityIndicator,
@@ -27,6 +32,10 @@ interface IOSButtonProps extends PressableProps {
   align?: 'center' | 'leading';
 }
 
+/**
+ * Composant: IOSButton
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const IOSButton: React.FC<IOSButtonProps> = ({
   label,
   onPress,
@@ -83,6 +92,10 @@ export const IOSButton: React.FC<IOSButtonProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     base: {

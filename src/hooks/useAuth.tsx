@@ -1,3 +1,8 @@
+/**
+ * Module: src/hooks/useAuth.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, {
   createContext,
   useContext,
@@ -25,6 +30,10 @@ interface AuthProviderProps {
 
 let demoAuthInitialized = false;
 
+/**
+ * Composant: AuthProvider
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +44,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     let isMounted = true;
     let unsubscribeAuth: (() => void) | undefined;
 
+/**
+ * Fonction: prepareAuth
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
     const prepareAuth = async () => {
       try {
         await initializeAppMode();
@@ -95,6 +108,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
+/**
+ * Fonction: login
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const login = async (email: string, password: string): Promise<void> => {
     try {
       const userData = await AuthService.login(email, password);
@@ -105,6 +122,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+/**
+ * Fonction: register
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const register = async (email: string, password: string): Promise<void> => {
     try {
       const userData = await AuthService.register(email, password);
@@ -115,6 +136,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+/**
+ * Fonction: logout
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const logout = async (): Promise<void> => {
     try {
       await AuthService.logout();
@@ -125,6 +150,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+/**
+ * Fonction: deleteAccount
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
+  const deleteAccount = async (): Promise<void> => {
+    if (!user) {
+      throw new Error('Utilisateur non connecté');
+    }
+
+    try {
+      await AuthService.deleteAccount(user.id);
+      setUser(null);
+    } catch (error) {
+      console.error('Erreur lors de la suppression du compte:', error);
+      throw error;
+    }
+  };
+
+/**
+ * Fonction: updateProfile
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const updateProfile = async (profileUpdates: Partial<UserProfile>): Promise<void> => {
     if (!user) throw new Error('Utilisateur non connecté');
 
@@ -143,9 +190,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
+    deleteAccount,
     updateProfile,
   };
 
+/**
+ * Fonction: handlePrivacyConsent
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handlePrivacyConsent = async (cloudConsent: boolean) => {
     await setSecureItem(CLOUD_CONSENT_STORAGE_KEY, cloudConsent ? 'true' : 'false');
     await setSecureItem(PRIVACY_CONSENT_SHOWN, 'true');
@@ -166,6 +218,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
+/**
+ * Fonction: useAuth
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {

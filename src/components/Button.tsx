@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/Button.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React from 'react';
 import {
   TouchableOpacity,
@@ -28,6 +33,10 @@ interface ButtonProps extends TouchableOpacityProps {
   backgroundColor?: string;
 }
 
+/**
+ * Composant: Button
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const Button: React.FC<ButtonProps> = ({
   title,
   variant = 'primary',
@@ -101,15 +110,19 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     base: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: BorderRadius.xl,
+      borderRadius: BorderRadius.sm,
       overflow: 'hidden',
-      ...(Platform.OS === 'ios' ? Shadows.md : {}),
+      ...(Platform.OS === 'ios' ? Shadows.xs : {}),
     } as ViewStyle,
 
     contentContainer: {
@@ -138,6 +151,8 @@ const createStyles = (colors: ThemePalette) =>
 
     primary: {
       backgroundColor: colors.primary,
+      borderWidth: 1,
+      borderColor: colors.primaryDark,
       ...(Platform.OS === 'android' ? { elevation: 2 } : {}),
     } as ViewStyle,
 
@@ -145,12 +160,12 @@ const createStyles = (colors: ThemePalette) =>
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
-      ...(Platform.OS === 'android' ? { elevation: 1 } : {}),
+      ...(Platform.OS === 'android' ? { elevation: 0 } : {}),
     } as ViewStyle,
 
     outline: {
       backgroundColor: Platform.OS === 'android' ? colors.overlay : 'transparent',
-      borderWidth: 2,
+      borderWidth: 1,
       borderColor: colors.primary,
       ...(Platform.OS === 'android'
         ? {
@@ -168,7 +183,9 @@ const createStyles = (colors: ThemePalette) =>
     } as ViewStyle,
 
     danger: {
-      backgroundColor: colors.error,
+      backgroundColor: colors.primaryDark,
+      borderWidth: 1,
+      borderColor: colors.primary,
       ...(Platform.OS === 'android' ? { elevation: 2 } : {}),
     } as ViewStyle,
 

@@ -1,3 +1,8 @@
+/**
+ * Module: src/services/photo.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 
@@ -16,6 +21,10 @@ export interface PhotoUploadPayload {
 
 const ALBUM_NAME = 'BerserkerCut';
 
+/**
+ * Fonction: ensurePermissions
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const ensurePermissions = async (): Promise<boolean> => {
   try {
     const current = await MediaLibrary.getPermissionsAsync();
@@ -38,6 +47,10 @@ const ensurePermissions = async (): Promise<boolean> => {
   }
 };
 
+/**
+ * Fonction: ensureAlbum
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const ensureAlbum = async (): Promise<MediaLibrary.Album | null> => {
   const hasPermission = await ensurePermissions();
   if (!hasPermission) {
@@ -56,12 +69,20 @@ const ensureAlbum = async (): Promise<MediaLibrary.Album | null> => {
   return null;
 };
 
+/**
+ * Fonction: getTimestampFromAsset
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getTimestampFromAsset = (asset: MediaLibrary.Asset): number => {
   const base = asset.modificationTime ?? asset.creationTime ?? Date.now();
   // Expo returns timestamps in milliseconds. Ensure the value stays in ms.
   return base > 10_000_000_000 ? base : Math.round(base * 1000);
 };
 
+/**
+ * Fonction: assetToRecord
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const assetToRecord = async (asset: MediaLibrary.Asset): Promise<PhotoRecord> => {
   try {
     const info = await MediaLibrary.getAssetInfoAsync(asset, {
@@ -83,6 +104,10 @@ const assetToRecord = async (asset: MediaLibrary.Asset): Promise<PhotoRecord> =>
   }
 };
 
+/**
+ * Fonction: createAlbumIfNeeded
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createAlbumIfNeeded = async (asset: MediaLibrary.Asset): Promise<MediaLibrary.Album | null> => {
   const hasPermission = await ensurePermissions();
   if (!hasPermission) {

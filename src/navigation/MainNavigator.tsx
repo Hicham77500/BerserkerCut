@@ -1,3 +1,8 @@
+/**
+ * Module: src/navigation/MainNavigator.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React from 'react';
 import { View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -34,12 +39,12 @@ const MainTabNavigator: React.FC = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: colors.primaryLight,
+          tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.textLight,
           tabBarStyle: {
             backgroundColor: colors.surface,
             borderTopWidth: 1,
-            borderTopColor: colors.border,
+            borderTopColor: colors.primary,
             paddingBottom: Math.max(insets.bottom, Spacing.sm),
             paddingTop: Spacing.sm,
             height: 64 + Math.max(insets.bottom, Spacing.sm) + Spacing.sm,
@@ -62,8 +67,10 @@ const MainTabNavigator: React.FC = () => {
                 height: 34,
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: 16,
-                backgroundColor: focused ? colors.secondaryLight : 'transparent',
+                borderRadius: 8,
+                backgroundColor: focused ? colors.surfaceDark : 'transparent',
+                borderWidth: focused ? 1 : 0,
+                borderColor: focused ? colors.border : 'transparent',
               }}
             >
               <Text
@@ -126,6 +133,10 @@ const MainTabNavigator: React.FC = () => {
   );
 };
 
+/**
+ * Composant: MainNavigator
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const MainNavigator: React.FC = () => {
   const { colors } = useThemeMode();
 

@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/NutritionGoalsModal.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -27,6 +32,10 @@ interface NutritionGoalsModalProps {
   isTrainingDay: boolean;
 }
 
+/**
+ * Composant: NutritionGoalsModal
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
   visible,
   onClose,
@@ -70,6 +79,10 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
     setFat('');
   }, [nutritionPlan, visible]);
   
+/**
+ * Fonction: validateMacros
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const validateMacros = () => {
     // Convert inputs to numbers
     const totalCals = Number(totalCalories);
@@ -97,6 +110,10 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
     
     // Check if the calculated calories are within 5% of the entered total calories
     const difference = Math.abs(calculatedCalories - totalCals);
+/**
+ * Fonction: percentageDifference
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
     const percentageDifference = (difference / totalCals) * 100;
     
     if (percentageDifference > 5) {
@@ -110,6 +127,10 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
     return true;
   };
   
+/**
+ * Fonction: updateMealDistribution
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const updateMealDistribution = (meals: Meal[], newTotalCalories: number, newMacros: { protein: number; carbs: number; fat: number }): Meal[] => {
     if (!meals || meals.length === 0) return [];
     
@@ -151,6 +172,10 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
     });
   };
   
+/**
+ * Fonction: handleSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSave = () => {
     if (!validateMacros()) return;
     if (!nutritionPlan) return;
@@ -342,6 +367,10 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (palette: ThemePalette) => 
   StyleSheet.create({
     keyboardWrapper: {

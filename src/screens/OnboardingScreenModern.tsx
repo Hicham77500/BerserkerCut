@@ -34,6 +34,10 @@ interface BasicInfo {
   objective: UserProfile['objective'];
 }
 
+/**
+ * Composant: OnboardingScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const OnboardingScreen: React.FC = () => {
   // États partagés entre les étapes
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
@@ -222,6 +226,10 @@ const Step1: React.FC<Step1Props> = ({ basicInfo, setBasicInfo, onNext }) => {
   const [gender, setGender] = useState<BasicInfo['gender']>(basicInfo.gender);
   const [objective, setObjective] = useState<BasicInfo['objective']>(basicInfo.objective);
 
+/**
+ * Fonction: handleSubmit
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSubmit = () => {
     if (!name) {
       Alert.alert('Erreur', 'Veuillez renseigner votre prénom.');
@@ -318,6 +326,10 @@ interface Step2Props extends StepProps {
 }
 
 const Step2: React.FC<Step2Props> = ({ healthData, setHealthData, onNext, onBack }) => {
+/**
+ * Fonction: handleComplete
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleComplete = (data: Partial<HealthProfile>) => {
     setHealthData({ ...healthData, ...data });
     onNext?.();
@@ -358,11 +370,19 @@ const mapWeeklyScheduleToTrainingDays = (
   schedule: WeeklyTrainingSchedule,
   preferredTimes: PreferredTrainingTime
 ): TrainingDay[] => {
+/**
+ * Fonction: selectedSlots
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const selectedSlots = (['morning', 'afternoon', 'evening'] as const).filter(
     (slot) => preferredTimes[slot]
   );
 
   const defaultSlot = selectedSlots[0] ?? 'evening';
+/**
+ * Fonction: mapSlotToStartTime
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const mapSlotToStartTime = (slot: 'morning' | 'afternoon' | 'evening'): string => {
     switch (slot) {
       case 'morning':
@@ -386,7 +406,15 @@ const mapWeeklyScheduleToTrainingDays = (
 };
 
 const Step3: React.FC<Step3Props> = ({ onNext, onBack, userId, setTrainingProfile }) => {
+/**
+ * Fonction: handleComplete
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleComplete = (data: ExtendedTrainingProfile) => {
+/**
+ * Fonction: preferredTimeSlots
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
     const preferredTimeSlots = (['morning', 'afternoon', 'evening'] as const).filter(
       (slot) => data.preferredTimes[slot]
     );
@@ -452,6 +480,10 @@ const Step4: React.FC<Step4Props> = ({
 
   const supplements = supplementData.available ?? [];
 
+/**
+ * Fonction: resetForm
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const resetForm = () => {
     setNewSupplement({
       name: '',
@@ -461,6 +493,10 @@ const Step4: React.FC<Step4Props> = ({
     });
   };
 
+/**
+ * Fonction: handleAddSupplement
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleAddSupplement = () => {
     const trimmedName = newSupplement.name.trim();
     const trimmedQuantity = newSupplement.quantity.trim();
@@ -504,6 +540,10 @@ const Step4: React.FC<Step4Props> = ({
     Keyboard.dismiss();
   };
 
+/**
+ * Fonction: handleRemoveSupplement
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleRemoveSupplement = (id: string) => {
     const updated = supplements.filter((supp) => supp.id !== id);
     setSupplementData({
@@ -512,6 +552,10 @@ const Step4: React.FC<Step4Props> = ({
     });
   };
 
+/**
+ * Fonction: handleFinish
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleFinish = () => {
     onComplete?.();
   };

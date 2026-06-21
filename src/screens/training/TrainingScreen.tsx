@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/training/TrainingScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useMemo } from 'react';
 import { ScrollView, Text, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,6 +29,10 @@ const SESSION_TYPE_LABELS: Record<string, string> = {
   active_recovery: 'Repos actif',
 };
 
+/**
+ * Fonction: formatDuration
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const formatDuration = (duration?: number) => {
   if (!duration) {
     return 'À planifier';
@@ -31,6 +40,10 @@ const formatDuration = (duration?: number) => {
   return `${duration} min`;
 };
 
+/**
+ * Fonction: formatStartTime
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const formatStartTime = (training?: TrainingDay | null) => {
   if (!training) {
     return 'À planifier';
@@ -47,6 +60,10 @@ const formatStartTime = (training?: TrainingDay | null) => {
   return 'À planifier';
 };
 
+/**
+ * Composant: TrainingScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const TrainingScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { currentPlan, weeklySchedule } = usePlan();
@@ -168,6 +185,10 @@ export const TrainingScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   safeArea: {
     flex: 1,

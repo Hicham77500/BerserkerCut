@@ -17,6 +17,10 @@ interface MacroCardProps {
   showPercentages?: boolean;
 }
 
+/**
+ * Composant: MacroCard
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const MacroCard: React.FC<MacroCardProps> = ({
   protein,
   carbs,
@@ -32,6 +36,10 @@ export const MacroCard: React.FC<MacroCardProps> = ({
   const carbsPercentage = totalMacros > 0 ? (carbs / totalMacros) * 100 : 0;
   const fatPercentage = totalMacros > 0 ? (fat / totalMacros) * 100 : 0;
 
+/**
+ * Fonction: MacroBar
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const MacroBar = ({ 
     value, 
     total, 
@@ -104,6 +112,10 @@ export const MacroCard: React.FC<MacroCardProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   header: {
     flexDirection: 'row',

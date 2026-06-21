@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/routes/auth.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -8,6 +13,10 @@ const { toClientUser, normalizeProfileInput } = require('../utils/users');
 
 const router = express.Router();
 
+/**
+ * Fonction: getJwtSecret
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -16,12 +25,20 @@ function getJwtSecret() {
   return secret;
 }
 
+/**
+ * Fonction: createTokens
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function createTokens(userId) {
   const accessToken = jwt.sign({ userId }, getJwtSecret(), { expiresIn: '1h' });
   const refreshToken = jwt.sign({ userId, type: 'refresh' }, getJwtSecret(), { expiresIn: '7d' });
   return { accessToken, refreshToken };
 }
 
+/**
+ * Fonction: verifyRefreshToken
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function verifyRefreshToken(token) {
   try {
     const decoded = jwt.verify(token, getJwtSecret());
@@ -31,6 +48,10 @@ function verifyRefreshToken(token) {
   }
 }
 
+/**
+ * Fonction: normalizeProfileOverrides
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeProfileOverrides(profileOverrides = {}) {
   const base = defaultUserProfile();
   const safeOverrides = normalizeProfileInput(profileOverrides, { fillDefaults: true }) || {};

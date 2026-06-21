@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/nutrition/NutritionScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
@@ -29,6 +34,10 @@ import { CLOUD_CONSENT_STORAGE_KEY } from '@/constants/storageKeys';
 import PhotoService from '@/services/photo';
 import photoStorage, { MealPhoto, StoredPhoto } from '@/services/photoStorage';
 
+/**
+ * Fonction: buildMacroSummary
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const buildMacroSummary = (plan: DailyPlan | null, palette: typeof Colors) => {
   if (!plan) {
     return null;
@@ -40,6 +49,10 @@ const buildMacroSummary = (plan: DailyPlan | null, palette: typeof Colors) => {
   ];
 };
 
+/**
+ * Fonction: recalculateTotalsFromMeals
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const recalculateTotalsFromMeals = (meals: Meal[]) => {
   const aggregate = meals.reduce(
     (acc, meal) => {
@@ -72,6 +85,10 @@ const SUPPLEMENT_SLOT_LABELS: Record<string, string> = {
 
 const SUPPLEMENT_SLOT_ORDER = ['morning', 'preWorkout', 'postWorkout', 'evening', 'with_meals'];
 
+/**
+ * Fonction: getSupplementUnitLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getSupplementUnitLabel = (unit?: SupplementFormType): string => {
   if (!unit) return '';
   switch (unit) {
@@ -86,6 +103,10 @@ const getSupplementUnitLabel = (unit?: SupplementFormType): string => {
   }
 };
 
+/**
+ * Fonction: formatSupplementIntakeDescription
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const formatSupplementIntakeDescription = (intake: SupplementIntake): string => {
   if (intake.dosage) {
     return intake.dosage;
@@ -96,6 +117,10 @@ const formatSupplementIntakeDescription = (intake: SupplementIntake): string => 
   return '';
 };
 
+/**
+ * Composant: NutritionScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const NutritionScreen: React.FC = () => {
   const { colors, navigationTheme } = useThemeMode();
   const navigation = useNavigation<any>();
@@ -231,16 +256,28 @@ export const NutritionScreen: React.FC = () => {
 
   const macroSummary = buildMacroSummary(currentPlan ?? null, colors);
 
+/**
+ * Fonction: handleEditMeal
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleEditMeal = (meal: Meal) => {
     setSelectedMeal(meal);
     setMealEditModalVisible(true);
   };
   
+/**
+ * Fonction: handleEditMealTime
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleEditMealTime = (meal: Meal) => {
     setSelectedMeal(meal);
     setTimePickerVisible(true);
   };
   
+/**
+ * Fonction: handleSaveMealTime
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSaveMealTime = async (newTime: string) => {
     if (!currentPlan || !selectedMeal) return;
     
@@ -277,6 +314,10 @@ export const NutritionScreen: React.FC = () => {
     }
   };
   
+/**
+ * Fonction: handleSaveMeal
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSaveMeal = async (updatedMeal: Meal) => {
     if (!currentPlan || !selectedMeal) return;
     
@@ -319,6 +360,10 @@ export const NutritionScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: handleSaveNutritionPlan
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSaveNutritionPlan = async (updatedNutritionPlan: NutritionPlan) => {
     if (!currentPlan) return;
     
@@ -342,6 +387,10 @@ export const NutritionScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: handleToggleSupplement
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleToggleSupplement = async (supplementId: string) => {
     if (!toggleSupplement || pendingSupplementId) return;
 
@@ -601,6 +650,10 @@ export const NutritionScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (palette: typeof Colors, cardColor: string) =>
   StyleSheet.create({
     safeArea: {

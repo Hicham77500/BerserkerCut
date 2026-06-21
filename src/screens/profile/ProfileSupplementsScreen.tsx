@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/profile/ProfileSupplementsScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View, Text, StyleSheet, Alert, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,12 +22,20 @@ const SUPPLEMENT_FORM_OPTIONS: Array<{
   { value: 'milliliter', label: 'Liquide', unitLabel: 'ml' },
 ];
 
+/**
+ * Fonction: getUnitLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getUnitLabel = (unit?: SupplementFormType): string => {
   if (!unit) return '';
   const match = SUPPLEMENT_FORM_OPTIONS.find((option) => option.value === unit);
   return match ? match.unitLabel : '';
 };
 
+/**
+ * Fonction: formatSupplementDosage
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const formatSupplementDosage = (supplement: Supplement): string => {
   if (supplement.quantity && supplement.unit) {
     const suffix = getUnitLabel(supplement.unit);
@@ -31,6 +44,10 @@ const formatSupplementDosage = (supplement: Supplement): string => {
   return supplement.dosage ?? '';
 };
 
+/**
+ * Composant: ProfileSupplementsScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfileSupplementsScreen: React.FC = () => {
   const { user, updateProfile } = useAuth();
   const { colors } = useThemeMode();
@@ -60,6 +77,10 @@ export const ProfileSupplementsScreen: React.FC = () => {
     [newSupplement.form],
   );
 
+/**
+ * Fonction: handleAdd
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleAdd = () => {
     if (!newSupplement.name.trim()) {
       Alert.alert('Nom requis', 'Merci de renseigner un nom');
@@ -91,6 +112,10 @@ export const ProfileSupplementsScreen: React.FC = () => {
     setNewSupplement({ name: '', quantity: '', form: 'gram' });
   };
 
+/**
+ * Fonction: handleSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -105,6 +130,10 @@ export const ProfileSupplementsScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: removeItem
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const removeItem = (id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
@@ -210,6 +239,10 @@ export const ProfileSupplementsScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

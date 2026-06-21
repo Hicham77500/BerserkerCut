@@ -1,3 +1,8 @@
+/**
+ * Module: src/services/demoAuth.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import { User, UserProfile } from '../types';
 
 const BASE_PROFILE: UserProfile = {
@@ -106,6 +111,10 @@ const DEMO_USER: User = {
   updatedAt: new Date(),
 };
 
+/**
+ * Classe: DemoAuthService
+ * Utilite: Regroupe des comportements et etats lies a un domaine precis.
+ */
 export class DemoAuthService {
   private static currentUser: User | null = null;
   private static listeners: Array<(user: User | null) => void> = [];

@@ -13,6 +13,10 @@ interface CardProps extends ViewProps {
   children: React.ReactNode;
 }
 
+/**
+ * Composant: Card
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const Card: React.FC<CardProps> = ({
   variant = 'default',
   padding = 'md',
@@ -37,20 +41,26 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     base: {
       backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
+      borderRadius: BorderRadius.sm,
       overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
     } as ViewStyle,
 
     default: {
-      ...Shadows.sm,
+      ...Shadows.xs,
     } as ViewStyle,
 
     elevated: {
-      ...Shadows.md,
+      ...Shadows.sm,
     } as ViewStyle,
 
     outlined: {

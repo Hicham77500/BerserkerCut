@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/utils/users.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const { sanitizeDateFields, defaultUserProfile } = require('./defaults');
 const { mergeDeep } = require('./merge');
 
@@ -48,6 +53,10 @@ const SUPPLEMENT_UNIT_ALIASES = {
 
 const BUDGET_RANGE_VALUES = new Set(['low', 'medium', 'high']);
 
+/**
+ * Fonction: normalizeSupplementTiming
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeSupplementTiming(value) {
   if (!value) return 'with_meals';
   const raw = String(value).trim();
@@ -61,6 +70,10 @@ function normalizeSupplementTiming(value) {
   return aliasKey || 'with_meals';
 }
 
+/**
+ * Fonction: normalizeSupplementUnit
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeSupplementUnit(value) {
   if (!value) return undefined;
   const raw = String(value).trim();
@@ -68,6 +81,10 @@ function normalizeSupplementUnit(value) {
   return SUPPLEMENT_UNIT_ALIASES[raw] || SUPPLEMENT_UNIT_ALIASES[raw.toLowerCase()] || undefined;
 }
 
+/**
+ * Fonction: parseQuantity
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function parseQuantity(value) {
   if (value === null || value === undefined) return undefined;
   const numeric = typeof value === 'number' ? value : Number.parseFloat(String(value));
@@ -77,6 +94,10 @@ function parseQuantity(value) {
   return undefined;
 }
 
+/**
+ * Fonction: normalizeSupplementType
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeSupplementType(value) {
   if (!value) return 'other';
   const raw = String(value).trim();
@@ -87,6 +108,10 @@ function normalizeSupplementType(value) {
   return SUPPLEMENT_TYPE_VALUES.has(alias) ? alias : 'other';
 }
 
+/**
+ * Fonction: normalizeSupplementEntry
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeSupplementEntry(entry = {}) {
   const plain = typeof entry.toObject === 'function' ? entry.toObject() : { ...entry };
 
@@ -117,6 +142,10 @@ function normalizeSupplementEntry(entry = {}) {
   return normalized;
 }
 
+/**
+ * Fonction: normalizeSupplementProfile
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeSupplementProfile(profile = {}, { fillDefaults = false } = {}) {
   const plain = typeof profile.toObject === 'function' ? profile.toObject() : { ...profile };
   const normalized = {};
@@ -145,6 +174,10 @@ function normalizeSupplementProfile(profile = {}, { fillDefaults = false } = {})
   return normalized;
 }
 
+/**
+ * Fonction: normalizeProfileInput
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function normalizeProfileInput(profile = {}, options = {}) {
   const plainProfile = typeof profile.toObject === 'function' ? profile.toObject() : { ...profile };
   const normalized = { ...plainProfile };
@@ -159,6 +192,10 @@ function normalizeProfileInput(profile = {}, options = {}) {
   return normalized;
 }
 
+/**
+ * Fonction: toClientUser
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function toClientUser(userDoc) {
   if (!userDoc) return null;
   const plain = userDoc.toJSON({ getters: true });

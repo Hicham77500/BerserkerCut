@@ -1,3 +1,8 @@
+/**
+ * Module: src/hooks/useAgenda.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as Calendar from 'expo-calendar';
 import {
@@ -11,6 +16,10 @@ import {
 
 type CalendarPermission = 'granted' | 'denied' | 'undetermined';
 
+/**
+ * Fonction: mapPermission
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const mapPermission = (status: Calendar.PermissionStatus): CalendarPermission => {
   if (status === Calendar.PermissionStatus.GRANTED) {
     return 'granted';
@@ -21,6 +30,10 @@ const mapPermission = (status: Calendar.PermissionStatus): CalendarPermission =>
   return 'undetermined';
 };
 
+/**
+ * Fonction: useAgenda
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const useAgenda = () => {
   const [permissionStatus, setPermissionStatus] = useState<CalendarPermission>('undetermined');
   const [events, setEvents] = useState<Calendar.Event[]>([]);
@@ -41,6 +54,10 @@ export const useAgenda = () => {
         setEvents(items);
         setPermissionStatus('granted');
       } catch (err) {
+/**
+ * Fonction: message
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
         const message = (err as Error).message;
         setError(message);
         if (message.includes('Permission calendrier refusée')) {

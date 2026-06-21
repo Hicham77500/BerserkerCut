@@ -1,3 +1,8 @@
+/**
+ * Module: src/services/agendaService.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import { Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 
@@ -20,6 +25,10 @@ export interface AgendaEvent extends AgendaEventInput {
   calendarId: string;
 }
 
+/**
+ * Fonction: getDefaultCalendarSource
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getDefaultCalendarSource = async (): Promise<Calendar.Source> => {
   if (Platform.OS === 'ios') {
     const defaultCalendar = await Calendar.getDefaultCalendarAsync();
@@ -35,16 +44,28 @@ const getDefaultCalendarSource = async (): Promise<Calendar.Source> => {
   } as Calendar.Source;
 };
 
+/**
+ * Fonction: getCalendarPermissionStatusAsync
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const getCalendarPermissionStatusAsync = async (): Promise<Calendar.PermissionStatus> => {
   const { status } = await Calendar.getCalendarPermissionsAsync();
   return status;
 };
 
+/**
+ * Fonction: requestCalendarPermissionAsync
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const requestCalendarPermissionAsync = async (): Promise<Calendar.PermissionStatus> => {
   const { status } = await Calendar.requestCalendarPermissionsAsync();
   return status;
 };
 
+/**
+ * Fonction: ensureCalendarAsync
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const ensureCalendarAsync = async (): Promise<string> => {
   const initialStatus = await getCalendarPermissionStatusAsync();
   const status =
@@ -76,6 +97,10 @@ export const ensureCalendarAsync = async (): Promise<string> => {
   });
 };
 
+/**
+ * Fonction: scheduleAgendaEvent
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const scheduleAgendaEvent = async (input: AgendaEventInput): Promise<string> => {
   const calendarId = await ensureCalendarAsync();
   const endDate = input.endDate ?? new Date(input.startDate.getTime() + 60 * 60 * 1000);
@@ -95,10 +120,18 @@ export const scheduleAgendaEvent = async (input: AgendaEventInput): Promise<stri
   });
 };
 
+/**
+ * Fonction: removeAgendaEvent
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const removeAgendaEvent = async (eventId: string): Promise<void> => {
   await Calendar.deleteEventAsync(eventId, { futureEvents: false, instanceStartDate: undefined });
 };
 
+/**
+ * Fonction: listUpcomingEvents
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const listUpcomingEvents = async (daysForward = 7): Promise<Calendar.Event[]> => {
   const calendarId = await ensureCalendarAsync();
   const now = new Date();

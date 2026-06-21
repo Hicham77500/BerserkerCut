@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/MealEditModal.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -26,6 +31,10 @@ interface MealEditModalProps {
   meal: Meal;
 }
 
+/**
+ * Composant: MealEditModal
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const MealEditModal: React.FC<MealEditModalProps> = ({
   visible,
   onClose,
@@ -67,6 +76,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
     }
   }, [visible, meal]);
 
+/**
+ * Fonction: resetFoodForm
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const resetFoodForm = () => {
     setFoodName('');
     setFoodQuantity('');
@@ -80,10 +93,18 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
     setIsEditingFood(false);
   };
 
+/**
+ * Fonction: handleAddFood
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleAddFood = () => {
     setIsAddingFood(true);
   };
 
+/**
+ * Fonction: handleEditFood
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleEditFood = (food: Food) => {
     setSelectedFood(food);
     setFoodName(food.name);
@@ -96,6 +117,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
     setIsEditingFood(true);
   };
 
+/**
+ * Fonction: handleDeleteFood
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleDeleteFood = (foodId: string) => {
     Alert.alert(
       'Supprimer cet aliment',
@@ -114,6 +139,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
     );
   };
 
+/**
+ * Fonction: calculateMacros
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const calculateMacros = () => {
     const totalCalories = foods.reduce((sum, food) => sum + food.calories, 0);
     const totalProtein = foods.reduce((sum, food) => sum + food.macros.protein, 0);
@@ -130,6 +159,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
     };
   };
 
+/**
+ * Fonction: handleSaveFood
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSaveFood = () => {
     if (!foodName || !foodQuantity || !foodCalories || !protein || !carbs || !fat) {
       Alert.alert('Information manquante', 'Veuillez remplir tous les champs.');
@@ -178,6 +211,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
     resetFoodForm();
   };
 
+/**
+ * Fonction: handleSaveMeal
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSaveMeal = () => {
     if (!mealName || !mealTime) {
       Alert.alert('Information manquante', 'Veuillez remplir le nom et l\'heure du repas.');
@@ -465,6 +502,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,

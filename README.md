@@ -1,3 +1,178 @@
+# BerserkerCut
+
+---
+
+## 🔧 DESIGN EXPERT IMPLEMENTATION GUIDE - v2.1.0 (2026-06-21)
+
+### Critical Rules (Don't Break!)
+1. **Secondary buttons (dark mode):** MUST use `#ffbd5c` + fontWeight: 700 + borderBottom: 2px
+2. **Light mode:** bg: `#fef9f7`, text: `#22120f`, primary: `#a83c4e`
+3. **HomeScreen layout:** 3-tier structure (40% hero | 20% context | 40% grid)
+4. **Tier spacing:** Exactly 24px between sections
+5. **Logo:** Molten Rift (Icon 1) for all app assets
+
+### Issue #1: Light Mode - IMPLEMENTATION NEEDED
+```typescript
+// src/theme/colors.ts (CREATE NEW FILE)
+export const COLORS_DARK = {
+  surface: '#1e0f0f',
+  onSurface: '#f9dcda',
+  primary: '#ffb3b1',
+  secondary: '#ffbd5c',
+  // ... see DESIGN.md for full palette
+};
+
+export const COLORS_LIGHT = {
+  surface: '#fef9f7',
+  onSurface: '#22120f',
+  primary: '#a83c4e',
+  secondary: '#22120f',
+  // ... see DESIGN.md for full palette
+};
+
+export const useThemeColors = (isDark: boolean) => 
+  isDark ? COLORS_DARK : COLORS_LIGHT;
+```
+
+```typescript
+// src/theme/useColorScheme.ts (CREATE NEW FILE)
+import { useColorScheme as RNColorScheme } from 'react-native';
+import { useState } from 'react';
+
+export const useColorScheme = () => {
+  const systemScheme = RNColorScheme();
+  const [manual, setManual] = useState<string | null>(null);
+  const isDark = manual ? manual === 'dark' : systemScheme === 'dark';
+  return { isDark, setDarkMode: (v: boolean) => setManual(v ? 'dark' : 'light') };
+};
+```
+
+### Issue #2: Secondary Buttons - IMPLEMENTATION NEEDED
+```tsx
+// src/screens/HomeScreen.tsx
+const { isDark } = useColorScheme();
+const colors = useThemeColors(isDark);
+
+// ❌ BEFORE - DO NOT USE
+<Text style={{ color: '#ffb3b1' }}>Voir l'agenda</Text>
+
+// ✅ AFTER - USE THIS PATTERN
+<TouchableOpacity 
+  style={[styles.secondaryButton, { borderColor: isDark ? '#ffbd5c' : '#a83c4e' }]}
+  onPress={() => goToAgenda()}
+>
+  <Text style={{
+    color: isDark ? '#ffbd5c' : '#a83c4e',
+    fontWeight: '700',
+    borderBottomWidth: 2,
+    borderBottomColor: isDark ? '#ffbd5c' : '#a83c4e',
+  }}>
+    Voir l'agenda
+  </Text>
+</TouchableOpacity>
+```
+
+### Issue #3: HomeScreen Layout - IMPLEMENTATION NEEDED
+```tsx
+// src/screens/HomeScreen.tsx - FULL REFACTOR
+<ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+  {/* TIER 1: Hero Section (40%) */}
+  <View
+    testID="home-tier-1"
+    style={{
+      height: SCREEN_HEIGHT * 0.4,
+      marginHorizontal: 16,
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.outline,
+    }}
+  >
+    <MacroRing dailyGoal={1800} current={1500} />
+    <Button 
+      label="Enregistrer ma séance"
+      variant="primary"
+      style={{ marginTop: 16 }}
+    />
+  </View>
+
+  {/* TIER 2: Context Card (20%) */}
+  <View
+    testID="home-tier-2"
+    style={{
+      marginTop: 24,
+      marginHorizontal: 16,
+      height: SCREEN_HEIGHT * 0.2,
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.outlineVariant,
+    }}
+  >
+    <Text style={{ ...fonts.headlineLg, color: colors.onSurface }}>
+      Jour de repos
+    </Text>
+    <Text style={{ ...fonts.bodyLg, color: colors.onSurfaceVariant, marginTop: 8 }}>
+      Profitez-en pour préparer vos repas !
+    </Text>
+    <Button 
+      label="Adapter mon plan"
+      variant="secondary"
+      style={{ marginTop: 12 }}
+    />
+  </View>
+
+  {/* TIER 3: Summary Grid (40%) */}
+  <View
+    testID="home-tier-3"
+    style={{
+      marginTop: 24,
+      marginHorizontal: 16,
+      height: SCREEN_HEIGHT * 0.4,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    }}
+  >
+    <SummaryColumn testID="summary-column-nutrition" label="NUTRITION" value="1800 kcal" />
+    <SummaryColumn testID="summary-column-training" label="TRAINING" value="3/5 sets" />
+    <SummaryColumn testID="summary-column-supplements" label="SUPPLEMENTS" value="3/3" />
+  </View>
+</ScrollView>
+```
+
+### Issue #4: Logo - SETUP REQUIRED
+- [ ] Add logo files: `assets/icons/molten-rift-1024.png`, `512.png`, `192.png`
+- [ ] Update `app.json`:
+  ```json
+  {
+    "expo": {
+      "icon": "assets/icons/molten-rift-1024.png"
+    }
+  }
+  ```
+
+### REGRESSION TEST - DO NOT SKIP
+```bash
+# Manual tests required:
+✓ npm test -- design-regression.test.ts (once implemented)
+✓ Light mode toggle in Settings
+✓ "Voir l'agenda" button is BRIGHT ORANGE (#ffbd5c) not red
+✓ "Adapter mon plan" button is BRIGHT ORANGE not red
+✓ HomeScreen shows 3 distinct visible tiers
+✓ Spacing between tiers = 24px
+✓ Summary grid has 3 columns (not stacked)
+✓ All text contrast passes WCAG AA (4.5:1)
+✓ Molten Rift logo in tab bar at 32px
+```
+
+### REFERENCE DESIGN SYSTEM
+See `assets/stitch_berserkercut_ai_nutrition_training_ecosystem/DESIGN.md` for:
+- Complete color palettes (colors-light + colors-dark)
+- Button component specs
+- HomeScreen 3-tier architecture
+- Typography rules
+- Accessibility guidelines
+
 # BerserkerCut 🔥
 
 Full-dark native iOS experience for personalised cutting plans.

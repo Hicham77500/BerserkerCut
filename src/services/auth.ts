@@ -14,6 +14,10 @@ import {
 import { enableDemoModeAfterNetworkError } from '../utils/networkFallback';
 import { isDemoMode } from './appModeService';
 
+/**
+ * Fonction: isDemoEnvironment
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const isDemoEnvironment = () => isDemoMode();
 
 type AuthResponse = {
@@ -27,6 +31,10 @@ type AuthListener = (user: User | null) => void;
 const listeners = new Set<AuthListener>();
 let initialised = false;
 
+/**
+ * Fonction: notifyAuthListeners
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function notifyAuthListeners(user: User | null) {
   listeners.forEach((listener) => {
     try {
@@ -37,6 +45,10 @@ function notifyAuthListeners(user: User | null) {
   });
 }
 
+/**
+ * Fonction: ensureInitialisation
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 async function ensureInitialisation() {
   if (initialised) return;
   initialised = true;
@@ -65,6 +77,10 @@ const DEFAULT_SUPPLEMENT_PROFILE: SupplementProfile = {
   },
 };
 
+/**
+ * Fonction: normalizeSupplementTiming
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function normalizeSupplementTiming(rawValue: unknown): Supplement['timing'] {
   if (!rawValue) return 'with_meals';
   const formatted = String(rawValue)
@@ -92,6 +108,10 @@ function normalizeSupplementTiming(rawValue: unknown): Supplement['timing'] {
   }
 }
 
+/**
+ * Fonction: normalizeSupplementUnit
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function normalizeSupplementUnit(rawValue: unknown): SupplementFormType {
   if (!rawValue) return 'gram';
   const formatted = String(rawValue)
@@ -121,6 +141,10 @@ function normalizeSupplementUnit(rawValue: unknown): SupplementFormType {
   }
 }
 
+/**
+ * Fonction: parseOptionalQuantity
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function parseOptionalQuantity(rawValue: unknown): number | undefined {
   if (rawValue === null || rawValue === undefined) {
     return undefined;
@@ -132,6 +156,10 @@ function parseOptionalQuantity(rawValue: unknown): number | undefined {
   return undefined;
 }
 
+/**
+ * Fonction: sanitizeSupplementEntry
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function sanitizeSupplementEntry(entry: Partial<Supplement> & { id?: string }): Supplement | null {
   if (!entry) return null;
 
@@ -168,6 +196,10 @@ function sanitizeSupplementEntry(entry: Partial<Supplement> & { id?: string }): 
   return sanitized;
 }
 
+/**
+ * Fonction: sanitizeSupplementProfile
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function sanitizeSupplementProfile(
   profile?: Partial<SupplementProfile>,
   options: { fillDefaults?: boolean } = {}
@@ -181,6 +213,10 @@ function sanitizeSupplementProfile(
         .filter((supplement): supplement is Supplement => Boolean(supplement))
     : [];
 
+/**
+ * Fonction: preferencesSource
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const preferencesSource = (profile?.preferences ?? {}) as Partial<SupplementProfile['preferences']>;
   const preferences = {
     preferNatural: preferencesSource.preferNatural === true,
@@ -202,6 +238,10 @@ function sanitizeSupplementProfile(
   };
 }
 
+/**
+ * Fonction: sanitizeProfileUpdates
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function sanitizeProfileUpdates(profileUpdates: Partial<UserProfile>): Partial<UserProfile> {
   if (!profileUpdates) {
     return profileUpdates;
@@ -231,6 +271,10 @@ function sanitizeProfileUpdates(profileUpdates: Partial<UserProfile>): Partial<U
   return sanitized;
 }
 
+/**
+ * Fonction: normalizeProfileFromApi
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function normalizeProfileFromApi(rawProfile: any): UserProfile {
   const base = createDefaultProfile();
   if (!rawProfile) {
@@ -264,6 +308,10 @@ function normalizeProfileFromApi(rawProfile: any): UserProfile {
   };
 }
 
+/**
+ * Fonction: createDefaultProfile
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function createDefaultProfile(): UserProfile {
   const now = new Date();
   return {
@@ -295,6 +343,10 @@ function createDefaultProfile(): UserProfile {
   };
 }
 
+/**
+ * Fonction: normalizeUser
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function normalizeUser(raw: any): User {
   return {
     ...raw,
@@ -387,6 +439,21 @@ export class AuthService {
     }
   }
 
+  static async deleteAccount(userId: string): Promise<void> {
+    if (isDemoEnvironment()) {
+      await DemoAuthService.logout();
+      notifyAuthListeners(null);
+      return;
+    }
+
+    try {
+      await apiClient.delete(`/users/${userId}`);
+    } finally {
+      await clearSession();
+      notifyAuthListeners(null);
+    }
+  }
+
   static async updateProfile(userId: string, profileUpdates: Partial<UserProfile>): Promise<User> {
     const sanitizedPayload = sanitizeProfileUpdates(profileUpdates);
 
@@ -443,6 +510,10 @@ export class AuthService {
   }
 }
 
+/**
+ * Fonction: formatAuthError
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function formatAuthError(error: any): string {
   const status = error?.status;
   const message = error?.details?.message || error?.message || 'Erreur inconnue';

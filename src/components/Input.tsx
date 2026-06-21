@@ -27,6 +27,10 @@ interface InputProps extends TextInputProps {
   isPassword?: boolean;
 }
 
+/**
+ * Composant: Input
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const Input: React.FC<InputProps> = ({
   label,
   error,
@@ -62,6 +66,10 @@ export const Input: React.FC<InputProps> = ({
     ...(rightIcon ? [styles.inputWithRightIcon] : []),
   ];
 
+/**
+ * Fonction: togglePasswordVisibility
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -107,6 +115,10 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     wrapper: {
@@ -116,7 +128,7 @@ const createStyles = (colors: ThemePalette) =>
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      borderRadius: BorderRadius.md,
+      borderRadius: BorderRadius.sm,
       backgroundColor: colors.surface,
     } as ViewStyle,
 
@@ -129,7 +141,7 @@ const createStyles = (colors: ThemePalette) =>
     outlined: {
       borderWidth: 1,
       borderColor: colors.border,
-      ...Shadows.xs,
+      ...Shadows.border_xs,
     } as ViewStyle,
 
     filled: {
@@ -155,7 +167,7 @@ const createStyles = (colors: ThemePalette) =>
     focused: {
       borderColor: colors.primary,
       borderWidth: 1,
-      ...Shadows.sm,
+      ...Shadows.border_md,
     } as ViewStyle,
 
     error: {

@@ -80,6 +80,10 @@ const TIMING_ALIASES: Record<string, Supplement['timing']> = {
   repas: 'with_meals',
 };
 
+/**
+ * Fonction: normalizeTimingKey
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const normalizeTimingKey = (value: string): Supplement['timing'] => {
   if (!value) return 'with_meals';
   const normalized = value.toString().trim();
@@ -99,11 +103,19 @@ const SECTION_KEYS = {
 
 type SectionKey = (typeof SECTION_KEYS)[keyof typeof SECTION_KEYS];
 
+/**
+ * Fonction: getTimingLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getTimingLabel = (timing: string): string => {
   const key = normalizeTimingKey(timing);
   return TIMING_LABEL_MAP[key] ?? timing;
 };
 
+/**
+ * Fonction: normalizeUnit
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const normalizeUnit = (unit?: string): Supplement['unit'] | undefined => {
   if (!unit) return undefined;
   const formatted = unit.toLowerCase().trim();
@@ -130,12 +142,20 @@ const normalizeUnit = (unit?: string): Supplement['unit'] | undefined => {
   }
 };
 
+/**
+ * Fonction: parseQuantity
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const parseQuantity = (value: unknown): number | undefined => {
   if (value === null || value === undefined) return undefined;
   const numeric = typeof value === 'number' ? value : Number.parseFloat(String(value));
   return Number.isFinite(numeric) && numeric > 0 ? Number(numeric.toFixed(3)) : undefined;
 };
 
+/**
+ * Fonction: sanitizeSupplementList
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const sanitizeSupplementList = (list: Supplement[] = []): Supplement[] =>
   list.map((supplement) => {
     const timing = normalizeTimingKey(supplement.timing);
@@ -150,6 +170,10 @@ const sanitizeSupplementList = (list: Supplement[] = []): Supplement[] =>
     };
   });
 
+/**
+ * Composant: ProfileOverviewScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfileOverviewScreen: React.FC = () => {
   const { user, logout, updateProfile } = useAuth();
   const navigation = useNavigation<any>();
@@ -226,6 +250,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     }, [refreshPhotoState])
   );
 
+/**
+ * Fonction: handleLogout
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleLogout = async () => {
     Alert.alert(
       'Déconnexion',
@@ -285,12 +313,20 @@ export const ProfileOverviewScreen: React.FC = () => {
     ? health.weight / Math.pow(health.height / 100, 2)
     : null;
 
+/**
+ * Fonction: objectiveLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const objectiveLabel = ({
     cutting: '🔥 Sèche',
     recomposition: '💪 Recomposition',
     maintenance: '⚖️ Maintien',
   } as const)[objective] ?? 'Objectif à définir';
 
+/**
+ * Fonction: experienceLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const experienceLabel = ({
     beginner: 'Débutant',
     intermediate: 'Intermédiaire',
@@ -336,6 +372,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     return grouped;
   }, [availableSupplements]);
 
+/**
+ * Fonction: handlePersistSupplements
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handlePersistSupplements = async (updatedList: Supplement[]) => {
     const preferences = supplementsState?.preferences ?? {
       preferNatural: false,
@@ -350,6 +390,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     });
   };
 
+/**
+ * Fonction: handleToggleSupplementAvailability
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleToggleSupplementAvailability = async (supplementId: string) => {
     if (!supplementsState) return;
     const updated = supplementsState.available.map((supplement) =>
@@ -367,6 +411,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: handleRemoveSupplement
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleRemoveSupplement = async (supplementId: string) => {
     if (!supplementsState) return;
 
@@ -393,6 +441,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: handleCreateSupplement
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleCreateSupplement = async () => {
     if (!newSupplement.name.trim() || !newSupplement.dosage.trim()) {
       Alert.alert('Champs requis', 'Merci de renseigner un nom et un dosage.');
@@ -441,6 +493,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     );
   }
 
+/**
+ * Fonction: canNavigateToRoute
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const canNavigateToRoute = (nav: any, route: string): boolean => {
     if (!nav || typeof nav.getState !== 'function') {
       return false;
@@ -449,6 +505,10 @@ export const ProfileOverviewScreen: React.FC = () => {
     return Array.isArray(state?.routeNames) && state.routeNames.includes(route);
   };
 
+/**
+ * Fonction: navigateToProfileScreen
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const navigateToProfileScreen = (route: ProfileRoute) => {
     if (canNavigateToRoute(navigation, route)) {
       navigation.navigate(route as never);
@@ -840,6 +900,10 @@ export const ProfileOverviewScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

@@ -62,6 +62,10 @@ const SUPPLEMENT_TIMING_ALIASES: Record<string, Supplement['timing']> = {
   withMeals: 'with_meals',
 };
 
+/**
+ * Fonction: normalizeSupplementType
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function normalizeSupplementType(type: Supplement['type'] | string | undefined): Supplement['type'] {
   if (!type) return 'other';
   if (typeof type === 'string' && SUPPLEMENT_TYPE_ALIASES[type]) {
@@ -72,6 +76,10 @@ function normalizeSupplementType(type: Supplement['type'] | string | undefined):
     : 'other';
 }
 
+/**
+ * Fonction: normalizeSupplementTiming
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function normalizeSupplementTiming(timing: Supplement['timing'] | string | undefined): Supplement['timing'] {
   if (!timing) return 'with_meals';
   if (typeof timing === 'string' && SUPPLEMENT_TIMING_ALIASES[timing]) {
@@ -103,12 +111,20 @@ interface ApiDailyPlan extends Omit<DailyPlan, 'date' | 'createdAt'> {
 
 export const PLAN_RANGE_CACHE_KEY = 'BERSERKER_PLAN_RANGE_CACHE';
 
+/**
+ * Fonction: parseApiPlan
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const parseApiPlan = (plan: ApiDailyPlan | DailyPlan): DailyPlan => ({
   ...plan,
   date: plan.date instanceof Date ? plan.date : new Date(plan.date),
   createdAt: plan.createdAt instanceof Date ? plan.createdAt : new Date(plan.createdAt),
 });
 
+/**
+ * Fonction: ensureDateOrdering
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const ensureDateOrdering = (from: string, to: string): { start: Date; end: Date } => {
   const start = new Date(from);
   const end = new Date(to);
@@ -121,6 +137,10 @@ const ensureDateOrdering = (from: string, to: string): { start: Date; end: Date 
   return start <= end ? { start, end } : { start: end, end: start };
 };
 
+/**
+ * Fonction: buildLocalRangeMock
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const buildLocalRangeMock = (userId: string, from: string, to: string): DailyPlan[] => {
   const { start, end } = ensureDateOrdering(from, to);
   const results: DailyPlan[] = [];
@@ -161,6 +181,10 @@ const buildLocalRangeMock = (userId: string, from: string, to: string): DailyPla
   return results;
 };
 
+/**
+ * Classe: PlanService
+ * Utilite: Regroupe des comportements et etats lies a un domaine precis.
+ */
 export class PlanService {
   
   /**

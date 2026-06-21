@@ -1,3 +1,8 @@
+/**
+ * Module: src/constants/storageKeys.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 export const PHOTOS_STORAGE_KEY = 'BERSERKERCUT_PHOTOS_V1';
 export const CLOUD_CONSENT_STORAGE_KEY = 'BERSERKERCUT_CLOUD_CONSENT_V1';
 export const CLOUD_CONSENT_AUDIT_STORAGE_KEY = 'BERSERKERCUT_CLOUD_CONSENT_AUDIT_V1';

@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/TimePickerModal.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useState } from 'react';
 import {
   View,
@@ -18,16 +23,28 @@ interface TimePickerModalProps {
   title?: string;
 }
 
+/**
+ * Fonction: convertTo24Hour
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const convertTo24Hour = (timeString: string): { hours: number; minutes: number } => {
   // Format can be HH:MM or H:MM
   const [hours, minutes] = timeString.split(':').map(part => parseInt(part, 10));
   return { hours: hours || 0, minutes: minutes || 0 };
 };
 
+/**
+ * Fonction: formatTimeString
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const formatTimeString = (hours: number, minutes: number): string => {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
 
+/**
+ * Composant: TimePickerModal
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   visible,
   onClose,
@@ -44,6 +61,10 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   const hourOptions = Array.from({ length: 24 }, (_, i) => i);
   const minuteOptions = Array.from({ length: 60 }, (_, i) => i);
 
+/**
+ * Fonction: handleSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSave = () => {
     onSave(formatTimeString(hours, minutes));
     onClose();

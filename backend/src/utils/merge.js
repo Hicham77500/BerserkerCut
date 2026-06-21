@@ -1,7 +1,16 @@
+/**
+ * Module: backend/src/utils/merge.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 function isObject(item) {
   return item && typeof item === 'object' && !Array.isArray(item);
 }
 
+/**
+ * Fonction: mergeDeep
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function mergeDeep(target = {}, source = {}) {
   const output = { ...target };
 

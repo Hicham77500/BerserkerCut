@@ -1,3 +1,8 @@
+/**
+ * Module: src/services/apiClient.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { getAuthToken } from './sessionStorage';
@@ -37,6 +42,10 @@ interface RequestOptions extends RequestInit {
   skipAuth?: boolean;
 }
 
+/**
+ * Fonction: buildQueryString
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function buildQueryString(params?: RequestOptions['query']): string {
   if (!params) return '';
   const searchParams = new URLSearchParams();
@@ -49,6 +58,10 @@ function buildQueryString(params?: RequestOptions['query']): string {
   return queryString ? `?${queryString}` : '';
 }
 
+/**
+ * Fonction: buildHeaders
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 async function buildHeaders(skipAuth?: boolean): Promise<Record<string, string>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -76,6 +89,10 @@ class ApiError extends Error {
   }
 }
 
+/**
+ * Fonction: handleResponse
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 async function handleResponse(response: Response) {
   const contentType = response.headers.get('content-type');
   const isJson = contentType?.includes('application/json');

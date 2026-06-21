@@ -1,3 +1,8 @@
+/**
+ * Module: src/navigation/StackNavigators.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 // Déclare les navigateurs de pile liés aux différentes sections de l'app.
 
 // React requis pour déclarer des composants fonctionnels.
@@ -75,9 +80,12 @@ export const HomeStackNavigator: React.FC = () => {
     <HomeStack.Navigator
       screenOptions={{
         headerShown: true,
+        headerBackTitleVisible: false,
+        headerBackTitle: '',
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { color: colors.text },
+        headerTitleAlign: 'center',
         ...TransitionPresets.SlideFromRightIOS,
         cardStyle: { backgroundColor: colors.background },
       }}
@@ -88,6 +96,10 @@ export const HomeStackNavigator: React.FC = () => {
   );
 };
 
+/**
+ * Composant: SettingsStackNavigator
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const SettingsStackNavigator: React.FC = () => {
   const { colors } = useThemeMode();
 
@@ -95,9 +107,12 @@ export const SettingsStackNavigator: React.FC = () => {
     <SettingsStack.Navigator
       screenOptions={{
         headerShown: true,
+        headerBackTitleVisible: false,
+        headerBackTitle: '',
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { color: colors.text },
+        headerTitleAlign: 'center',
         ...TransitionPresets.SlideFromRightIOS,
         cardStyle: { backgroundColor: colors.background },
       }}
@@ -117,9 +132,12 @@ export const ProfileStackNavigator: React.FC = () => {
     <ProfileStack.Navigator
       screenOptions={{
         headerShown: true,
+        headerBackTitleVisible: false,
+        headerBackTitle: '',
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { color: colors.text },
+        headerTitleAlign: 'center',
         ...TransitionPresets.SlideFromRightIOS,
         cardStyle: { backgroundColor: colors.background },
       }}
@@ -145,9 +163,12 @@ export const NutritionStackNavigator: React.FC = () => {
     <NutritionStack.Navigator
       screenOptions={{
         headerShown: true,
+        headerBackTitleVisible: false,
+        headerBackTitle: '',
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { color: colors.text },
+        headerTitleAlign: 'center',
         ...TransitionPresets.ModalSlideFromBottomIOS,
         cardStyle: { backgroundColor: colors.background },
       }}
@@ -168,9 +189,12 @@ export const TrainingStackNavigator: React.FC = () => {
     <TrainingStack.Navigator
       screenOptions={{
         headerShown: true,
+        headerBackTitleVisible: false,
+        headerBackTitle: '',
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { color: colors.text },
+        headerTitleAlign: 'center',
         ...TransitionPresets.SlideFromRightIOS,
         cardStyle: { backgroundColor: colors.background },
       }}
@@ -180,6 +204,10 @@ export const TrainingStackNavigator: React.FC = () => {
   );
 };
 
+/**
+ * Composant: AgendaStackNavigator
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const AgendaStackNavigator: React.FC = () => {
   const { colors } = useThemeMode();
 
@@ -187,9 +215,12 @@ export const AgendaStackNavigator: React.FC = () => {
     <AgendaStack.Navigator
       screenOptions={{
         headerShown: true,
+        headerBackTitleVisible: false,
+        headerBackTitle: '',
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { color: colors.text },
+        headerTitleAlign: 'center',
         ...TransitionPresets.SlideFromRightIOS,
         cardStyle: { backgroundColor: colors.background },
       }}

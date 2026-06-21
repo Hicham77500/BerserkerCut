@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/utils/defaults.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 function defaultUserProfile() {
   const now = new Date();
   return {
@@ -36,6 +41,10 @@ function defaultUserProfile() {
   };
 }
 
+/**
+ * Fonction: sanitizeDateFields
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function sanitizeDateFields(value) {
   if (!value || typeof value !== 'object') {
     return value;
@@ -56,6 +65,10 @@ function sanitizeDateFields(value) {
   return data;
 }
 
+/**
+ * Fonction: isIsoDate
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function isIsoDate(value) {
   return typeof value === 'string' && /\d{4}-\d{2}-\d{2}T/.test(value);
 }

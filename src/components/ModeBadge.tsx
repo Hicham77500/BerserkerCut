@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/ModeBadge.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { isDemoMode } from '../services/appModeService';
@@ -11,6 +16,10 @@ interface ModeBadgeProps {
   style?: ViewStyle;
 }
 
+/**
+ * Composant: ModeBadge
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ModeBadge: React.FC<ModeBadgeProps> = ({ style }) => {
   const { colors } = useThemeMode();
   const demoMode = isDemoMode();

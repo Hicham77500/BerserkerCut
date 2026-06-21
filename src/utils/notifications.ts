@@ -1,3 +1,8 @@
+/**
+ * Module: src/utils/notifications.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
@@ -39,6 +44,10 @@ export const requestPermissionsAsync = async (): Promise<boolean> => {
   return granted || status === 'granted';
 };
 
+/**
+ * Fonction: configureNotifications
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const configureNotifications = async (): Promise<void> => {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
@@ -58,6 +67,10 @@ interface DailyReminderOptions {
   minute: number;
 }
 
+/**
+ * Fonction: scheduleDailyReminder
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const scheduleDailyReminder = async ({ title, body, hour, minute }: DailyReminderOptions): Promise<string> => {
   const hasPermission = await requestPermissionsAsync();
   if (!hasPermission) {
@@ -121,6 +134,10 @@ export const cancelAllNotifications = async (): Promise<void> => {
   await Notifications.cancelAllScheduledNotificationsAsync();
 };
 
+/**
+ * Fonction: cancelNotification
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const cancelNotification = async (identifier: string): Promise<void> => {
   await Notifications.cancelScheduledNotificationAsync(identifier);
 };

@@ -1,10 +1,15 @@
+/**
+ * Module: src/utils/theme.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import { DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationLightTheme } from '@react-navigation/native';
 
 /**
  * BerserkerCut Theme System
  * 
  * Material Design 3 system with Industrial Brutalism + Glassmorphism
- * Fire Orange (#FF5722) primary, Primal Orange (#ffbd5c) secondary
+ * Tactical Berserker Red (#ff535b) primary, Primal Orange (#ffbd5c) secondary
  * Optimized for iOS with consistent visual language
  * WCAG AA compliant contrast ratios
  */
@@ -61,12 +66,12 @@ export interface ThemePalette {
   borderDark: string;
 }
 
-// Dark Theme Palette (Material Design 3 - Industrial Brutalism)
+// Dark Theme Palette aligned with design captures (Industrial Brutalism)
 export const DarkColors: ThemePalette = {
-  // Primary: Fire Orange (Material Design 3 - better contrast in light mode)
-  primary: '#FF5722',       // Deep Orange (Fire-like)
-  primaryDark: '#D84315',   // Darker orange for pressed states
-  primaryLight: '#FF7043',  // Lighter orange for highlights
+  // Primary: Tactical Berserker Red (CTA/critical actions)
+  primary: '#ff535b',       // Primary container from design captures
+  primaryDark: '#bb152c',   // Inverse primary
+  primaryLight: '#ffb3b1',  // Surface tint / highlight
 
   // Secondary: Primal Orange (Material Design 3)
   secondary: '#ffbd5c',     // Primal Orange
@@ -99,11 +104,11 @@ export const DarkColors: ThemePalette = {
   error: '#ffb4ab',         // Error (Material Design 3)
   info: '#9ecfd1',          // Info (tertiary)
 
-  // Macro nutrients (aligned with brand)
-  protein: '#FF5722',       // Deep Orange (protein)
+  // Macro nutrients (aligned with captures)
+  protein: '#ff535b',       // Berserker Red (protein)
   carbs: '#9ecfd1',         // Teal (carbs)
   fat: '#ffbd5c',           // Primal Orange (fat)
-  calories: '#ff9999',      // Light red (calories)
+  calories: '#ffb3b1',      // Light pink-red (calories)
 
   // UI elements (Glassmorphism)
   overlay: 'rgba(30, 15, 15, 0.6)', // 60% opacity for glass
@@ -114,11 +119,11 @@ export const DarkColors: ThemePalette = {
 
 export const Colors: ThemePalette = { ...DarkColors };
 
-// Light Theme Palette (Material Design 3 - High contrast)
+// Light Theme Palette (kept high-contrast, closer to tactical identity)
 export const LightColors: ThemePalette = {
-  primary: '#FF5722',       // Deep Orange (Fire) - excellent contrast on light
-  primaryDark: '#D84315',   // Darker for pressed states
-  primaryLight: '#FF7043',  // Lighter for highlights
+  primary: '#ff535b',       // Tactical Berserker Red
+  primaryDark: '#bb152c',   // Darker pressed/active
+  primaryLight: '#ffb3b1',  // Highlight tint
 
   secondary: '#ffbd5c',
   secondaryDark: '#452b00', // On-secondary
@@ -146,10 +151,10 @@ export const LightColors: ThemePalette = {
   error: '#f2b8b5',         // Error light
   info: '#80deea',          // Info light
 
-  protein: '#FF5722',       // Deep Orange (same)
+  protein: '#ff535b',       // Berserker Red (same)
   carbs: '#80deea',         // Teal light
   fat: '#ffbd5c',           // Primal Orange (same)
-  calories: '#ff9999',      // Light red
+  calories: '#ffb3b1',      // Light pink-red
 
   overlay: 'rgba(0, 0, 0, 0.05)', // Subtle overlay for light
   overlayLight: 'rgba(0, 0, 0, 0.02)', // Very subtle

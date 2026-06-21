@@ -46,6 +46,10 @@ interface Props {
 
 const { width } = Dimensions.get('window');
 
+/**
+ * Composant: OnboardingTrainingStep
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, userId }) => {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -595,6 +599,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,

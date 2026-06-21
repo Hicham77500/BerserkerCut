@@ -4,6 +4,10 @@
  */
 import { AppConfig } from './config';
 
+/**
+ * Fonction: enableDemoModeAfterNetworkError
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export function enableDemoModeAfterNetworkError(error: any): boolean {
   const isNetworkError =
     error?.message?.includes('Network request failed') ||
@@ -23,10 +27,18 @@ export function enableDemoModeAfterNetworkError(error: any): boolean {
   return !AppConfig.DEMO_MODE;
 }
 
+/**
+ * Fonction: checkPreviousDemoModePreference
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function checkPreviousDemoModePreference(): Promise<boolean> {
   return false;
 }
 
+/**
+ * Fonction: resetNetworkFallbackFlag
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export function resetNetworkFallbackFlag(): void {
   // laissé pour compatibilité
 }

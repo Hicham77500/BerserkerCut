@@ -16,11 +16,19 @@ interface ExampleUsageProps {
   onNavigateBack: () => void;
 }
 
+/**
+ * Composant: ExampleUsage
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ExampleUsage: React.FC<ExampleUsageProps> = ({
   userId,
   onNavigateNext,
   onNavigateBack
 }) => {
+/**
+ * Fonction: handleTrainingComplete
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleTrainingComplete = (data: ExtendedTrainingProfile) => {
     // Les données sont automatiquement sauvegardées via l'API backend
     // par le composant OnboardingTrainingStep

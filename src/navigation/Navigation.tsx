@@ -1,3 +1,8 @@
+/**
+ * Module: src/navigation/Navigation.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 // Navigation racine : orchestrate les providers, l'écran de chargement et le routage auth.
 
 // Bibliothèques React & React Native pour le rendu et les indicateurs de chargement.
@@ -94,6 +99,10 @@ const AppNavigator: React.FC = () => {
   );
 };
 
+/**
+ * Composant: Navigation
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const Navigation: React.FC = () => {
   const { navigationTheme, colors, ready } = useThemeMode();
 

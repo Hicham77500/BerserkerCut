@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/profile/ProfileHealthScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useState, useMemo } from 'react';
 import { ScrollView, View, Text, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +12,10 @@ import { Typography, Spacing, BorderRadius, ThemePalette } from '@/utils/theme';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { HealthProfile } from '@/types';
 
+/**
+ * Composant: ProfileHealthScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfileHealthScreen: React.FC = () => {
   const { user, updateProfile } = useAuth();
   const { colors } = useThemeMode();
@@ -35,6 +44,10 @@ export const ProfileHealthScreen: React.FC = () => {
     averageSleepHours: String(health.averageSleepHours || ''),
   });
 
+/**
+ * Fonction: handleSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSave = async () => {
     await updateProfile({
       health: {
@@ -50,6 +63,10 @@ export const ProfileHealthScreen: React.FC = () => {
 
   const styles = useMemo(() => createStyles(colors), [colors]);
 
+/**
+ * Fonction: handleSaveSuccess
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSaveSuccess = () => {
     Alert.alert('Profil mis à jour', 'Vos données biométriques ont été enregistrées avec succès.');
   };
@@ -112,6 +129,10 @@ export const ProfileHealthScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

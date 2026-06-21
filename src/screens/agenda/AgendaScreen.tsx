@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/agenda/AgendaScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useCallback, useMemo } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +12,10 @@ import { useThemeMode } from '@/hooks/useThemeMode';
 import { useAgenda } from '@/hooks/useAgenda';
 import { Spacing, ThemePalette, Typography } from '@/utils/theme';
 
+/**
+ * Fonction: toLocaleDateTime
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const toLocaleDateTime = (value: string | Date) =>
   new Date(value).toLocaleString('fr-FR', {
     weekday: 'long',
@@ -16,6 +25,10 @@ const toLocaleDateTime = (value: string | Date) =>
     minute: '2-digit',
   });
 
+/**
+ * Fonction: computeNextOccurrence
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const computeNextOccurrence = (hour: number, minute: number, dayOffset = 0) => {
   const now = new Date();
   const next = new Date(now);
@@ -30,6 +43,10 @@ const computeNextOccurrence = (hour: number, minute: number, dayOffset = 0) => {
   return next;
 };
 
+/**
+ * Composant: AgendaScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const AgendaScreen: React.FC = () => {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -192,6 +209,10 @@ export const AgendaScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

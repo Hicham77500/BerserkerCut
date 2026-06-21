@@ -1,3 +1,8 @@
+/**
+ * Module: src/services/sessionStorage.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../types';
 
@@ -10,6 +15,10 @@ type StoredSession = {
   user: User;
 };
 
+/**
+ * Fonction: saveSession
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function saveSession(token: string, refreshToken: string, user: User): Promise<void> {
   await Promise.all([
     AsyncStorage.setItem(TOKEN_KEY, token),
@@ -18,6 +27,10 @@ export async function saveSession(token: string, refreshToken: string, user: Use
   ]);
 }
 
+/**
+ * Fonction: clearSession
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function clearSession(): Promise<void> {
   await Promise.all([
     AsyncStorage.removeItem(TOKEN_KEY),
@@ -26,6 +39,10 @@ export async function clearSession(): Promise<void> {
   ]);
 }
 
+/**
+ * Fonction: getStoredSession
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function getStoredSession(): Promise<StoredSession | null> {
   const [token, refreshToken, rawUser] = await Promise.all([
     AsyncStorage.getItem(TOKEN_KEY),
@@ -46,16 +63,28 @@ export async function getStoredSession(): Promise<StoredSession | null> {
   }
 }
 
+/**
+ * Fonction: getAuthToken
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function getAuthToken(): Promise<string | null> {
   const { token } = (await getStoredSession()) || {};
   return token ?? null;
 }
 
+/**
+ * Fonction: getStoredUser
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function getStoredUser(): Promise<User | null> {
   const { user } = (await getStoredSession()) || {};
   return user ?? null;
 }
 
+/**
+ * Fonction: updateStoredUser
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function updateStoredUser(user: User): Promise<void> {
   await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
 }

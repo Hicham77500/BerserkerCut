@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/PrivacyConsentModal.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useState } from 'react';
 import {
   View,
@@ -18,6 +23,10 @@ interface PrivacyConsentModalProps {
   initialCloudConsent?: boolean;
 }
 
+/**
+ * Composant: PrivacyConsentModal
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const PrivacyConsentModal: React.FC<PrivacyConsentModalProps> = ({
   visible,
   onClose,
@@ -27,6 +36,10 @@ export const PrivacyConsentModal: React.FC<PrivacyConsentModalProps> = ({
   const { colors } = useThemeMode();
   const [cloudConsent, setCloudConsent] = useState(initialCloudConsent);
 
+/**
+ * Fonction: handleSubmit
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSubmit = () => {
     onConsent(cloudConsent);
     onClose();

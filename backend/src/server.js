@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/server.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 require('dotenv').config();
 require('express-async-errors');
 
@@ -11,6 +16,10 @@ const planRoutes = require('./routes/plans');
 
 const app = express();
 
+/**
+ * Fonction: allowedOrigins
+ * Utilite: Encapsule une logique reutilisable ou un handler.
+ */
 const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')
   .map((origin) => origin.trim())

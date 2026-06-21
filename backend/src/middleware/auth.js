@@ -1,5 +1,14 @@
+/**
+ * Module: backend/src/middleware/auth.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const jwt = require('jsonwebtoken');
 
+/**
+ * Fonction: requireAuth
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
 

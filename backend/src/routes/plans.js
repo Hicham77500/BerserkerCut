@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/routes/plans.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const express = require('express');
 const mongoose = require('mongoose');
 const DailyPlan = require('../models/DailyPlan');
@@ -6,6 +11,10 @@ const { markSupplementTaken, sanitizePlan } = require('../utils/plans');
 
 const router = express.Router();
 
+/**
+ * Fonction: ensureSameUser
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function ensureSameUser(requestedId, authenticatedUserId) {
   if (requestedId !== authenticatedUserId) {
     const error = new Error('Forbidden');
@@ -14,6 +23,10 @@ function ensureSameUser(requestedId, authenticatedUserId) {
   }
 }
 
+/**
+ * Fonction: ensureObjectId
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function ensureObjectId(id) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const error = new Error('Invalid user id');

@@ -1,3 +1,8 @@
+/**
+ * Module: src/hooks/useThemeMode.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { createContext, useContext } from 'react';
 import {
   DarkNavigationTheme,
@@ -38,6 +43,10 @@ const DEFAULT_VALUE: ThemeModeContextValue = {
 
 const ThemeModeContext = createContext<ThemeModeContextValue>(DEFAULT_VALUE);
 
+/**
+ * Composant: ThemeModeProvider
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ThemeModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mode, setModeState] = React.useState<ThemeMode>('dark');
   const [ready, setReady] = React.useState(false);
@@ -47,11 +56,10 @@ export const ThemeModeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     (async () => {
       try {
-        const persisted = await getSecureItem(THEME_PREFERENCE_STORAGE_KEY);
+        await getSecureItem(THEME_PREFERENCE_STORAGE_KEY);
         if (!isMounted) return;
-        if (persisted === 'light' || persisted === 'dark') {
-          setModeState(persisted);
-        }
+        // Design parity lock: keep the app in dark tactical mode to match capture references.
+        setModeState('dark');
       } finally {
         if (isMounted) {
           setReady(true);
@@ -65,8 +73,9 @@ export const ThemeModeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const setMode = React.useCallback(async (nextMode: ThemeMode) => {
-    setModeState(nextMode);
-    await setSecureItem(THEME_PREFERENCE_STORAGE_KEY, nextMode);
+    // Keep API compatibility while forcing dark mode for visual consistency.
+    setModeState('dark');
+    await setSecureItem(THEME_PREFERENCE_STORAGE_KEY, 'dark');
   }, []);
 
   const toggleMode = React.useCallback(async () => {
@@ -94,6 +103,10 @@ export const ThemeModeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   return <ThemeModeContext.Provider value={value}>{children}</ThemeModeContext.Provider>;
 };
 
+/**
+ * Fonction: useThemeMode
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const useThemeMode = (): ThemeModeContextValue => {
   const context = useContext(ThemeModeContext);
   if (!context) {

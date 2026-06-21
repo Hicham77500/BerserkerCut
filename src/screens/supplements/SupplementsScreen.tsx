@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/supplements/SupplementsScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   ScrollView,
@@ -79,6 +84,10 @@ const SupplementListItem: React.FC<SupplementListItemProps> = ({
   );
 };
 
+/**
+ * Composant: SupplementsScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const SupplementsScreen: React.FC = () => {
   const {
     currentPlan,
@@ -107,6 +116,10 @@ export const SupplementsScreen: React.FC = () => {
       }));
   }, [currentPlan]);
 
+/**
+ * Fonction: handleToggle
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleToggle = async (supplementId: string) => {
     if (pendingId) return;
     setPendingId(supplementId);

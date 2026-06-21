@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/nutrition/NutritionCalendarScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,8 +25,16 @@ interface CalendarEntry {
 
 const DAYS_TO_DISPLAY = 7;
 
+/**
+ * Fonction: toIsoDate
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const toIsoDate = (date: Date): string => date.toISOString().split('T')[0];
 
+/**
+ * Fonction: parseCachedPlans
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const parseCachedPlans = (raw: string | null): DailyPlan[] => {
   if (!raw) return [];
   try {
@@ -40,6 +53,10 @@ const parseCachedPlans = (raw: string | null): DailyPlan[] => {
   }
 };
 
+/**
+ * Fonction: buildEntries
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const buildEntries = (startDate: Date, plans: DailyPlan[]): CalendarEntry[] => {
   const start = new Date(startDate);
   start.setHours(0, 0, 0, 0);
@@ -64,6 +81,10 @@ const buildEntries = (startDate: Date, plans: DailyPlan[]): CalendarEntry[] => {
   });
 };
 
+/**
+ * Composant: NutritionCalendarScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const NutritionCalendarScreen: React.FC = () => {
   const { user } = useAuth();
   const { colors } = useThemeMode();
@@ -185,6 +206,10 @@ export const NutritionCalendarScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

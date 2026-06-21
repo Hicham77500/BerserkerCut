@@ -25,6 +25,10 @@ interface HealthStepProps {
   initialData?: Partial<HealthProfile>;
 }
 
+/**
+ * Composant: HealthStep
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const HealthStep: React.FC<HealthStepProps> = ({
   onComplete,
   initialData,
@@ -47,6 +51,10 @@ export const HealthStep: React.FC<HealthStepProps> = ({
     initialData?.restingHeartRate?.toString() || ''
   );
 
+/**
+ * Fonction: validateAndSubmit
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const validateAndSubmit = () => {
     // Validation des champs obligatoires
     if (!weight || !height || !age) {
@@ -117,6 +125,10 @@ export const HealthStep: React.FC<HealthStepProps> = ({
     onComplete(healthData);
   };
 
+/**
+ * Fonction: getBMIInfo
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const getBMIInfo = () => {
     if (!weight || !height) return null;
     
@@ -330,6 +342,10 @@ const ActivityOption: React.FC<ActivityOptionProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,

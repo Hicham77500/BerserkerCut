@@ -25,12 +25,20 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { MacroCard } from '../components/MacroCard';
 
+/**
+ * Fonction: normalizeText
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const normalizeText = (value: string) =>
   value
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
+/**
+ * Fonction: getMealCategory
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getMealCategory = (name: string): 'breakfast' | 'lunch' | 'snack' | 'dinner' => {
   const normalized = normalizeText(name);
 
@@ -96,6 +104,10 @@ const MEAL_FILTERS: Array<{ label: string; value: 'all' | 'breakfast' | 'lunch' 
   { label: 'Dîner', value: 'dinner' },
 ];
 
+/**
+ * Composant: DashboardScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const DashboardScreen: React.FC = () => {
   const { user } = useAuth();
   const {
@@ -123,6 +135,10 @@ export const DashboardScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
+/**
+ * Fonction: loadSections
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
     const loadSections = async () => {
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
@@ -155,6 +171,10 @@ export const DashboardScreen: React.FC = () => {
     }
   }, [currentPlan]);
 
+/**
+ * Fonction: handleRefresh
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
@@ -164,6 +184,10 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: handleSupplementTaken
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSupplementTaken = async (supplementId: string) => {
     try {
       await toggleSupplement(supplementId);
@@ -172,10 +196,18 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: toggleMealExpanded
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const toggleMealExpanded = (mealId: string) => {
     setExpandedMeals((prev) => ({ ...prev, [mealId]: !prev[mealId] }));
   };
 
+/**
+ * Fonction: toggleMealConsumed
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const toggleMealConsumed = (mealId: string) => {
     setConsumedMeals((prev) => ({ ...prev, [mealId]: !prev[mealId] }));
   };
@@ -189,6 +221,10 @@ export const DashboardScreen: React.FC = () => {
 
   const visibleSections = sectionConfigs.filter((section) => section.visible);
 
+/**
+ * Fonction: moveSection
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const moveSection = (id: SectionId, direction: 'up' | 'down') => {
     const currentIndex = sectionConfigs.findIndex((section) => section.id === id);
     if (currentIndex === -1) return;
@@ -202,6 +238,10 @@ export const DashboardScreen: React.FC = () => {
     persistSections(updated);
   };
 
+/**
+ * Fonction: toggleSectionVisibility
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const toggleSectionVisibility = (id: SectionId) => {
     const updated = sectionConfigs.map((section) =>
       section.id === id ? { ...section, visible: !section.visible } : section
@@ -209,6 +249,10 @@ export const DashboardScreen: React.FC = () => {
     persistSections(updated);
   };
 
+/**
+ * Fonction: renderMealCard
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderMealCard = (meal: Meal) => {
     const isExpanded = expandedMeals[meal.id];
     const isConsumed = consumedMeals[meal.id];
@@ -269,6 +313,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderSupplementsByTiming
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderSupplementsByTiming = (timing: keyof SupplementPlan) => {
     if (!currentPlan) return null;
     const supplements = currentPlan.supplementPlan[timing];
@@ -311,6 +359,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderOverview
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderOverview = () => {
     if (!user || !currentPlan) {
       return (
@@ -360,6 +412,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderTip
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderTip = () => {
     if (!currentPlan) return null;
     return (
@@ -370,6 +426,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderNutrition
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderNutrition = () => {
     if (!currentPlan) return null;
     return (
@@ -384,6 +444,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderMeals
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderMeals = () => {
     if (!currentPlan) return null;
     return (
@@ -421,6 +485,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderSupplements
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderSupplements = () => {
     if (!currentPlan) return null;
     return (
@@ -443,6 +511,10 @@ export const DashboardScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: renderDemoNotice
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderDemoNotice = () => (
     <View style={styles.demoCardContent}>
       <Text style={styles.demoTitle}>Mode démo activé</Text>
@@ -450,6 +522,10 @@ export const DashboardScreen: React.FC = () => {
     </View>
   );
 
+/**
+ * Fonction: renderSection
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const renderSection = (sectionId: SectionId) => {
     switch (sectionId) {
       case 'overview':
@@ -469,6 +545,10 @@ export const DashboardScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: Header
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const Header = () => (
     <View style={[styles.header, { paddingTop: Spacing.xs }] }>
       <View style={styles.headerTextGroup}>

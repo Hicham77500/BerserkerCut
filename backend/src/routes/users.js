@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/routes/users.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const express = require('express');
 const mongoose = require('mongoose');
 const User = require('../models/User');
@@ -9,6 +14,10 @@ const { toClientUser, normalizeProfileInput } = require('../utils/users');
 
 const router = express.Router();
 
+/**
+ * Fonction: ensureSameUser
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function ensureSameUser(requestedId, authenticatedUserId) {
   if (requestedId !== authenticatedUserId) {
     const error = new Error('Forbidden');
@@ -17,6 +26,10 @@ function ensureSameUser(requestedId, authenticatedUserId) {
   }
 }
 
+/**
+ * Fonction: ensureObjectId
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function ensureObjectId(id) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const error = new Error('Invalid user id');
@@ -37,6 +50,22 @@ router.get('/:id', requireAuth, async (req, res) => {
   }
 
   return res.json(toClientUser(user));
+});
+
+router.delete('/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  ensureSameUser(id, req.userId);
+
+  const objectId = ensureObjectId(id);
+
+  await TrainingProfile.deleteMany({ userId: objectId });
+  const deletedUser = await User.findByIdAndDelete(objectId);
+
+  if (!deletedUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  return res.status(204).send();
 });
 
 router.patch('/:id/profile', requireAuth, async (req, res) => {

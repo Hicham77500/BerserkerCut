@@ -1,3 +1,8 @@
+/**
+ * Module: src/services/photoStorage.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import { MEAL_PHOTOS_STORAGE_KEY, PHOTOS_STORAGE_KEY } from '@/constants/storageKeys';
@@ -17,11 +22,19 @@ export interface MealPhoto extends StoredPhoto {
 
 // No photo limit
 const DEFAULT_MAX_PHOTOS = Number.MAX_SAFE_INTEGER;
+/**
+ * Fonction: DOCUMENT_DIRECTORY
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const DOCUMENT_DIRECTORY = (FileSystem as unknown as { documentDirectory?: string | null }).documentDirectory ?? null;
 const PHOTO_FOLDER = DOCUMENT_DIRECTORY
   ? `${DOCUMENT_DIRECTORY.replace(/\/$/, '')}/berserkercut/photos`
   : null;
 
+/**
+ * Fonction: ensurePhotoDirectory
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const ensurePhotoDirectory = async () => {
   if (!PHOTO_FOLDER) return;
   try {
@@ -34,11 +47,19 @@ const ensurePhotoDirectory = async () => {
   }
 };
 
+/**
+ * Fonction: isManagedUri
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const isManagedUri = (uri: string | null | undefined): boolean => {
   if (!uri || !PHOTO_FOLDER) return false;
   return uri.startsWith(PHOTO_FOLDER);
 };
 
+/**
+ * Fonction: deleteManagedFile
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const deleteManagedFile = async (uri: string | null | undefined) => {
   if (!uri || !PHOTO_FOLDER || !isManagedUri(uri)) return;
   try {
@@ -51,6 +72,10 @@ const deleteManagedFile = async (uri: string | null | undefined) => {
   }
 };
 
+/**
+ * Fonction: sanitizeExtension
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const sanitizeExtension = (uri: string): string => {
   const match = /\.(\w+)(?:\?|$)/.exec(uri);
   if (!match) return '.jpg';
@@ -62,11 +87,19 @@ const sanitizeExtension = (uri: string): string => {
   return '.jpg';
 };
 
+/**
+ * Fonction: sanitizeIdentifier
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const sanitizeIdentifier = (identifier: string, fallback: string): string => {
   const safe = identifier.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').replace(/^[-_]+|[-_]+$/g, '');
   return safe.length ? safe : fallback;
 };
 
+/**
+ * Fonction: createManagedCopy
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createManagedCopy = async (sourceUri: string, identifier: string): Promise<string> => {
   if (!PHOTO_FOLDER) {
     return sourceUri;
@@ -87,6 +120,10 @@ const createManagedCopy = async (sourceUri: string, identifier: string): Promise
   }
 };
 
+/**
+ * Fonction: loadMealPhotosFlat
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const loadMealPhotosFlat = async (): Promise<MealPhoto[]> => {
   try {
     const stored = await AsyncStorage.getItem(MEAL_PHOTOS_STORAGE_KEY);
@@ -100,6 +137,10 @@ const loadMealPhotosFlat = async (): Promise<MealPhoto[]> => {
   }
 };
 
+/**
+ * Fonction: persistMealPhotosFlat
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const persistMealPhotosFlat = async (photos: MealPhoto[]) => {
   try {
     await AsyncStorage.setItem(MEAL_PHOTOS_STORAGE_KEY, JSON.stringify(photos));
@@ -108,10 +149,18 @@ const persistMealPhotosFlat = async (photos: MealPhoto[]) => {
   }
 };
 
+/**
+ * Fonction: loadGalleryPhotos
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const loadGalleryPhotos = async (): Promise<StoredPhoto[]> => {
   return getSecureJSON<StoredPhoto[]>(PHOTOS_STORAGE_KEY, []);
 };
 
+/**
+ * Fonction: persistGalleryPhotos
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const persistGalleryPhotos = async (photos: StoredPhoto[]) => {
   await setSecureJSON(PHOTOS_STORAGE_KEY, photos);
 };

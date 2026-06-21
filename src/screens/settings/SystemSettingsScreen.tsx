@@ -1,14 +1,25 @@
+/**
+ * Module: src/screens/settings/SystemSettingsScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useCallback, useMemo } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Button, Card } from '@/components';
+import { useAuth } from '@/hooks/useAuth';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { useNotifications } from '@/hooks/useNotifications';
 import { BorderRadius, Spacing, ThemePalette, Typography } from '@/utils/theme';
 
+/**
+ * Composant: SystemSettingsScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const SystemSettingsScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { logout } = useAuth();
   const { mode, setMode, colors } = useThemeMode();
   const {
     permissionStatus,
@@ -80,6 +91,27 @@ export const SystemSettingsScreen: React.FC = () => {
       Alert.alert('Impossible de supprimer', (error as Error).message);
     }
   }, [cancelAll]);
+
+  const handleLogout = useCallback(() => {
+    Alert.alert(
+      'Se déconnecter ? ',
+      'Vous allez revenir à l\'écran de connexion.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Se déconnecter',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (error) {
+              Alert.alert('Erreur', "Impossible de vous déconnecter pour le moment.");
+            }
+          },
+        },
+      ]
+    );
+  }, [logout]);
 
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
@@ -183,11 +215,28 @@ export const SystemSettingsScreen: React.FC = () => {
             />
           </View>
         </Card>
+
+        <Card style={styles.card}>
+          <Text style={styles.sectionTitle}>Session</Text>
+          <Text style={styles.subtitle}>
+            Déconnecte ton compte sur cet appareil.
+          </Text>
+          <Button
+            title="Se déconnecter"
+            variant="secondary"
+            onPress={handleLogout}
+            style={styles.button}
+          />
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

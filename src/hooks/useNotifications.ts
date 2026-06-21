@@ -1,3 +1,8 @@
+/**
+ * Module: src/hooks/useNotifications.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as Notifications from 'expo-notifications';
 import {
@@ -26,6 +31,10 @@ interface DailyReminderScheduleOptions {
   minute: number;
 }
 
+/**
+ * Fonction: resolvePermissionState
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const resolvePermissionState = (
   status: Notifications.NotificationPermissionsStatus,
 ): NotificationPermissionState => {
@@ -36,6 +45,10 @@ const resolvePermissionState = (
   return status.status;
 };
 
+/**
+ * Fonction: useNotifications
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const useNotifications = () => {
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermissionState>('undetermined');
   const [initializing, setInitializing] = useState(true);

@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/profile/ProfilePhotosScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import {
   ScrollView,
@@ -29,6 +34,10 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 const MAX_PHOTOS = photoStorage.MAX_GALLERY_PHOTOS;
 
+/**
+ * Composant: ProfilePhotosScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfilePhotosScreen: React.FC = () => {
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -127,6 +136,10 @@ export const ProfilePhotosScreen: React.FC = () => {
     })();
   }, [syncFromCloud]);
 
+/**
+ * Fonction: requestCameraPermission
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const requestCameraPermission = async (): Promise<boolean> => {
     setIsRequestingPermission(true);
     try {
@@ -144,6 +157,10 @@ export const ProfilePhotosScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: handleTakePhoto
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleTakePhoto = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
@@ -199,6 +216,10 @@ export const ProfilePhotosScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: handleDeletePhoto
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleDeletePhoto = (timestamp: number) => {
     Alert.alert('Supprimer la photo ?', 'Cette action est irréversible.', [
       { text: 'Annuler', style: 'cancel' },
@@ -220,6 +241,10 @@ export const ProfilePhotosScreen: React.FC = () => {
     ]);
   };
 
+/**
+ * Fonction: handleClearAll
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleClearAll = () => {
     Alert.alert('Effacer toutes les photos ?', 'Toutes vos photos locales seront supprimées.', [
       { text: 'Annuler', style: 'cancel' },
@@ -235,6 +260,10 @@ export const ProfilePhotosScreen: React.FC = () => {
     ]);
   };
 
+/**
+ * Fonction: handleConsentToggle
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleConsentToggle = async (nextValue: boolean) => {
     if (nextValue) {
       Alert.alert(
@@ -362,6 +391,10 @@ export const ProfilePhotosScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {

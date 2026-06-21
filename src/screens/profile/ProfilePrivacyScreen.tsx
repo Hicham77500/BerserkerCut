@@ -1,3 +1,8 @@
+/**
+ * Module: src/screens/profile/ProfilePrivacyScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, StyleSheet, Switch, Alert, Linking, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,8 +28,12 @@ const MAX_AUDIT_ENTRIES = 10;
 // Liste des clés à préserver lors du nettoyage des données sensibles
 const CLOUD_KEYS = [CLOUD_CONSENT_STORAGE_KEY, CLOUD_CONSENT_AUDIT_STORAGE_KEY];
 
+/**
+ * Composant: ProfilePrivacyScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfilePrivacyScreen: React.FC = () => {
-  const { user } = useAuth();
+  const { user, deleteAccount } = useAuth();
   const { colors } = useThemeMode();
   const [cloudConsent, setCloudConsent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,6 +51,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
     })();
   }, []);
 
+/**
+ * Fonction: logConsentAction
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const logConsentAction = async (entry: ConsentAuditEntry) => {
     const current = await getSecureJSON<ConsentAuditEntry[]>(CLOUD_CONSENT_AUDIT_STORAGE_KEY, []);
     const safeCurrent = Array.isArray(current) ? current : [];
@@ -50,6 +63,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
     await setSecureJSON(CLOUD_CONSENT_AUDIT_STORAGE_KEY, next);
   };
 
+/**
+ * Fonction: disableCloudConsent
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const disableCloudConsent = async (clearCloudAlbum: boolean) => {
     await setSecureItem(CLOUD_CONSENT_STORAGE_KEY, 'false');
     setCloudConsent(false);
@@ -84,6 +101,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
     }
   };
 
+/**
+ * Fonction: updateConsent
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const updateConsent = async (nextValue: boolean) => {
     if (nextValue) {
       Alert.alert(
@@ -130,6 +151,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: handleClearCloudData
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleClearCloudData = () => {
     Alert.alert(
       'Retirer les photos iCloud ?',
@@ -165,6 +190,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
     );
   };
 
+/**
+ * Fonction: handleClearLocalData
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleClearLocalData = () => {
     Alert.alert(
       'Supprimer les données locales sensibles ?',
@@ -195,6 +224,36 @@ export const ProfilePrivacyScreen: React.FC = () => {
     );
   }, []);
 
+  const handleDeleteAccount = useCallback(() => {
+    Alert.alert(
+      'Supprimer le compte ? ',
+      'Cette action est irréversible. Votre compte et ses données seront supprimés.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer définitivement',
+          style: 'destructive',
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await photoStorage.clearAll();
+              await clearAllSensitiveData(CLOUD_KEYS);
+              await deleteAccount();
+            } catch (error) {
+              Alert.alert('Erreur', "Impossible de supprimer le compte pour le moment.");
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  }, [deleteAccount]);
+
+/**
+ * Fonction: formatAuditLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const formatAuditLabel = (entry: ConsentAuditEntry): string => {
     const actionLabel = entry.action === 'enabled'
       ? 'Consentement activé'
@@ -252,6 +311,16 @@ export const ProfilePrivacyScreen: React.FC = () => {
             style={styles.button}
           />
 
+          <View style={styles.accountActions}>
+            <Button
+              title="Supprimer le compte"
+              variant="danger"
+              onPress={handleDeleteAccount}
+              disabled={loading}
+              style={styles.button}
+            />
+          </View>
+
           <View style={styles.auditBlock}>
             <Text style={styles.auditTitle}>Journal du consentement cloud</Text>
             {consentAudit.length === 0 ? (
@@ -292,6 +361,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {
@@ -325,6 +398,10 @@ const createStyles = (colors: ThemePalette) =>
     },
     button: {
       width: '100%',
+    },
+    accountActions: {
+      marginTop: Spacing.xs,
+      gap: Spacing.sm,
     },
     switchRow: {
       flexDirection: 'row',

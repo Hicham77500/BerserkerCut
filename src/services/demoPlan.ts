@@ -5,6 +5,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DailyPlan, User } from '../types';
 
+/**
+ * Fonction: mergeDailyPlan
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const mergeDailyPlan = (plan: DailyPlan, updates: Partial<DailyPlan>): DailyPlan => {
   const nextPlan: DailyPlan = {
     ...plan,
@@ -45,6 +49,10 @@ const mergeDailyPlan = (plan: DailyPlan, updates: Partial<DailyPlan>): DailyPlan
   return nextPlan;
 };
 
+/**
+ * Classe: DemoPlanService
+ * Utilite: Regroupe des comportements et etats lies a un domaine precis.
+ */
 export class DemoPlanService {
   /**
    * Générer un plan quotidien de démonstration

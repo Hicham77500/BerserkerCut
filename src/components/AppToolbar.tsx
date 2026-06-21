@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/AppToolbar.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -5,6 +10,10 @@ import { ModeBadge } from '@/components/ModeBadge';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { Spacing, Typography, BorderRadius } from '@/utils/theme';
 
+/**
+ * Composant: AppToolbar
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const AppToolbar: React.FC = () => {
   const { colors } = useThemeMode();
 

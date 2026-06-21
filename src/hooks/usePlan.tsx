@@ -1,3 +1,8 @@
+/**
+ * Module: src/hooks/usePlan.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, {
   createContext,
   useContext,
@@ -29,12 +34,20 @@ const SUPPLEMENT_STATUS_PREFIX = 'BERSERKERCUT_SUPPLEMENT_STATUS_';
 const WEEKDAY_LABELS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 const DEFAULT_PROGRESS: SupplementProgress = { total: 0, completed: 0, percentage: 0 };
 
+/**
+ * Fonction: normalizePlanDates
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const normalizePlanDates = (plan: DailyPlan): DailyPlan => ({
   ...plan,
   date: plan.date instanceof Date ? plan.date : new Date(plan.date),
   createdAt: plan.createdAt instanceof Date ? plan.createdAt : new Date(plan.createdAt),
 });
 
+/**
+ * Fonction: deriveStatusFromPlan
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const deriveStatusFromPlan = (plan: DailyPlan): Record<string, boolean> => {
   const status: Record<string, boolean> = {};
   Object.values(plan.supplementPlan).forEach((supplements) => {
@@ -45,6 +58,10 @@ const deriveStatusFromPlan = (plan: DailyPlan): Record<string, boolean> => {
   return status;
 };
 
+/**
+ * Fonction: applyStatusToPlan
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const applyStatusToPlan = (plan: DailyPlan, status: Record<string, boolean>): DailyPlan => {
   const nextPlan: DailyPlan = {
     ...plan,
@@ -64,6 +81,10 @@ const applyStatusToPlan = (plan: DailyPlan, status: Record<string, boolean>): Da
   return nextPlan;
 };
 
+/**
+ * Fonction: computeSupplementProgress
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const computeSupplementProgress = (
   plan: DailyPlan | null,
   status: Record<string, boolean>,
@@ -84,11 +105,19 @@ const computeSupplementProgress = (
   };
 };
 
+/**
+ * Fonction: buildWeeklySchedule
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const buildWeeklySchedule = (profile?: TrainingProfile): WeeklyTrainingSession[] => {
   if (!profile) return [];
 
   const today = new Date();
   const currentDay = today.getDay();
+/**
+ * Fonction: mondayIndex
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const mondayIndex = (currentDay + 6) % 7;
   const startOfWeek = new Date(today);
   startOfWeek.setHours(0, 0, 0, 0);
@@ -111,6 +140,10 @@ const buildWeeklySchedule = (profile?: TrainingProfile): WeeklyTrainingSession[]
   });
 };
 
+/**
+ * Composant: PlanProvider
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const [currentPlan, setCurrentPlan] = useState<DailyPlan | null>(null);
@@ -354,6 +387,10 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 };
 
+/**
+ * Fonction: usePlan
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 export const usePlan = (): PlanContextType => {
   const context = useContext(PlanContext);
   if (context === undefined) {

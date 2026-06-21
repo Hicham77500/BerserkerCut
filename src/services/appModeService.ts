@@ -9,15 +9,27 @@ export type ModeChangeListener = (isDemoMode: boolean) => void;
 let isDemoModeInternal = AppConfig.DEMO_MODE;
 const listeners: ModeChangeListener[] = [];
 
+/**
+ * Fonction: initializeAppMode
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function initializeAppMode(): Promise<boolean> {
   updateGlobalConfig(isDemoModeInternal);
   return isDemoModeInternal;
 }
 
+/**
+ * Fonction: isDemoMode
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export function isDemoMode(): boolean {
   return isDemoModeInternal;
 }
 
+/**
+ * Fonction: setDemoMode
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export async function setDemoMode(enabled: boolean): Promise<void> {
   if (isDemoModeInternal === enabled) return;
 
@@ -36,6 +48,10 @@ export async function setDemoMode(enabled: boolean): Promise<void> {
   notifyListeners(enabled);
 }
 
+/**
+ * Fonction: addModeChangeListener
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 export function addModeChangeListener(listener: ModeChangeListener): () => void {
   listeners.push(listener);
   return () => {
@@ -46,6 +62,10 @@ export function addModeChangeListener(listener: ModeChangeListener): () => void 
   };
 }
 
+/**
+ * Fonction: notifyListeners
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function notifyListeners(isDemo: boolean) {
   listeners.forEach((listener) => {
     try {
@@ -56,6 +76,10 @@ function notifyListeners(isDemo: boolean) {
   });
 }
 
+/**
+ * Fonction: updateGlobalConfig
+ * Utilite: Execute la logique metier associee a cette fonctionnalite.
+ */
 function updateGlobalConfig(isDemo: boolean) {
   (AppConfig as any).DEMO_MODE = isDemo;
   if ((global as any).USE_DEMO_MODE !== undefined) {

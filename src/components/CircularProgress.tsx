@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/CircularProgress.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -12,6 +17,10 @@ interface CircularProgressProps {
   children?: React.ReactNode;
 }
 
+/**
+ * Composant: CircularProgress
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const CircularProgress: React.FC<CircularProgressProps> = ({
   progress,
   size = 120,
@@ -22,6 +31,10 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 }) => {
   const { radius, circumference, dashOffset } = useMemo(() => {
     const clamped = Math.min(1, Math.max(0, progress));
+/**
+ * Fonction: computedRadius
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
     const computedRadius = (size - strokeWidth) / 2;
     const computedCircumference = 2 * Math.PI * computedRadius;
     const computedOffset = computedCircumference - computedCircumference * clamped;

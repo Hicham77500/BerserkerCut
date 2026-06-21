@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/ProgressBar.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { BorderRadius, Spacing, Typography, ThemePalette } from '../utils/theme';
@@ -15,11 +20,19 @@ interface ProgressBarProps {
   animated?: boolean;
 }
 
+/**
+ * Fonction: clampProgress
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const clampProgress = (value: number): number => {
   if (Number.isNaN(value)) return 0;
   return Math.min(1, Math.max(0, value));
 };
 
+/**
+ * Composant: ProgressBar
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
   size = 'md',
@@ -92,6 +105,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     width: '100%',

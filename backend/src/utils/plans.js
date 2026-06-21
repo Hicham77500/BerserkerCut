@@ -1,3 +1,8 @@
+/**
+ * Module: backend/src/utils/plans.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 function sanitizePlan(planDoc) {
   if (!planDoc) return null;
 
@@ -13,6 +18,10 @@ function sanitizePlan(planDoc) {
   return plan;
 }
 
+/**
+ * Fonction: markSupplementTaken
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 function markSupplementTaken(supplementPlan = {}, supplementId) {
   const updatedPlan = JSON.parse(JSON.stringify(supplementPlan || {}));
   let found = false;

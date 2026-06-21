@@ -2,7 +2,7 @@
  * Écran de connexion avec design moderne
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,49 +11,58 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Switch,
+  TouchableOpacity,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../hooks/useAuth';
 import { Typography, Spacing, BorderRadius, ThemePalette } from '../utils/theme';
 import { Button, Input, Card } from '../components';
-import { isDemoMode, setDemoMode } from '../services/appModeService';
+import { setDemoMode } from '../services/appModeService';
 import { getSecureItem, setSecureItem } from '@/utils/storage/secureStorage';
 import { DEMO_MODE_CONSENT_STORAGE_KEY } from '@/constants/storageKeys';
 import { useThemeMode } from '@/hooks/useThemeMode';
 
+/**
+ * LoginScreen
+ * Rôle: point d'entrée d'authentification (connexion/inscription) + accès mode démo.
+ * Emplacement logique:
+ * - État local + hooks: début du composant
+ * - Validations: blocs useMemo
+ * - Actions utilisateur: handleSubmit / handleTitleTap
+ * - UI: bloc return (header, formulaire, footer légal)
+ */
 export const LoginScreen: React.FC = () => {
+  // ===== État de formulaire =====
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-  const [demoModeEnabled, setDemoModeEnabled] = useState(false);
-  const [demoConsentAccepted, setDemoConsentAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // ===== Thème dynamique =====
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  
-  const { login, register } = useAuth();
-  
-  // Initialiser l'état du mode démo lors du chargement du composant
-  useEffect(() => {
-    (async () => {
-      const consentStored = await getSecureItem(DEMO_MODE_CONSENT_STORAGE_KEY);
-      setDemoConsentAccepted(consentStored === 'true');
-      setDemoModeEnabled(isDemoMode());
-    })();
-  }, []);
 
+  // Easter egg: 6 taps on title → demo mode
+  const tapCount = useRef(0);
+  const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { login, register } = useAuth();
+
+  // Réinitialise l'état "formulaire soumis" lors du switch Connexion/Inscription
   useEffect(() => {
     setSubmitted(false);
   }, [isLogin]);
 
+  // Validation email (requise + format)
   const emailError = useMemo(() => {
     if (!email) return 'Veuillez renseigner votre email';
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email) ? null : 'Email invalide';
   }, [email]);
 
+  // Validation mot de passe (requis, et >= 8 caractères en inscription)
   const passwordError = useMemo(() => {
     if (!password) return 'Veuillez saisir votre mot de passe';
     if (!isLogin && password.length < 8) {
@@ -62,6 +71,11 @@ export const LoginScreen: React.FC = () => {
     return null;
   }, [password, isLogin]);
 
+  /**
+   * handleSubmit
+   * Utilité: soumet le formulaire avec garde-fous de validation
+   * Flux: validate -> set loading -> login/register -> gestion erreurs
+   */
   const handleSubmit = async () => {
     setSubmitted(true);
 
@@ -87,93 +101,115 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
-  const enableDemoModeWithConsent = async (showEnabledAlert: boolean): Promise<boolean> => {
-    if (demoConsentAccepted) {
-      await setDemoMode(true);
-      setDemoModeEnabled(true);
-      if (showEnabledAlert) {
-        Alert.alert(
-          'Mode démo activé',
-          'Aucune donnée personnelle de base n\'est requise. Un profil fictif local est utilisé sur cet appareil.'
-        );
-      }
-      return true;
+  /**
+   * handleTitleTap
+   * Utilité: Easter egg (6 taps) pour activer le mode démo local.
+   * Détail: demande consentement persistant si première activation.
+   */
+  const handleTitleTap = async () => {
+    tapCount.current += 1;
+
+    if (tapTimer.current) {
+      clearTimeout(tapTimer.current);
     }
 
-    return new Promise((resolve) => {
+    // Reset counter after 2s of inactivity
+    tapTimer.current = setTimeout(() => {
+      tapCount.current = 0;
+    }, 2000);
+
+    if (tapCount.current >= 6) {
+      tapCount.current = 0;
+      if (tapTimer.current) clearTimeout(tapTimer.current);
+
+      const consentStored = await getSecureItem(DEMO_MODE_CONSENT_STORAGE_KEY);
+
       Alert.alert(
-        'Activer le mode démo ? ',
-        'Le mode démo utilise un profil fictif local et ne nécessite aucune donnée personnelle de base. Souhaitez-vous activer ce mode ? ',
-        [
-          { text: 'Annuler', style: 'cancel', onPress: () => resolve(false) },
-          {
-            text: 'Accepter et activer',
-            onPress: () => {
-              (async () => {
-                await setSecureItem(DEMO_MODE_CONSENT_STORAGE_KEY, 'true');
-                setDemoConsentAccepted(true);
-                await setDemoMode(true);
-                setDemoModeEnabled(true);
-                if (showEnabledAlert) {
+        '🔓 Mode démo',
+        consentStored === 'true'
+          ? 'Activation du mode démo...'
+          : 'Le mode démo utilise un profil fictif local sans données personnelles. Continuer ?',
+        consentStored === 'true'
+          ? [
+              { text: 'Annuler', style: 'cancel' },
+              {
+                text: 'Activer',
+                onPress: async () => {
+                  await setDemoMode(true);
+                  setEmail('demo@berserkercut.com');
+                  setPassword('demo123');
+                  setTimeout(() => handleSubmit(), 100);
+                },
+              },
+            ]
+          : [
+              { text: 'Annuler', style: 'cancel' },
+              {
+                text: 'Accepter et activer',
+                onPress: async () => {
+                  await setSecureItem(DEMO_MODE_CONSENT_STORAGE_KEY, 'true');
+                  await setDemoMode(true);
                   Alert.alert(
-                    'Mode démo activé',
-                    'Profil fictif local activé. Vous pourrez revenir en mode production à tout moment.'
+                    '✓ Mode démo activé',
+                    'Profil fictif local activé.',
+                    [
+                      {
+                        text: 'Continuer',
+                        onPress: () => {
+                          setEmail('demo@berserkercut.com');
+                          setPassword('demo123');
+                          setTimeout(() => handleSubmit(), 100);
+                        },
+                      },
+                    ]
                   );
-                }
-                resolve(true);
-              })().catch(() => resolve(false));
-            },
-          },
-        ]
+                },
+              },
+            ]
       );
-    });
-  };
-
-  const handleDemoLogin = async () => {
-    if (!demoModeEnabled) {
-      const activated = await enableDemoModeWithConsent(true);
-      if (!activated) return;
     }
-
-    setEmail('demo@berserkercut.com');
-    setPassword('demo123');
-
-    setTimeout(() => {
-      handleSubmit();
-    }, 300);
-  };
-
-  const toggleDemoMode = async (value: boolean) => {
-    if (value) {
-      await enableDemoModeWithConsent(true);
-      return;
-    }
-
-    await setDemoMode(false);
-    setDemoModeEnabled(false);
-    Alert.alert(
-      'Mode production activé',
-      'Le mode démo est désactivé. Connectez-vous avec votre compte pour utiliser vos données réelles.'
-    );
   };
 
   return (
     <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.container}>
+      {/* ===== Couche de fond (image + overlay pour conserver la lisibilité) ===== */}
+      {/* Background image slot — remplace assets/login-bg.png par ta propre image */}
+      <ImageBackground
+        source={require('../../assets/fondecran.jpeg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.overlay} />
+      </ImageBackground>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
       >
-        <ScrollView 
+        {/* ===== Contenu scrollable principal ===== */}
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.header}>
+          {/* ===== Header marque ===== */}
+          {/* Header — 6 taps secret pour mode démo */}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={handleTitleTap}
+            accessibilityLabel="BerserkerCut"
+            style={styles.header}
+          >
             <Text style={styles.title}>BerserkerCut</Text>
-            <Text style={styles.subtitle}>
-              Votre coach personnel pour la sèche
-            </Text>
-          </View>
+            <View style={styles.subtitleContainer}>
+              <View style={styles.subtitleLine} />
+              <Text style={styles.subtitle}>Votre coach personnel pour la sèche</Text>
+              <View style={styles.subtitleLine} />
+            </View>
+          </TouchableOpacity>
 
+          <View style={styles.spacer} />
+
+          {/* ===== Formulaire d'authentification ===== */}
           <Card style={styles.formCard}>
             <Text style={styles.formTitle}>
               {isLogin ? 'Connexion' : 'Inscription'}
@@ -218,39 +254,29 @@ export const LoginScreen: React.FC = () => {
             />
           </Card>
 
-          <View style={styles.demoSection}>
-            <Text style={styles.demoTitle}>Mode démo</Text>
-            <Text style={styles.demoSubtitle}>
-              Testez l'application sans compte réel ni données personnelles de base
-            </Text>
-            <Text style={styles.demoPrivacyNote}>
-              Utilise un profil fictif local sur cet appareil, activé uniquement avec votre accord.
-            </Text>
-            
-            <View style={styles.demoToggleContainer}>
-              <Text style={styles.demoToggleLabel}>
-                Mode démo {demoModeEnabled ? 'activé' : 'désactivé'}
-              </Text>
-              <Switch
-                value={demoModeEnabled}
-                onValueChange={toggleDemoMode}
-                trackColor={{ false: colors.border, true: colors.primaryLight }}
-                thumbColor={demoModeEnabled ? colors.primary : colors.textMuted}
-                accessibilityLabel="Activer ou desactiver le mode demo"
-                accessibilityHint="Bascule entre le mode de demonstration local et le mode production"
-              />
+          {/* ===== Footer conformité légale ===== */}
+          {/* Legal mentions footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>En utilisant BerserkerCut, vous acceptez nos</Text>
+            <View style={styles.footerLinks}>
+              <TouchableOpacity>
+                <Text style={styles.link}>Conditions d'utilisation</Text>
+              </TouchableOpacity>
+              <Text style={styles.separator}>•</Text>
+              <TouchableOpacity>
+                <Text style={styles.link}>Politique de confidentialité</Text>
+              </TouchableOpacity>
             </View>
-            
-            <Button
-              title="Essayer en mode démo"
-              onPress={handleDemoLogin}
-              variant="outline"
-              style={[styles.demoButton, Platform.OS === 'android' && {
-                borderColor: colors.primary,
-                borderWidth: 2.5,
-              }]}
-              accessibilityLabel="Essayer l'application en mode demo"
-            />
+            <View style={styles.footerLinks}>
+              <TouchableOpacity>
+                <Text style={styles.link}>Mentions légales</Text>
+              </TouchableOpacity>
+              <Text style={styles.separator}>•</Text>
+              <TouchableOpacity>
+                <Text style={styles.link}>Charte utilisateur</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.copyright}>© 2026 BerserkerCut. Tous droits réservés.</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -258,33 +284,69 @@ export const LoginScreen: React.FC = () => {
   );
 };
 
+/**
+ * createStyles
+ * Utilité: centralise les styles de l'écran selon la palette active (light/dark).
+ * Emplacement: fin de fichier pour isoler la présentation de la logique métier.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
+    // ===== Layout global =====
     container: {
       flex: 1,
       backgroundColor: colors.background,
     },
+    backgroundImage: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(30, 15, 15, 0.25)',
+    },
     keyboardAvoidingView: {
       flex: 1,
     },
+
+    // ===== Zone de contenu =====
     scrollContent: {
       flexGrow: 1,
       padding: Spacing.lg,
+      justifyContent: 'flex-start',
+      paddingBottom: Spacing.xl,
     },
+
+    // ===== Header =====
     header: {
       alignItems: 'center',
-      marginBottom: Spacing.xl,
+      marginBottom: Spacing.lg,
+      paddingTop: Spacing.md,
+    },
+    spacer: {
+      height: Spacing.xxl,
     },
     title: {
       ...Typography.h1,
       color: colors.primary,
-      marginBottom: Spacing.sm,
+      marginBottom: Spacing.md,
     },
     subtitle: {
       ...Typography.body,
       color: colors.textLight,
       textAlign: 'center',
+      marginHorizontal: Spacing.sm,
     },
+    subtitleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    subtitleLine: {
+      width: 60,
+      height: 1.5,
+      backgroundColor: colors.primary,
+    },
+
+    // ===== Carte formulaire =====
     formCard: {
       marginBottom: Spacing.xl,
     },
@@ -300,61 +362,42 @@ const createStyles = (colors: ThemePalette) =>
     switchButton: {
       marginTop: Spacing.md,
     },
-    demoSection: {
+
+    // ===== Footer légal =====
+    footer: {
+      marginTop: Spacing.lg,
+      paddingHorizontal: Spacing.md,
       alignItems: 'center',
-      padding: Spacing.lg,
-      backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      borderWidth: 1,
-      borderColor: colors.border,
-      ...(Platform.OS === 'android'
-        ? {
-            elevation: 0,
-            shadowOpacity: 0,
-            shadowOffset: { width: 0, height: 0 },
-            shadowRadius: 0,
-          }
-        : {}),
+      marginBottom: Spacing.lg,
     },
-    demoTitle: {
-      ...Typography.h3,
-      color: colors.text,
+    footerText: {
+      ...Typography.bodySmall,
+      color: colors.textLight,
+      textAlign: 'center',
       marginBottom: Spacing.sm,
     },
-    demoSubtitle: {
+    footerLinks: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: Spacing.xs,
+      flexWrap: 'wrap',
+    },
+    link: {
+      ...Typography.bodySmall,
+      color: colors.primary,
+      textDecorationLine: 'underline',
+      marginHorizontal: Spacing.xs,
+    },
+    separator: {
+      color: colors.textLight,
+      marginHorizontal: Spacing.xs,
+    },
+    copyright: {
       ...Typography.caption,
       color: colors.textLight,
       textAlign: 'center',
-      marginBottom: Spacing.xs,
-    },
-    demoPrivacyNote: {
-      ...Typography.caption,
-      color: colors.textMuted,
-      textAlign: 'center',
-      marginBottom: Spacing.md,
-    },
-    demoButton: {
-      minWidth: 200,
-      ...(Platform.OS === 'android'
-        ? {
-            marginTop: 8,
-            paddingVertical: 14,
-            paddingHorizontal: 24,
-          }
-        : {}),
-    },
-    demoToggleContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      width: '100%',
-      marginBottom: Spacing.md,
-      paddingHorizontal: Spacing.md,
-    },
-    demoToggleLabel: {
-      ...Typography.bodySmall,
-      color: colors.text,
-      flex: 1,
-      marginRight: Spacing.md,
+      marginTop: Spacing.sm,
+      fontSize: 11,
     },
   });

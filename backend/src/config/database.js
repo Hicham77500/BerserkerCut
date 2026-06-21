@@ -1,7 +1,16 @@
+/**
+ * Module: backend/src/config/database.js
+ * Utilite: Definit la logique backend de cette fonctionnalite BerserkerCut.
+ * Navigation: Commencer par les exports publics (routes, modeles, services).
+ */
 const mongoose = require('mongoose');
 
 let connectionPromise = null;
 
+/**
+ * Fonction: connectToDatabase
+ * Utilite: Execute une partie de la logique backend/metier.
+ */
 async function connectToDatabase() {
   if (connectionPromise) return connectionPromise;
 

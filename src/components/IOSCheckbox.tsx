@@ -1,3 +1,8 @@
+/**
+ * Module: src/components/IOSCheckbox.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React from 'react';
 import {
   Pressable,
@@ -17,6 +22,10 @@ interface IOSCheckboxProps extends Omit<PressableProps, 'onPress'> {
   disabled?: boolean;
 }
 
+/**
+ * Composant: IOSCheckbox
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const IOSCheckbox: React.FC<IOSCheckboxProps> = ({
   checked,
   onChange,
@@ -29,6 +38,10 @@ export const IOSCheckbox: React.FC<IOSCheckboxProps> = ({
   const { colors } = useThemeMode();
   const styles = React.useMemo(() => createStyles(colors), [colors]);
 
+/**
+ * Fonction: handlePress
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handlePress = () => {
     if (disabled) return;
     onChange(!checked);
@@ -72,6 +85,10 @@ export const IOSCheckbox: React.FC<IOSCheckboxProps> = ({
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     container: {

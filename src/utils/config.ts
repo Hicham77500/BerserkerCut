@@ -1,7 +1,16 @@
+/**
+ * Module: src/utils/config.ts
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import Constants from 'expo-constants';
 
 const expoExtra = Constants.expoConfig?.extra ?? {};
 
+/**
+ * Fonction: deriveLocalApiUrl
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const deriveLocalApiUrl = (): string | null => {
   const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest2?.extra?.expoClient?.hostUri;
   if (!hostUri) return null;

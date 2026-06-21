@@ -1,5 +1,10 @@
+/**
+ * Module: src/screens/profile/ProfileTrainingScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, Card, Input, IOSButton, TimePickerModal } from '../../components';
@@ -27,6 +32,10 @@ const TRAINING_TYPE_OPTIONS: Array<{ value: TrainingDay['type']; label: string }
 const DEFAULT_START_TIME = '18:00';
 const DEFAULT_DURATION = 45;
 
+/**
+ * Fonction: deriveTimeSlotFromStartTime
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const deriveTimeSlotFromStartTime = (time: string): TrainingDay['timeSlot'] => {
   const [hoursString] = time.split(':');
   const hours = Number.parseInt(hoursString ?? '0', 10);
@@ -46,11 +55,19 @@ const deriveTimeSlotFromStartTime = (time: string): TrainingDay['timeSlot'] => {
   return 'evening';
 };
 
+/**
+ * Fonction: getWeekdayLabel
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const getWeekdayLabel = (dayOfWeek: number): string => {
   const match = WEEKDAYS.find((day) => day.key === dayOfWeek);
   return match?.label ?? 'Jour inconnu';
 };
 
+/**
+ * Composant: ProfileTrainingScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const ProfileTrainingScreen: React.FC = () => {
   const { user, updateProfile } = useAuth();
 
@@ -80,6 +97,10 @@ export const ProfileTrainingScreen: React.FC = () => {
     [trainingDays],
   );
 
+/**
+ * Fonction: toggleDay
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const toggleDay = (dayOfWeek: number) => {
     setTrainingDays((prev) => {
       const exists = prev.find((day) => day.dayOfWeek === dayOfWeek);
@@ -99,16 +120,28 @@ export const ProfileTrainingScreen: React.FC = () => {
     });
   };
 
+/**
+ * Fonction: updateDay
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const updateDay = (dayOfWeek: number, updates: Partial<TrainingDay>) => {
     setTrainingDays((prev) =>
       prev.map((day) => (day.dayOfWeek === dayOfWeek ? { ...day, ...updates } : day)),
     );
   };
 
+/**
+ * Fonction: handleSelectType
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSelectType = (dayOfWeek: number, type: TrainingDay['type']) => {
     updateDay(dayOfWeek, { type });
   };
 
+/**
+ * Fonction: handleDurationChange
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleDurationChange = (dayOfWeek: number, value: string) => {
     const trimmed = value.replace(/[^0-9]/g, '');
     if (!trimmed) {
@@ -119,11 +152,19 @@ export const ProfileTrainingScreen: React.FC = () => {
     updateDay(dayOfWeek, { duration: Number.isNaN(parsed) ? undefined : parsed });
   };
 
+/**
+ * Fonction: openTimePicker
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const openTimePicker = (dayOfWeek: number) => {
     const match = trainingDays.find((day) => day.dayOfWeek === dayOfWeek);
     setTimePickerDay({ dayOfWeek, initial: match?.startTime ?? DEFAULT_START_TIME });
   };
 
+/**
+ * Fonction: handleTimeSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleTimeSave = (time: string) => {
     if (!timePickerDay) return;
     updateDay(timePickerDay.dayOfWeek, {
@@ -132,6 +173,10 @@ export const ProfileTrainingScreen: React.FC = () => {
     });
   };
 
+/**
+ * Fonction: handleSave
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -141,11 +186,18 @@ export const ProfileTrainingScreen: React.FC = () => {
           trainingDays,
         },
       });
+      Alert.alert('Enregistré', 'Le planning d\'entraînement a bien été enregistré.');
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible d'enregistrer le planning pour le moment.");
     } finally {
       setLoading(false);
     }
   };
 
+/**
+ * Fonction: isActive
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
   const isActive = (dayOfWeek: number) => trainingDays.some((day) => day.dayOfWeek === dayOfWeek);
 
   return (

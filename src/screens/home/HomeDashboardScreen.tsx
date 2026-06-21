@@ -1,9 +1,15 @@
+/**
+ * Module: src/screens/home/HomeDashboardScreen.tsx
+ * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
+ * Navigation: Voir les exports nommes pour les points d'entree publics.
+ */
 import React, { useMemo, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -14,6 +20,10 @@ import { Card, IOSButton, ProgressBar } from '@/components';
 import DesignSystem from '@/utils/designSystem';
 import { Typography, Spacing, ThemePalette } from '@/utils/theme';
 
+/**
+ * Composant: HomeDashboardScreen
+ * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
+ */
 export const HomeDashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
@@ -56,11 +66,16 @@ export const HomeDashboardScreen: React.FC = () => {
   }, [navigation]);
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+    <ImageBackground
+      source={require('../../../assets/fondecran.jpeg')}
+      style={{ flex: 1 }}
+      imageStyle={{ opacity: 0.15 }}
+    >
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
         <View style={{ ...styles.header, paddingTop: headerTopSpacing }}>
           <View>
             <Text accessibilityRole="header" style={styles.greeting}>Bonjour {name}</Text>
@@ -187,10 +202,15 @@ export const HomeDashboardScreen: React.FC = () => {
 
         </View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
+/**
+ * Fonction: createStyles
+ * Utilite: Encapsule une logique reutilisable locale ou exportee.
+ */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {
