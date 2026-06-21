@@ -168,7 +168,7 @@ BerserkerCut/
 │   │
 │   ├── navigation/           # Configuration navigation
 │   │   ├── Navigation.tsx
-│   │   ├── DrawerNavigator.tsx
+│   │   ├── MainNavigator.tsx
 │   │   └── StackNavigators.tsx
 │   │
 │   ├── screens/              # Écrans de l'application
@@ -256,38 +256,30 @@ BerserkerCut/
 
 ### Architecture de navigation
 
-L'application utilise une **navigation hybride** combinant :
-1. **Drawer Navigator** (menu latéral)
-2. **Bottom Tab Navigator** (onglets en bas)
-3. **Stack Navigators** (navigation hiérarchique)
+L'application utilise une navigation **tabs-first** combinant :
+1. **Bottom Tab Navigator** (onglets en bas)
+2. **Stack Navigators** (navigation hiérarchique par domaine)
+3. **Stack interne Profile** pour les ecrans utilitaires et contextuels
 
 ### Hiérarchie de navigation
 
 ```
-MainNavigator (Drawer + Tabs)
-├── DrawerNavigator (Menu latéral)
-│   └── DrawerContent
-│       ├── Accueil
-│       ├── Nutrition
-│       ├── Entraînement
-│       ├── Profil
-│       ├── Confidentialité
-│       ├── Paramètres
-│       └── Déconnexion
+MainNavigator
+├── MainTabs
+│   ├── HomeStack
+│   │   └── HomeDashboardScreen
+│   ├── NutritionStack
+│   │   ├── NutritionScreen
+│   │   └── NutritionCalendarScreen
+│   ├── TrainingStack
+│   │   └── TrainingScreen
+│   ├── AgendaStack
+│   │   └── AgendaScreen
+│   └── SettingsStack
+│       └── SystemSettingsScreen
 │
-└── TabNavigator (Onglets)
-    ├── HomeStack
-    │   └── HomeDashboardScreen
-    │
-    ├── NutritionStack
-    │   ├── NutritionScreen
-    │   └── NutritionCalendarScreen
-    │
-    ├── TrainingStack
-    │   └── TrainingScreen
-    │
-    └── ProfileStack
-        ├── ProfileOverviewScreen
+└── ProfileStack
+    ├── ProfileOverviewScreen
         ├── ProfileHealthScreen
         ├── ProfileGoalsScreen
         ├── ProfileTrainingScreen
@@ -303,25 +295,9 @@ MainNavigator (Drawer + Tabs)
 TransitionPresets.SlideFromRightIOS
 ```
 
-**Drawer Animation** :
-```typescript
-Animated.spring(translateX, {
-  toValue: 0,
-  useNativeDriver: true,
-  friction: 8,
-  tension: 40
-})
-```
-
-### Navigation globale
-
-Exposition globale pour accès depuis n'importe où :
-```typescript
-global.navigation = {
-  openDrawer: () => void,
-  closeDrawer: () => void
-}
-```
+**Tabs & safe areas** :
+- Hauteur du tab bar adaptee au `safe-area inset` bas.
+- `HomeDashboardScreen` protege a nouveau l'encoche haute sans recreer le gap bas.
 
 ---
 

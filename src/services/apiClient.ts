@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { getAuthToken, saveSession, clearSession } from './sessionStorage';
+import { getAuthToken } from './sessionStorage';
 
 const expoConfig = Constants.expoConfig?.extra ?? {};
 

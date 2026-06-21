@@ -22,22 +22,20 @@ import {
   LoginScreen,
   OnboardingScreen,
 } from '@/screens';
-// Barre d'outils affichée globalement en haut de l'application.
-import { AppToolbar } from '@/components';
 // Configuration applicative (feature flags, etc.).
 import AppConfig from '@/utils/config';
 // Hook de thème pour synchroniser la navigation avec le mode actuel.
 import { useThemeMode } from '@/hooks/useThemeMode';
 // Échelle d'espacement partagée.
 import { Spacing } from '@/utils/theme';
-// Navigateur principal combinant Drawer + Tabs.
-import { MainNavigator } from './DrawerNavigator';
+// Navigateur principal avec navigation par onglets unique.
+import { MainNavigator } from './MainNavigator';
 
 // Typage des routes du stack racine : login, onboarding et application principale.
 type RootStackParamList = {
   Login: undefined;
   Onboarding: undefined;
-  MainDrawer: undefined;
+  MainApp: undefined;
 };
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -80,12 +78,12 @@ const AppNavigator: React.FC = () => {
         cardStyle: { backgroundColor: colors.background },
       }}
     >
-      {/* Décision de routage : login, onboarding ou drawer principal. */}
+      {/* Décision de routage : login, onboarding ou interface principale. */}
       {user ? (
         user.profile?.name && isNewUiEnabled ? (
-          <RootStack.Screen name="MainDrawer" component={MainNavigator} />
+          <RootStack.Screen name="MainApp" component={MainNavigator} />
         ) : user.profile?.name ? (
-          <RootStack.Screen name="MainDrawer" component={MainNavigator} />
+          <RootStack.Screen name="MainApp" component={MainNavigator} />
         ) : (
           <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
         )
@@ -144,11 +142,7 @@ export const Navigation: React.FC = () => {
         <AuthProvider>
           <PlanProvider>
             <View style={{ flex: 1, backgroundColor: colors.background }}>
-              {/* Barre d'outils persistante sur l'ensemble de l'application. */}
-              <AppToolbar />
-              <View style={{ flex: 1 }}>
-                <AppNavigator />
-              </View>
+              <AppNavigator />
             </View>
           </PlanProvider>
         </AuthProvider>

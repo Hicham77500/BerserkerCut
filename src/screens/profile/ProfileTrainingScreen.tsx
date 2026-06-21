@@ -149,7 +149,7 @@ export const ProfileTrainingScreen: React.FC = () => {
   const isActive = (dayOfWeek: number) => trainingDays.some((day) => day.dayOfWeek === dayOfWeek);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <Card style={styles.card}>
           <Text style={styles.cardTitle}>Planning hebdomadaire</Text>

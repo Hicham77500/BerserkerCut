@@ -11,7 +11,6 @@ import {
   getStoredUser,
   updateStoredUser,
 } from './sessionStorage';
-import { AppConfig } from '../utils/config';
 import { enableDemoModeAfterNetworkError } from '../utils/networkFallback';
 import { isDemoMode } from './appModeService';
 

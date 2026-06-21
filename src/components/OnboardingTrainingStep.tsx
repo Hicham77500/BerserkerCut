@@ -3,7 +3,7 @@
  * Interface moderne et complète pour la collecte des données d'entraînement
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -15,11 +15,10 @@ import {
   Switch,
   Dimensions,
   Platform,
-  Animated,
   Pressable
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing } from '../utils/theme';
+import { Typography, Spacing, ThemePalette } from '../utils/theme';
 import {
   ExtendedTrainingProfile,
   TrainingObjective,
@@ -37,6 +36,7 @@ import {
 } from '../types/TrainingProfile';
 import { saveTrainingProfile, validateTrainingProfile, getCurrentMode } from '../services/trainingService';
 import { getUIModeMessages } from '../utils/config';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 interface Props {
   onComplete: (data: ExtendedTrainingProfile) => void;
@@ -47,6 +47,8 @@ interface Props {
 const { width } = Dimensions.get('window');
 
 export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, userId }) => {
+  const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   // États pour chaque section du formulaire
   const [objectives, setObjectives] = useState<TrainingObjective>({ primary: 'muscle_gain' });
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklyTrainingSchedule>({
@@ -191,7 +193,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
   ]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.container}>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -238,6 +240,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 ]}
                 onPress={() => handleObjectiveSelect('primary', obj.key)}
                 activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
+                accessibilityRole="button"
+                accessibilityLabel={`Objectif principal ${obj.label}`}
+                accessibilityState={{ selected: objectives.primary === obj.key }}
+                hitSlop={8}
               >
                 <Text style={styles.optionChipEmoji}>{obj.emoji}</Text>
                 <Text style={[
@@ -260,6 +266,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 ]}
                 onPress={() => handleObjectiveSelect('primary', obj.key)}
                 activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
+                accessibilityRole="button"
+                accessibilityLabel={`Objectif principal ${obj.label}`}
+                accessibilityState={{ selected: objectives.primary === obj.key }}
+                hitSlop={8}
               >
                 <Text style={styles.optionChipEmoji}>{obj.emoji}</Text>
                 <Text style={[
@@ -285,6 +295,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                     ]}
                     onPress={() => handleObjectiveSelect('secondary', obj.key)}
                     activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Objectif secondaire ${obj.label}`}
+                    accessibilityState={{ selected: objectives.secondary === obj.key }}
+                    hitSlop={8}
                   >
                     <Text style={styles.optionChipEmojiSmall}>{obj.emoji}</Text>
                     <Text style={[
@@ -314,6 +328,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                   weeklySchedule[day.key as keyof WeeklyTrainingSchedule] && styles.dayButtonSelected
                 ]}
                 onPress={() => handleDayToggle(day.key as keyof WeeklyTrainingSchedule)}
+                accessibilityRole="button"
+                accessibilityLabel={`Jour ${day.label}`}
+                accessibilityState={{ selected: weeklySchedule[day.key as keyof WeeklyTrainingSchedule] }}
+                hitSlop={8}
               >
                 <Text style={[
                   styles.dayText,
@@ -335,6 +353,11 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                   preferredTimes[slot.key as keyof PreferredTrainingTime] && styles.timeSlotSelected
                 ]}
                 onPress={() => handleTimeToggle(slot.key as keyof PreferredTrainingTime)}
+                accessibilityRole="button"
+                accessibilityLabel={`Creneau ${slot.label}`}
+                accessibilityHint={slot.description}
+                accessibilityState={{ selected: preferredTimes[slot.key as keyof PreferredTrainingTime] }}
+                hitSlop={8}
               >
                 <Text style={[
                   styles.timeSlotText,
@@ -365,6 +388,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 ]}
                 onPress={() => handleActivityToggle(activity.key as keyof ActivityType)}
                 activeOpacity={Platform.OS === 'android' ? 0.7 : 0.8}
+                accessibilityRole="button"
+                accessibilityLabel={`Type d'activite ${activity.label}`}
+                accessibilityState={{ selected: Boolean(activityTypes[activity.key as keyof ActivityType]) }}
+                hitSlop={8}
               >
                 <Text style={styles.activityChipIcon}>{activity.icon}</Text>
                 <Text style={[
@@ -384,6 +411,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 placeholder="Précisez (ex: Arts martiaux, danse...)"
                 value={activityTypes.other_description || ''}
                 onChangeText={(text) => setActivityTypes(prev => ({ ...prev, other_description: text }))}
+                accessibilityLabel="Autre type d'activite"
               />
             </View>
           )}
@@ -408,6 +436,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                   color: 'rgba(128, 128, 128, 0.1)',
                   borderless: false
                 } : undefined}
+                accessibilityRole="button"
+                accessibilityLabel={`Niveau d'activite quotidienne ${level.label}`}
+                accessibilityHint={level.description}
+                accessibilityState={{ selected: neatLevel.level === level.key }}
               >
                 <Text style={[
                   styles.neatChipButtonText,
@@ -436,8 +468,9 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
             <Switch
               value={healthLimitations.hasLimitations}
               onValueChange={handleHealthLimitationsToggle}
-              trackColor={{ false: Colors.border, true: Colors.primaryLight }}
-              thumbColor={healthLimitations.hasLimitations ? Colors.primary : Colors.textMuted}
+              trackColor={{ false: colors.border, true: colors.primaryLight }}
+              thumbColor={healthLimitations.hasLimitations ? colors.primary : colors.textMuted}
+              accessibilityLabel="Indiquer des limitations de sante"
             />
           </View>
 
@@ -451,6 +484,7 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 onChangeText={(text) => setHealthLimitations(prev => ({ ...prev, limitations: text }))}
                 multiline
                 numberOfLines={4}
+                accessibilityLabel="Description des limitations de sante"
               />
             </View>
           )}
@@ -486,6 +520,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 ...prev, 
                 declareGoodHealth: !prev.declareGoodHealth 
               }))}
+              accessibilityRole="button"
+              accessibilityLabel="Declaration de bonne sante"
+              accessibilityState={{ selected: healthDeclaration.declareGoodHealth }}
+              hitSlop={8}
             >
               <View style={[
                 styles.checkbox,
@@ -506,6 +544,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
                 ...prev, 
                 acknowledgeDisclaimer: !prev.acknowledgeDisclaimer 
               }))}
+              accessibilityRole="button"
+              accessibilityLabel="Accepter l'avertissement et les conditions"
+              accessibilityState={{ selected: healthDeclaration.acknowledgeDisclaimer }}
+              hitSlop={8}
             >
               <View style={[
                 styles.checkbox,
@@ -524,7 +566,13 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
 
         {/* Boutons de navigation */}
         <View style={styles.navigationButtons}>
-          <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Retour a l'etape precedente"
+            hitSlop={8}
+          >
             <Text style={styles.backButtonText}>Retour</Text>
           </TouchableOpacity>
           
@@ -532,6 +580,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
             style={[styles.nextButton, loading && styles.nextButtonDisabled]} 
             onPress={handleSubmit}
             disabled={loading}
+            accessibilityRole="button"
+            accessibilityLabel={loading ? 'Sauvegarde en cours' : 'Valider et continuer'}
+            accessibilityState={{ disabled: loading }}
+            hitSlop={8}
           >
             <Text style={styles.nextButtonText}>
               {loading ? 'Sauvegarde...' : uiMessages.saveButton}
@@ -543,10 +595,10 @@ export const OnboardingTrainingStep: React.FC<Props> = ({ onComplete, onBack, us
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -560,22 +612,22 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.h1,
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: Spacing.sm,
   },
   subtitle: {
     ...Typography.body,
-    color: Colors.textLight,
+    color: colors.textLight,
     textAlign: 'center',
   },
   modeIndicator: {
-    backgroundColor: Platform.OS === 'android' ? 'rgba(59, 130, 246, 0.08)' : Colors.info + '15',
+    backgroundColor: Platform.OS === 'android' ? colors.info + '12' : colors.info + '15',
     borderRadius: Platform.OS === 'android' ? 12 : 8,
     padding: Platform.OS === 'android' ? Spacing.md : Spacing.sm,
     marginTop: Spacing.md,
     borderWidth: Platform.OS === 'android' ? 2 : 1,
-    borderColor: Platform.OS === 'android' ? 'rgba(59, 130, 246, 0.4)' : Colors.info + '30',
+    borderColor: Platform.OS === 'android' ? colors.info + '55' : colors.info + '30',
     // Suppression complète des élévations qui causent les carrés
     ...(Platform.OS === 'android' ? { 
       elevation: 0,
@@ -587,7 +639,7 @@ const styles = StyleSheet.create({
   },
   modeIndicatorText: {
     ...Typography.caption,
-    color: Platform.OS === 'android' ? 'rgb(59, 130, 246)' : Colors.info, // Couleur plus contrastée sur Android
+    color: colors.info,
     textAlign: 'center',
     fontWeight: Platform.OS === 'android' ? '700' : '600', // Plus gras sur Android
     ...(Platform.OS === 'android' ? {
@@ -596,16 +648,16 @@ const styles = StyleSheet.create({
     } : {}),
   },
   errorContainer: {
-    backgroundColor: Colors.error + '15',
+    backgroundColor: colors.error + '15',
     borderRadius: 12,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.error + '30',
+    borderColor: colors.error + '30',
   },
   errorText: {
     ...Typography.caption,
-    color: Colors.error,
+    color: colors.error,
     marginBottom: Spacing.xs,
   },
   section: {
@@ -613,18 +665,18 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...Typography.h3,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   fieldLabel: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.sm,
   },
   fieldDescription: {
     ...Typography.caption,
-    color: Colors.textLight,
+    color: colors.textLight,
     marginBottom: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   optionsGrid: {
@@ -636,25 +688,25 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   optionCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
     borderWidth: 2,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   optionCardSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
   },
   optionChip: {
     flex: 1,
-    backgroundColor: Platform.OS === 'android' ? 'transparent' : Colors.surface, // Complètement transparent sur Android
+    backgroundColor: Platform.OS === 'android' ? 'transparent' : colors.surface,
     borderRadius: Platform.OS === 'android' ? 16 : 12,
     paddingVertical: Platform.OS === 'android' ? Spacing.md + 2 : Spacing.md,
     paddingHorizontal: Spacing.sm,
     borderWidth: Platform.OS === 'android' ? 2 : 2,
-    borderColor: Platform.OS === 'android' ? 'rgba(203, 213, 225, 0.9)' : Colors.border,
+    borderColor: Platform.OS === 'android' ? colors.borderDark : colors.border,
     alignItems: 'center',
     minHeight: Platform.OS === 'android' ? 75 : 70,
     // Suppression complète des ombres et élévations sur Android
@@ -667,8 +719,8 @@ const styles = StyleSheet.create({
     } : {}),
   },
   optionChipSelected: {
-    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
-    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 0.1)' : Colors.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: Platform.OS === 'android' ? colors.primary + '18' : colors.primary + '10',
     // Suppression des élévations et ombres sur Android pour éviter les carrés
     ...(Platform.OS === 'android' ? { 
       elevation: 0,
@@ -685,12 +737,12 @@ const styles = StyleSheet.create({
   },
   optionChipSmall: {
     flex: 1,
-    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 255, 255, 0.95)' : Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     paddingVertical: Platform.OS === 'android' ? Spacing.sm + 2 : Spacing.sm,
     paddingHorizontal: Spacing.xs,
     borderWidth: Platform.OS === 'android' ? 2 : 1.5,
-    borderColor: Platform.OS === 'android' ? 'rgba(209, 213, 219, 0.8)' : Colors.border,
+    borderColor: colors.border,
     alignItems: 'center',
     minHeight: Platform.OS === 'android' ? 55 : 50,
     ...(Platform.OS === 'android' ? { elevation: 1 } : {}),
@@ -698,16 +750,16 @@ const styles = StyleSheet.create({
   optionText: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.xs,
   },
   optionTextSelected: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   optionChipText: {
     ...Typography.body,
     fontWeight: Platform.OS === 'android' ? '700' : '600',
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     fontSize: Platform.OS === 'android' ? 13 : 12,
     ...(Platform.OS === 'android' ? {
@@ -716,7 +768,7 @@ const styles = StyleSheet.create({
     } : {}),
   },
   optionChipTextSelected: {
-    color: Platform.OS === 'android' ? 'rgb(255, 107, 53)' : Colors.primary,
+    color: colors.primary,
     ...(Platform.OS === 'android' ? {
       fontWeight: '700',
       textShadowColor: 'rgba(255, 107, 53, 0.2)',
@@ -727,7 +779,7 @@ const styles = StyleSheet.create({
   optionChipTextSmall: {
     ...Typography.caption,
     fontWeight: '600',
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     fontSize: 10,
   },
@@ -737,7 +789,7 @@ const styles = StyleSheet.create({
   },
   optionDescription: {
     ...Typography.caption,
-    color: Colors.textLight,
+    color: colors.textLight,
   },
   daysContainer: {
     flexDirection: 'row',
@@ -748,9 +800,9 @@ const styles = StyleSheet.create({
     width: (width - 2 * Spacing.lg - 6 * Spacing.xs) / 7,
     height: Platform.OS === 'android' ? 42 : 44,
     borderRadius: Platform.OS === 'android' ? 21 : 22,
-    backgroundColor: Platform.OS === 'android' ? 'transparent' : Colors.surface,
+    backgroundColor: Platform.OS === 'android' ? 'transparent' : colors.surface,
     borderWidth: Platform.OS === 'android' ? 2 : 2,
-    borderColor: Platform.OS === 'android' ? 'rgba(203, 213, 225, 0.9)' : Colors.border,
+    borderColor: Platform.OS === 'android' ? colors.borderDark : colors.border,
     justifyContent: 'center',
     alignItems: 'center',
     // Suppression complète des ombres sur Android
@@ -763,8 +815,8 @@ const styles = StyleSheet.create({
     } : {}),
   },
   dayButtonSelected: {
-    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
-    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
     // Suppression des effets 3D sur Android
     ...(Platform.OS === 'android' ? {
       elevation: 0,
@@ -776,39 +828,39 @@ const styles = StyleSheet.create({
   },
   dayText: {
     ...Typography.caption,
-    color: Colors.text,
+    color: colors.text,
     fontWeight: '600',
   },
   dayTextSelected: {
-    color: Colors.surface,
+    color: colors.textDark,
   },
   timeSlots: {
     marginBottom: Spacing.md,
   },
   timeSlot: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
     borderWidth: 2,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   timeSlotSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
   },
   timeSlotText: {
     ...Typography.body,
     fontWeight: '600',
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.xs,
   },
   timeSlotTextSelected: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   timeSlotDescription: {
     ...Typography.caption,
-    color: Colors.textLight,
+    color: colors.textLight,
   },
   activitiesGrid: {
     flexDirection: 'row',
@@ -825,27 +877,27 @@ const styles = StyleSheet.create({
   },
   activityCard: {
     width: (width - 2 * Spacing.lg - Spacing.sm) / 2,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
     borderWidth: 2,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     alignItems: 'center',
   },
   activityCardSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
   },
   activityChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 255, 255, 0)' : Colors.surface, // Totalement transparent sur Android
+    backgroundColor: Platform.OS === 'android' ? 'transparent' : colors.surface,
     borderRadius: Platform.OS === 'android' ? 20 : 20,
     paddingHorizontal: Platform.OS === 'android' ? Spacing.md : Spacing.md + 2,
     paddingVertical: Platform.OS === 'android' ? Spacing.xs + 3 : Spacing.sm + 2,
     borderWidth: Platform.OS === 'android' ? 2 : 1.5,
-    borderColor: Platform.OS === 'android' ? 'rgba(203, 213, 225, 1)' : Colors.border, // Bordure plus opaque
+    borderColor: Platform.OS === 'android' ? colors.borderDark : colors.border,
     marginBottom: Platform.OS === 'android' ? Spacing.xs / 2 : Spacing.xs,
     maxWidth: Platform.OS === 'android' ? '48%' : 'auto',
     // Suppression absolue de tout effet visuel sur Android
@@ -859,8 +911,8 @@ const styles = StyleSheet.create({
     } : {}),
   },
   activityChipSelected: {
-    borderColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 1)' : Colors.primary,
-    backgroundColor: Platform.OS === 'android' ? 'rgba(255, 107, 53, 0.08)' : Colors.primary + '15', // Plus léger sur Android
+    borderColor: colors.primary,
+    backgroundColor: Platform.OS === 'android' ? colors.primary + '14' : colors.primary + '15',
     // Suppression absolue de tout effet 3D sur Android
     ...(Platform.OS === 'android' ? { 
       elevation: 0,
@@ -881,16 +933,16 @@ const styles = StyleSheet.create({
   },
   activityText: {
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
   },
   activityTextSelected: {
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   activityChipText: {
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     fontSize: Platform.OS === 'android' ? 15 : 14,
     fontWeight: Platform.OS === 'android' ? '600' : 'normal',
     ...(Platform.OS === 'android' ? {
@@ -898,7 +950,7 @@ const styles = StyleSheet.create({
     } : {}),
   },
   activityChipTextSelected: {
-    color: Platform.OS === 'android' ? 'rgb(255, 107, 53)' : Colors.primary,
+    color: colors.primary,
     fontWeight: Platform.OS === 'android' ? '700' : '600',
     ...(Platform.OS === 'android' ? {
       textShadowColor: 'rgba(255, 107, 53, 0.2)',
@@ -910,13 +962,13 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm, // Compact comme iOS sur toutes les plateformes
   },
   textInput: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     minHeight: 44,
   },
   neatOptions: {
@@ -931,12 +983,12 @@ const styles = StyleSheet.create({
   // Nouveaux styles pour les boutons NEAT optimisés Android/iOS
   neatChipButton: {
     flex: 1,
-    backgroundColor: Platform.OS === 'android' ? '#FFFFFF' : Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     paddingVertical: Platform.OS === 'android' ? 12 : 14,
     paddingHorizontal: Platform.OS === 'android' ? 8 : 10,
     borderWidth: Platform.OS === 'android' ? 1.5 : 2,
-    borderColor: Platform.OS === 'android' ? '#E2E8F0' : Colors.border,
+    borderColor: Platform.OS === 'android' ? colors.borderDark : colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
@@ -952,15 +1004,15 @@ const styles = StyleSheet.create({
       backfaceVisibility: 'hidden',
     } : {
       // iOS garde des ombres subtiles
-      shadowColor: Colors.text,
+      shadowColor: colors.text,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
     }),
   },
   neatChipButtonActive: {
-    borderColor: Platform.OS === 'android' ? '#FF6B35' : Colors.primary,
-    backgroundColor: Platform.OS === 'android' ? '#FFFFFF' : Colors.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: Platform.OS === 'android' ? colors.surface : colors.primary + '10',
     // Suppression totale des effets 3D sur Android même actif
     ...(Platform.OS === 'android' ? { 
       elevation: 0,
@@ -971,7 +1023,7 @@ const styles = StyleSheet.create({
       overflow: 'hidden',
       backfaceVisibility: 'hidden',
     } : {
-      shadowColor: Colors.primary,
+      shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.15,
       shadowRadius: 4,
@@ -980,22 +1032,22 @@ const styles = StyleSheet.create({
   neatChipButtonText: {
     ...Typography.body,
     fontWeight: Platform.OS === 'android' ? '600' : '600',
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     fontSize: Platform.OS === 'android' ? 13 : 14,
     lineHeight: Platform.OS === 'android' ? 18 : 20,
   },
   neatChipButtonTextActive: {
-    color: Platform.OS === 'android' ? '#FF6B35' : Colors.primary,
+    color: colors.primary,
     fontWeight: '700',
   },
   neatOptionDescription: {
     ...Typography.caption,
-    color: Colors.textLight,
+    color: colors.textLight,
   },
   neatSelectedDescription: {
     ...Typography.caption,
-    color: Colors.textLight,
+    color: colors.textLight,
     fontStyle: 'italic',
     marginTop: Platform.OS === 'android' ? Spacing.xs / 2 : Spacing.xs, // Moins d'espace sur Android
     fontSize: Platform.OS === 'android' ? 11 : 12, // Plus petit sur Android
@@ -1008,7 +1060,7 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     flex: 1,
     marginRight: Spacing.md,
   },
@@ -1016,32 +1068,32 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
   },
   textArea: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     minHeight: 100,
     textAlignVertical: 'top',
   },
   disclaimerContainer: {
-    backgroundColor: Colors.warning + '10',
+    backgroundColor: colors.warning + '10',
     borderRadius: 12,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.warning + '30',
+    borderColor: colors.warning + '30',
   },
   disclaimerText: {
     ...Typography.caption,
-    color: Colors.text,
+    color: colors.text,
     lineHeight: 18,
   },
   disclaimerBold: {
     fontWeight: '700',
-    color: Colors.warning,
+    color: colors.warning,
   },
   declarationsContainer: {
     marginBottom: Spacing.md,
@@ -1056,24 +1108,24 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: Colors.textMuted,
+    borderColor: colors.textMuted,
     marginRight: Spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 2,
   },
   checkboxSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary,
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   checkmark: {
-    color: Colors.surface,
+    color: colors.textDark,
     fontSize: 16,
     fontWeight: '700',
   },
   checkboxText: {
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     flex: 1,
     lineHeight: 20,
   },
@@ -1083,37 +1135,37 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     paddingTop: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: colors.border,
   },
   backButton: {
     flex: 1,
     height: 50,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
     borderWidth: 2,
-    borderColor: Colors.textMuted,
+    borderColor: colors.textMuted,
   },
   backButtonText: {
     ...Typography.button,
-    color: Colors.text,
+    color: colors.text,
   },
   nextButton: {
     flex: 1,
     height: 50,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: Spacing.md,
   },
   nextButtonDisabled: {
-    backgroundColor: Colors.textMuted,
+    backgroundColor: colors.textMuted,
   },
   nextButtonText: {
     ...Typography.button,
-    color: Colors.surface,
+    color: colors.textDark,
   },
 });

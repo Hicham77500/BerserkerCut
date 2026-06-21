@@ -126,7 +126,7 @@ export class DemoAuthService {
     throw new Error('Identifiants invalides');
   }
 
-  static async register(email: string, password: string): Promise<User> {
+  static async register(email: string, _password: string): Promise<User> {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     const demoProfile: UserProfile = {

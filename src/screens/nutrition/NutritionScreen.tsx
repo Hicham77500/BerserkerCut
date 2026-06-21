@@ -12,7 +12,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { usePlan } from '@/hooks/usePlan';
-import { useAuth } from '@/hooks/useAuth';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { Colors, Typography, Spacing, BorderRadius } from '@/utils/theme';
 import {
@@ -417,6 +416,10 @@ export const NutritionScreen: React.FC = () => {
                         <TouchableOpacity 
                           onPress={() => handleEditMeal(meal)}
                           style={styles.editButton}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Editer le repas ${meal.name}`}
+                          accessibilityHint="Ouvre la fiche d'edition du repas"
+                          hitSlop={8}
                         >
                           <Text style={styles.editButtonText}>Éditer</Text>
                         </TouchableOpacity>
@@ -426,6 +429,10 @@ export const NutritionScreen: React.FC = () => {
                         <TouchableOpacity
                           style={{ marginLeft: 8, padding: 4 }}
                           onPress={() => handleEditMealTime(meal)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Modifier l'heure du repas ${meal.name}`}
+                          accessibilityHint="Ouvre le selecteur d'heure"
+                          hitSlop={8}
                         >
                           <Text style={{ fontSize: 16 }}>⏰</Text>
                         </TouchableOpacity>
@@ -453,7 +460,12 @@ export const NutritionScreen: React.FC = () => {
 
                   {latestPhoto ? (
                     <View style={styles.mealPhotoPreview}>
-                      <Image source={{ uri: latestPhoto.uri }} style={styles.mealPhoto} />
+                      <Image
+                        source={{ uri: latestPhoto.uri }}
+                        style={styles.mealPhoto}
+                        accessibilityRole="image"
+                        accessibilityLabel={`Derniere photo du repas ${meal.name}`}
+                      />
                       <Text style={styles.mealPhotoLabel}>
                         Dernière photo • {new Date(latestPhoto.timestamp).toLocaleTimeString('fr-FR', {
                           hour: '2-digit',
@@ -470,6 +482,7 @@ export const NutritionScreen: React.FC = () => {
                     loading={savingMealId === meal.id}
                     fullWidth
                     style={styles.mealButton}
+                    accessibilityLabel={`Prendre une photo pour ${meal.name}`}
                   />
 
                   {photos.length ? (
@@ -482,7 +495,13 @@ export const NutritionScreen: React.FC = () => {
                         .slice()
                         .sort((a, b) => b.timestamp - a.timestamp)
                         .map((photo) => (
-                          <Image key={photo.id} source={{ uri: photo.uri }} style={styles.photoThumbnail} />
+                          <Image
+                            key={photo.id}
+                            source={{ uri: photo.uri }}
+                            style={styles.photoThumbnail}
+                            accessibilityRole="image"
+                            accessibilityLabel={`Miniature photo du repas ${meal.name}`}
+                          />
                         ))}
                     </ScrollView>
                   ) : null}
@@ -496,6 +515,10 @@ export const NutritionScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.galleryLink}
             onPress={() => navigation.getParent()?.navigate('ProfileStack' as never, { screen: 'Photos' } as never)}
+            accessibilityRole="button"
+            accessibilityLabel="Ouvrir la galerie complete des photos"
+            accessibilityHint="Navigue vers l'ecran Photos du profil"
+            hitSlop={8}
           >
             <Text style={styles.galleryLinkText}>Ouvrir la galerie complète</Text>
           </TouchableOpacity>

@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { usePlan } from '../../hooks/usePlan';
 import { useAuth } from '../../hooks/useAuth';
-import { Colors, Typography, Spacing, BorderRadius } from '../../utils/theme';
+import { useThemeMode } from '../../hooks/useThemeMode';
+import { Typography, Spacing, BorderRadius, ThemePalette } from '../../utils/theme';
 import { Card, IOSButton } from '../../components';
 import DesignSystem from '../../utils/designSystem';
 import { TrainingDay } from '../../types';
@@ -50,6 +51,8 @@ export const TrainingScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { currentPlan, weeklySchedule } = usePlan();
   const { user } = useAuth();
+  const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const trainingProfile = user?.profile?.training;
 
@@ -61,18 +64,20 @@ export const TrainingScreen: React.FC = () => {
 
   const todayIsTrainingDay = currentPlan?.dayType === 'training' && Boolean(todaysTraining);
 
+  const sessionTone = todayIsTrainingDay ? colors.primary : colors.accent;
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Card style={styles.card}>
+        <Card style={[styles.card, styles.heroCard]}>
           <Text style={styles.sectionTitle}>Séance du jour</Text>
           {todayIsTrainingDay && todaysTraining ? (
             <View style={styles.sessionContainer}>
               <View style={styles.sessionHeader}>
-                <Text style={styles.sessionType}>
+                <Text style={[styles.sessionType, { color: sessionTone }]}>
                   {SESSION_TYPE_LABELS[todaysTraining.type] ?? 'Séance programmée'}
                 </Text>
                 <Text style={styles.sessionDuration}>
@@ -82,17 +87,21 @@ export const TrainingScreen: React.FC = () => {
               <Text style={styles.sessionSlot}>
                 {`Heure prévue : ${formatStartTime(todaysTraining)}`}
               </Text>
-              <Text style={styles.sessionTip}>
-                {currentPlan?.dailyTip ??
-                  'Préparez votre échauffement et pensez à vous hydrater avant la séance.'}
-              </Text>
+              <View style={styles.tipBox}>
+                <Text style={styles.sessionTip}>
+                  {currentPlan?.dailyTip ??
+                    'Préparez votre échauffement et pensez à vous hydrater avant la séance.'}
+                </Text>
+              </View>
             </View>
           ) : (
             <View style={styles.sessionContainer}>
-              <Text style={styles.sessionType}>Jour de récupération</Text>
-              <Text style={styles.sessionTip}>
-                Profitez de cette journée pour vous reposer et optimiser la récupération musculaire.
-              </Text>
+              <Text style={[styles.sessionType, { color: sessionTone }]}>Jour de récupération</Text>
+              <View style={styles.tipBox}>
+                <Text style={styles.sessionTip}>
+                  Profitez de cette journée pour vous reposer et optimiser la récupération musculaire.
+                </Text>
+              </View>
             </View>
           )}
         </Card>
@@ -123,7 +132,7 @@ export const TrainingScreen: React.FC = () => {
                   style={[
                     styles.weekRow,
                     day.isToday && styles.weekRowToday,
-                    day.isTrainingDay && styles.weekRowActive,
+                    day.isTrainingDay ? styles.weekRowActive : styles.weekRowRestCard,
                   ]}
                 >
                   <View style={styles.weekRowInfo}>
@@ -147,7 +156,7 @@ export const TrainingScreen: React.FC = () => {
                       </Text>
                     </View>
                   ) : (
-                    <Text style={styles.weekRowRest}>Récupération</Text>
+                      <Text style={styles.weekRowRest}>Récupération</Text>
                   )}
                 </View>
               ))}
@@ -159,23 +168,29 @@ export const TrainingScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.secondaryBackground,
   },
   content: {
     flexGrow: 1,
     paddingHorizontal: DesignSystem.layout.screenPadding,
     paddingVertical: DesignSystem.layout.sectionGap,
     gap: DesignSystem.layout.sectionGap,
+    backgroundColor: colors.secondaryBackground,
   },
   card: {
     gap: Spacing.md,
   },
+  heroCard: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
   sectionTitle: {
     ...Typography.h3,
-    color: Colors.text,
+    color: colors.text,
   },
   sessionContainer: {
     gap: Spacing.sm,
@@ -187,19 +202,26 @@ const styles = StyleSheet.create({
   },
   sessionType: {
     ...Typography.h2,
-    color: Colors.text,
+    color: colors.text,
   },
   sessionDuration: {
     ...Typography.bodySmall,
-    color: Colors.textLight,
+    color: colors.textLight,
   },
   sessionSlot: {
     ...Typography.body,
-    color: Colors.textLight,
+    color: colors.textLight,
+  },
+  tipBox: {
+    backgroundColor: colors.secondaryBackground,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   sessionTip: {
     ...Typography.body,
-    color: Colors.textLight,
+    color: colors.text,
   },
   weekHeader: {
     flexDirection: 'row',
@@ -213,30 +235,35 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     gap: Spacing.md,
   },
   weekRowToday: {
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   weekRowActive: {
-    backgroundColor: Colors.surfaceDark ?? Colors.surface,
+    backgroundColor: colors.primary + '10',
+    borderColor: colors.primary + '45',
+  },
+  weekRowRestCard: {
+    backgroundColor: colors.surface,
   },
   weekRowInfo: {
     flex: 1,
   },
   weekDayLabel: {
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
+    fontWeight: '600',
   },
   weekDaySubtitle: {
     ...Typography.bodySmall,
-    color: Colors.textLight,
+    color: colors.textLight,
     marginTop: Spacing.xs,
   },
   weekRowMeta: {
@@ -245,19 +272,20 @@ const styles = StyleSheet.create({
   },
   weekRowTime: {
     ...Typography.bodySmall,
-    color: Colors.textLight,
+    color: colors.text,
   },
   weekRowDuration: {
     ...Typography.caption,
-    color: Colors.textLight,
+    color: colors.textLight,
   },
   weekRowRest: {
     ...Typography.bodySmall,
-    color: Colors.textLight,
+    color: colors.accent,
+    fontWeight: '600',
   },
   emptyText: {
     ...Typography.bodySmall,
-    color: Colors.textLight,
+    color: colors.textLight,
   },
 });
 

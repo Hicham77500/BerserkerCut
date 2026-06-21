@@ -2,7 +2,7 @@
  * Composants pour l'étape santé de l'onboarding
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,13 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { Colors, Typography, Spacing, BorderRadius } from '../utils/theme';
+import { Typography, Spacing, BorderRadius, ThemePalette } from '../utils/theme';
 import { Card } from './Card';
 import { Input } from './Input'; 
 import { Button } from './Button';
 import { HealthProfile } from '../types';
 import HealthService from '../services/healthService';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 interface HealthStepProps {
   onComplete: (healthData: Partial<HealthProfile>) => void;
@@ -28,6 +29,8 @@ export const HealthStep: React.FC<HealthStepProps> = ({
   onComplete,
   initialData,
 }) => {
+  const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [weight, setWeight] = useState(initialData?.weight?.toString() || '');
   const [height, setHeight] = useState(initialData?.height?.toString() || '');
   const [age, setAge] = useState(initialData?.age?.toString() || '');
@@ -89,9 +92,6 @@ export const HealthStep: React.FC<HealthStepProps> = ({
     }
 
     // Calculer l'IMC
-    const bmi = HealthService.calculateBMI(weightNum, heightNum);
-    const bmiCategory = HealthService.getBMICategory(bmi);
-
     // Estimer le niveau d'activité si les pas sont fournis
     let estimatedActivityLevel = activityLevel;
     if (dailySteps) {
@@ -235,6 +235,8 @@ const ActivityLevelSelector: React.FC<ActivityLevelSelectorProps> = ({
   value,
   onChange,
 }) => {
+  const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const options = [
     {
       value: 'sedentary' as const,
@@ -297,33 +299,38 @@ const ActivityOption: React.FC<ActivityOptionProps> = ({
   option,
   isSelected,
   onPress,
-}) => (
-  <TouchableOpacity onPress={onPress}>
-    <Card
-      style={[
-        styles.activityOption,
-        isSelected && styles.activityOptionSelected,
-      ]}
-    >
-      <View style={styles.activityContent}>
-        <Text style={styles.activityEmoji}>{option.emoji}</Text>
-        <View style={styles.activityTextContainer}>
-          <Text style={[
-            styles.activityLabel,
-            isSelected && styles.activityLabelSelected,
-          ]}>
-            {option.label}
-          </Text>
-          <Text style={styles.activityDescription}>
-            {option.description}
-          </Text>
-        </View>
-      </View>
-    </Card>
-  </TouchableOpacity>
-);
+}) => {
+  const { colors } = useThemeMode();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-const styles = StyleSheet.create({
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <Card
+        style={[
+          styles.activityOption,
+          isSelected && styles.activityOptionSelected,
+        ]}
+      >
+        <View style={styles.activityContent}>
+          <Text style={styles.activityEmoji}>{option.emoji}</Text>
+          <View style={styles.activityTextContainer}>
+            <Text style={[
+              styles.activityLabel,
+              isSelected && styles.activityLabelSelected,
+            ]}>
+              {option.label}
+            </Text>
+            <Text style={styles.activityDescription}>
+              {option.description}
+            </Text>
+          </View>
+        </View>
+      </Card>
+    </TouchableOpacity>
+  );
+};
+
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,
     padding: Spacing.lg,
@@ -331,14 +338,14 @@ const styles = StyleSheet.create({
 
   title: {
     ...Typography.h2,
-    color: Colors.text,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: Spacing.sm,
   } as TextStyle,
 
   subtitle: {
     ...Typography.body,
-    color: Colors.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     marginBottom: Spacing.xl,
   } as TextStyle,
@@ -349,19 +356,19 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     ...Typography.h4,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: Spacing.md,
   } as TextStyle,
 
   optionalText: {
     ...Typography.bodySmall,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginBottom: Spacing.md,
     fontStyle: 'italic',
   } as TextStyle,
 
   bmiContainer: {
-    backgroundColor: Colors.info + '20',
+    backgroundColor: colors.info + '20',
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     marginTop: Spacing.sm,
@@ -369,7 +376,7 @@ const styles = StyleSheet.create({
 
   bmiText: {
     ...Typography.body,
-    color: Colors.info,
+    color: colors.info,
     textAlign: 'center',
     fontWeight: '600',
   } as TextStyle,
@@ -382,12 +389,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     padding: Spacing.md,
     borderWidth: 2,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   } as ViewStyle,
 
   activityOptionSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
   } as ViewStyle,
 
   activityContent: {
@@ -406,18 +413,18 @@ const styles = StyleSheet.create({
 
   activityLabel: {
     ...Typography.body,
-    color: Colors.text,
+    color: colors.text,
     fontWeight: '600',
     marginBottom: Spacing.xs,
   } as TextStyle,
 
   activityLabelSelected: {
-    color: Colors.primary,
+    color: colors.primary,
   } as TextStyle,
 
   activityDescription: {
     ...Typography.bodySmall,
-    color: Colors.textLight,
+    color: colors.textLight,
   } as TextStyle,
 
   continueButton: {

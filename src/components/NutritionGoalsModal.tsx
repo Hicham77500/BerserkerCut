@@ -9,7 +9,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
-import { Colors, Typography, Spacing, BorderRadius } from '../utils/theme';
+import { Typography, Spacing, BorderRadius, ThemePalette } from '../utils/theme';
 import { useThemeMode } from '../hooks/useThemeMode';
 import { NutritionPlan, Meal } from '../types';
 import { NUTRITION_CONSTANTS } from '../utils/nutritionConstants';
@@ -293,11 +293,11 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
   );
 };
 
-const createStyles = (palette: typeof Colors) => 
+const createStyles = (palette: ThemePalette) => 
   StyleSheet.create({
     modalBackdrop: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: palette.overlay,
       justifyContent: 'flex-end',
     },
     modalContent: {
@@ -355,7 +355,7 @@ const createStyles = (palette: typeof Colors) =>
     },
     percentageText: {
       ...Typography.caption,
-      color: '#FFFFFF', // Using literal white color
+      color: palette.textDark,
       fontWeight: '600',
     },
     divider: {

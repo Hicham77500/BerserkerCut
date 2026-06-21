@@ -1,51 +1,54 @@
 # BerserkerCut - Copilot Instructions
 
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
+## Baseline Context
 
-## Project Context
-BerserkerCut is a React Native Expo TypeScript application for intelligent cutting (sèche) with personalized nutrition and supplement plans.
+- BerserkerCut is an Expo + React Native + TypeScript app (iOS-first) for cutting plans.
+- Runtime supports cloud API mode and local demo fallback mode.
+- Current architecture reference is PROJECT_CONTEXT.md.
 
-**Development Strategy**: iOS-first approach, then PWA in Phase 2. Focus on iOS native optimizations and user experience.
+## Priority Rules
 
-## Architecture Guidelines
-- Use TypeScript for all files with proper type definitions
-- Follow React Native and Expo best practices for iOS
-- Separate concerns: screens/, components/, services/, utils/
-- Use Firebase Authentication and Firestore for backend
-- Implement clean architecture patterns
-- Add proper error handling and loading states
-- **iOS Priority**: Optimize for iOS performance, animations, and native UX patterns
+1. Preserve auth and plan contract integrity between:
+	 - src/services/auth.ts
+	 - src/services/plan.ts
+	 - backend/src/routes/auth.js
+	 - backend/src/routes/plans.js
+2. Keep demo/cloud parity: never implement features that only work in one mode unless explicitly requested.
+3. Use strict TypeScript and existing service abstractions (avoid direct fetch/storage from screens).
+4. Keep iOS-first UX quality while preserving Android/web compatibility where already present.
 
-## Code Style
-- Use functional components with hooks
-- Follow ESLint and TypeScript rules
-- Add JSDoc comments for complex functions
-- Use proper naming conventions (camelCase for variables, PascalCase for components)
-- Structure imports: React first, then external libraries, then internal modules
-- **iOS Focus**: Consider iOS-specific patterns and performance optimizations
+## Architecture Constraints
 
-## Firebase Integration
-- Use Firebase SDK v9+ modular syntax
-- Implement proper authentication flows
-- Use Firestore for data persistence
-- Follow security rules best practices
-- Handle offline capabilities for iOS
+- Navigation and provider boot sequence must remain stable:
+	- App.tsx -> src/navigation/Navigation.tsx -> providers.
+- Business logic belongs in hooks/services, not in presentation components.
+- Theme values must come from src/utils/theme.ts and related design tokens.
+- Shared UI components must consume the runtime theme; avoid hardcoded visual tokens inside reusable components when light/dark mode can switch at runtime.
+- Sensitive behavior changes require updates in PROJECT_CONTEXT.md flag registry.
 
-## Business Logic
-- Generate daily nutrition plans based on user profile
-- Adapt plans for training/rest days
-- Manage supplement recommendations
-- Track user progress and preferences
+## UX/UI Guardrails
 
-## Development Phases
-### Phase 1 (Current): iOS Native
-- Focus on iOS-specific optimizations
-- Native iOS animations and transitions
-- iOS design patterns and UX conventions
-- TestFlight preparation and App Store deployment
+- Avoid duplicate navigation affordances for the same destination in a single surface.
+- Keep bottom tab bars to the minimum useful visible destinations; use internal routes for secondary flows.
+- Respect touch target minimums: 44x44 pt iOS, 48x48 dp Android.
+- Check safe-area and navigator padding interactions before shipping layout changes.
+- Ensure buttons, inputs, cards, progress indicators, and disabled states remain coherent in both dark and light themes.
+- Privacy-sensitive copy must be consent-first and match the real implementation.
 
-### Phase 2 (Future): PWA
-- Maintain 90% code reusability from iOS phase
-- Implement web-specific adaptations
-- Progressive Web App features
-- Cross-platform architecture
+## Code Quality
+
+- Prefer minimal, reviewable patches with explicit impact notes.
+- Add tests for behavioral changes when feasible, especially auth/plan flows.
+- Avoid hardcoded environment-specific values.
+- Do not introduce dependency-heavy solutions for small problems.
+
+## Active Flags
+
+- Check PROJECT_CONTEXT.md before any significant change.
+- If a change resolves or mitigates a flag, update the flag status in PROJECT_CONTEXT.md.
+
+## Recommended Skill Composition
+
+- Local skill: .github/skills/berserkercut-mobile/SKILL.md
+- External references (orisha-skills): frontend, javascript, ux-ui, api-design, security, swift.
+

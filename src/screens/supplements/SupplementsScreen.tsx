@@ -124,7 +124,7 @@ export const SupplementsScreen: React.FC = () => {
   const thereAreSupplements = sections.length > 0;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

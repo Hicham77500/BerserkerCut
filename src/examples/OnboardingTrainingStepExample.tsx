@@ -79,7 +79,7 @@ export const ExampleDataRetrieval = async (userId: string) => {
       
       // Exemple d'utilisation des données pour générer un plan
       const weeklyTrainingDays = Object.entries(trainingProfile.weeklySchedule)
-        .filter(([day, isSelected]) => isSelected)
+        .filter(([, isSelected]) => isSelected)
         .map(([day]) => day);
       
       console.log('Jours d\'entraînement:', weeklyTrainingDays);

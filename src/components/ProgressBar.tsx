@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { BorderRadius, Colors, Spacing, Typography } from '../utils/theme';
+import { BorderRadius, Spacing, Typography, ThemePalette } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 type ProgressSize = 'sm' | 'md' | 'lg';
 
@@ -24,10 +25,12 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   size = 'md',
   label,
   showLabel = true,
-  trackColor = Colors.surfaceDark ?? Colors.surface,
-  indicatorColor = Colors.primary,
+  trackColor,
+  indicatorColor,
   animated = true,
 }) => {
+  const { colors } = useThemeMode();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const clamped = useMemo(() => clampProgress(progress), [progress]);
   const animatedValue = useRef(new Animated.Value(clamped)).current;
 
@@ -53,6 +56,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const height =
     size === 'sm' ? 4 : size === 'lg' ? 16 : 8;
 
+  const resolvedTrackColor = trackColor ?? (colors.surfaceDark ?? colors.surface);
+  const resolvedIndicatorColor = indicatorColor ?? colors.primary;
+
   return (
     <View style={styles.container}>
       {showLabel && (
@@ -67,7 +73,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           styles.track,
           {
             height,
-            backgroundColor: trackColor,
+            backgroundColor: resolvedTrackColor,
           },
         ]}
       >
@@ -75,7 +81,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           style={[
             styles.indicator,
             {
-              backgroundColor: indicatorColor,
+              backgroundColor: resolvedIndicatorColor,
               width: widthInterpolation,
               height,
             },
@@ -86,7 +92,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     width: '100%',
   },
@@ -96,7 +102,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   label: {
-    color: Colors.textLight,
+    color: colors.textLight,
     letterSpacing: 0.4, // iOS-optimized letter spacing
   },
   track: {

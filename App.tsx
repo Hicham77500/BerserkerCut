@@ -21,8 +21,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from '@/navigation/Navigation';
 // Provider custom qui gère le thème clair/sombre de l'application.
 import { ThemeModeProvider } from '@/hooks/useThemeMode';
+import { useThemeMode } from '@/hooks/useThemeMode';
 // Palette de couleurs partagée par l'ensemble du projet.
-import { Colors } from '@/utils/theme';
 
 // Hook utilitaire : applique des styles par défaut aux composants Text/TextInput
 // pour harmoniser la typographie sur toutes les plateformes.
@@ -76,11 +76,12 @@ const useConfigureDefaultTypography = () => {
 // Conteneur principal qui configure la typographie et injecte la navigation.
 const AppShell: React.FC = () => {
   useConfigureDefaultTypography();
+  const { colors, isDark } = useThemeMode();
 
   return (
-    <View style={styles.appContainer}>
+    <View style={[styles.appContainer, { backgroundColor: colors.background }]}>
       <Navigation />
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
     </View>
   );
 };
@@ -100,6 +101,5 @@ export default function App() {
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
 });

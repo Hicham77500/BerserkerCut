@@ -4,7 +4,6 @@ import {
   Text,
   Modal,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   Switch,
 } from 'react-native';

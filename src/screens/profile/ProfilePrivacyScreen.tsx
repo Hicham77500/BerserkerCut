@@ -1,30 +1,88 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, Text, StyleSheet, Switch, Alert, Linking, View } from 'react-native';
+import { ScrollView, Text, StyleSheet, Switch, Alert, Linking, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, Button } from '@/components';
 import { Typography, Spacing, BorderRadius, ThemePalette } from '@/utils/theme';
-import { CLOUD_CONSENT_STORAGE_KEY } from '@/constants/storageKeys';
-import { getSecureItem, setSecureItem, clearAllSensitiveData } from '@/utils/storage/secureStorage';
+import { CLOUD_CONSENT_STORAGE_KEY, CLOUD_CONSENT_AUDIT_STORAGE_KEY } from '@/constants/storageKeys';
+import { getSecureItem, setSecureItem, clearAllSensitiveData, getSecureJSON, setSecureJSON } from '@/utils/storage/secureStorage';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import PhotoService from '@/services/photo';
 import photoStorage from '@/services/photoStorage';
 
+type ConsentAuditAction = 'enabled' | 'disabled';
+
+type ConsentAuditEntry = {
+  at: number;
+  action: ConsentAuditAction;
+  removeCloudAlbum: boolean;
+};
+
+const MAX_AUDIT_ENTRIES = 10;
+
 // Liste des clés à préserver lors du nettoyage des données sensibles
-const CLOUD_KEYS = ['BERSERKERCUT_CLOUD_CONSENT_V1'];
+const CLOUD_KEYS = [CLOUD_CONSENT_STORAGE_KEY, CLOUD_CONSENT_AUDIT_STORAGE_KEY];
 
 export const ProfilePrivacyScreen: React.FC = () => {
   const { user } = useAuth();
   const { colors } = useThemeMode();
   const [cloudConsent, setCloudConsent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [consentAudit, setConsentAudit] = useState<ConsentAuditEntry[]>([]);
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   useEffect(() => {
     (async () => {
-      const stored = await getSecureItem(CLOUD_CONSENT_STORAGE_KEY);
+      const [stored, audit] = await Promise.all([
+        getSecureItem(CLOUD_CONSENT_STORAGE_KEY),
+        getSecureJSON<ConsentAuditEntry[]>(CLOUD_CONSENT_AUDIT_STORAGE_KEY, []),
+      ]);
       setCloudConsent(stored === 'true');
+      setConsentAudit(Array.isArray(audit) ? audit : []);
     })();
   }, []);
+
+  const logConsentAction = async (entry: ConsentAuditEntry) => {
+    const current = await getSecureJSON<ConsentAuditEntry[]>(CLOUD_CONSENT_AUDIT_STORAGE_KEY, []);
+    const safeCurrent = Array.isArray(current) ? current : [];
+    const next = [entry, ...safeCurrent].slice(0, MAX_AUDIT_ENTRIES);
+    setConsentAudit(next);
+    await setSecureJSON(CLOUD_CONSENT_AUDIT_STORAGE_KEY, next);
+  };
+
+  const disableCloudConsent = async (clearCloudAlbum: boolean) => {
+    await setSecureItem(CLOUD_CONSENT_STORAGE_KEY, 'false');
+    setCloudConsent(false);
+    await logConsentAction({
+      at: Date.now(),
+      action: 'disabled',
+      removeCloudAlbum: clearCloudAlbum,
+    });
+
+    if (!clearCloudAlbum) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const removed = await PhotoService.clearAlbum();
+      const localGallery = await photoStorage.loadGallery();
+      const updated = localGallery.map((item) => ({ ...item, cloudSynced: false }));
+      await photoStorage.setGallery(updated);
+
+      Alert.alert(
+        'Consentement retiré',
+        removed
+          ? `${removed} photo${removed > 1 ? 's' : ''} retirée${removed > 1 ? 's' : ''} de l'album BerserkerCut.`
+          : "Consentement retiré. Aucune photo n'était présente dans l'album BerserkerCut."
+      );
+    } catch (error) {
+      console.warn('[ProfilePrivacyScreen] disable cloud + clear error', error);
+      Alert.alert('Erreur', "Le consentement a été retiré mais la suppression iCloud a échoué.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const updateConsent = async (nextValue: boolean) => {
     if (nextValue) {
@@ -38,6 +96,11 @@ export const ProfilePrivacyScreen: React.FC = () => {
             onPress: async () => {
               await setSecureItem(CLOUD_CONSENT_STORAGE_KEY, 'true');
               setCloudConsent(true);
+              await logConsentAction({
+                at: Date.now(),
+                action: 'enabled',
+                removeCloudAlbum: false,
+              });
             },
           },
         ]
@@ -45,8 +108,26 @@ export const ProfilePrivacyScreen: React.FC = () => {
       return;
     }
 
-    await setSecureItem(CLOUD_CONSENT_STORAGE_KEY, 'false');
-    setCloudConsent(false);
+    Alert.alert(
+      'Désactiver le stockage cloud ?',
+      "Vous pouvez simplement arrêter les futurs envois iCloud, ou retirer aussi les photos déjà présentes dans l'album BerserkerCut.",
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Désactiver seulement',
+          onPress: async () => {
+            await disableCloudConsent(false);
+          },
+        },
+        {
+          text: 'Désactiver et retirer iCloud',
+          style: 'destructive',
+          onPress: async () => {
+            await disableCloudConsent(true);
+          },
+        },
+      ]
+    );
   };
 
   const handleClearCloudData = () => {
@@ -114,14 +195,32 @@ export const ProfilePrivacyScreen: React.FC = () => {
     );
   }, []);
 
+  const formatAuditLabel = (entry: ConsentAuditEntry): string => {
+    const actionLabel = entry.action === 'enabled'
+      ? 'Consentement activé'
+      : entry.removeCloudAlbum
+      ? 'Consentement retiré + album iCloud nettoyé'
+      : 'Consentement retiré';
+
+    const when = new Date(entry.at).toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return `${actionLabel} le ${when}`;
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <Card style={styles.card}>
           <Text style={styles.title}>Confidentialité & RGPD</Text>
           <Text style={styles.subtitle}>
-            BerserkerCut traite vos données de santé avec soin. Par défaut, vos photos et informations biométriques
-            restent chiffrées sur votre appareil. Vous pouvez activer la synchronisation cloud à tout moment.
+            BerserkerCut traite vos données de santé avec soin. Par défaut, les photos restent dans le stockage local
+            de l'application sur votre appareil. Vous pouvez activer ou retirer la synchronisation iCloud à tout moment.
           </Text>
 
           <View style={styles.switchRow}>
@@ -152,6 +251,22 @@ export const ProfilePrivacyScreen: React.FC = () => {
             loading={loading}
             style={styles.button}
           />
+
+          <View style={styles.auditBlock}>
+            <Text style={styles.auditTitle}>Journal du consentement cloud</Text>
+            {consentAudit.length === 0 ? (
+              <Text style={styles.auditEmpty}>Aucun événement enregistré pour le moment.</Text>
+            ) : (
+              consentAudit.map((entry) => (
+                <Text
+                  key={`${entry.at}-${entry.action}-${entry.removeCloudAlbum ? 'clear' : 'keep'}`}
+                  style={styles.auditItem}
+                >
+                  • {formatAuditLabel(entry)}
+                </Text>
+              ))
+            )}
+          </View>
         </Card>
 
         <Card style={styles.card}>
@@ -160,10 +275,10 @@ export const ProfilePrivacyScreen: React.FC = () => {
             • Consentement photo : aucune image n'est envoyée sans activation explicite du cloud.
           </Text>
           <Text style={styles.sectionText}>
-            • Conservation : localement sans limitation (chiffré), cloud 90 jours maximum avant purge automatique (TODO backend).
+            • Conservation : les photos locales restent présentes jusqu'à suppression manuelle par l'utilisateur.
           </Text>
           <Text style={styles.sectionText}>
-            • Données partagées : uniquement macros agrégées et anonymisées pour les recommandations IA futures.
+            • Cloud iOS : si activé, les photos sont copiées dans l'album iCloud BerserkerCut et supprimables depuis l'app.
           </Text>
           <Button
             title="Consulter la politique complète"
@@ -220,6 +335,25 @@ const createStyles = (colors: ThemePalette) =>
     switchLabelGroup: {
       flex: 1,
       gap: Spacing.xs,
+    },
+    auditBlock: {
+      marginTop: Spacing.xs,
+      paddingTop: Spacing.sm,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+      gap: Spacing.xs,
+    },
+    auditTitle: {
+      ...Typography.h4,
+      color: colors.text,
+    },
+    auditEmpty: {
+      ...Typography.caption,
+      color: colors.textLight,
+    },
+    auditItem: {
+      ...Typography.caption,
+      color: colors.textLight,
     },
   });
 

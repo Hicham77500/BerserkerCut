@@ -9,11 +9,12 @@ import {
 } from 'react-native';
 import {
   BorderRadius,
-  Colors,
   Spacing,
   Typography,
   Shadows,
+  ThemePalette,
 } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 type IOSButtonVariant = 'primary' | 'secondary' | 'ghost';
 
@@ -38,7 +39,9 @@ export const IOSButton: React.FC<IOSButtonProps> = ({
   style: styleProp,
   ...rest
 }) => {
-  const labelColor = variant === 'ghost' ? Colors.primary : Colors.text;
+  const { colors } = useThemeMode();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
+  const labelColor = variant === 'ghost' ? colors.primary : colors.text;
   const contentAlignment =
     align === 'leading' ? styles.contentLeading : styles.contentCenter;
 
@@ -71,7 +74,7 @@ export const IOSButton: React.FC<IOSButtonProps> = ({
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={variant === 'ghost' ? Colors.primary : Colors.text}
+            color={variant === 'ghost' ? colors.primary : colors.text}
             style={styles.loader}
           />
         ) : null}
@@ -80,56 +83,56 @@ export const IOSButton: React.FC<IOSButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  base: {
-    // Use standardized border radius and spacing from design system
-    borderRadius: BorderRadius.xl,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    minHeight: 48,
-    justifyContent: 'center',
-    ...Shadows.sm,
-  },
-  primary: {
-    backgroundColor: Colors.primary,
-  },
-  secondary: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  ghost: {
-    backgroundColor: Colors.overlayLight,
-    borderWidth: 1,
-    borderColor: 'transparent', // Improved for better appearance
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  pressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.95, // Slight opacity change for better feedback
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  contentCenter: {
-    justifyContent: 'center',
-  },
-  contentLeading: {
-    justifyContent: 'flex-start',
-  },
-  icon: {
-    marginRight: Spacing.sm,
-  },
-  label: {
-    textAlign: 'center',
-  },
-  loader: {
-    marginLeft: Spacing.sm,
-  },
-});
+const createStyles = (colors: ThemePalette) =>
+  StyleSheet.create({
+    base: {
+      borderRadius: BorderRadius.xl,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      minHeight: 48,
+      justifyContent: 'center',
+      ...Shadows.sm,
+    },
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    secondary: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    ghost: {
+      backgroundColor: colors.overlayLight,
+      borderWidth: 1,
+      borderColor: 'transparent',
+    },
+    disabled: {
+      opacity: 0.6,
+    },
+    pressed: {
+      transform: [{ scale: 0.98 }],
+      opacity: 0.95,
+    },
+    fullWidth: {
+      width: '100%',
+    },
+    content: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    contentCenter: {
+      justifyContent: 'center',
+    },
+    contentLeading: {
+      justifyContent: 'flex-start',
+    },
+    icon: {
+      marginRight: Spacing.sm,
+    },
+    label: {
+      textAlign: 'center',
+    },
+    loader: {
+      marginLeft: Spacing.sm,
+    },
+  });

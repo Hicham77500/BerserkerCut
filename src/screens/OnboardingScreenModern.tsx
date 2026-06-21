@@ -34,13 +34,6 @@ interface BasicInfo {
   objective: UserProfile['objective'];
 }
 
-interface OnboardingStep {
-  id: number;
-  title: string;
-  subtitle: string;
-  component: React.ReactNode;
-}
-
 export const OnboardingScreen: React.FC = () => {
   // États partagés entre les étapes
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
@@ -147,7 +140,7 @@ export const OnboardingScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -554,6 +547,10 @@ const Step4: React.FC<Step4Props> = ({
                 newSupplement.unit === unit.value && styles.chipActive,
               ]}
               onPress={() => setNewSupplement((prev) => ({ ...prev, unit: unit.value }))}
+              accessibilityRole="button"
+              accessibilityLabel={`Choisir l'unite ${unit.label}`}
+              accessibilityState={{ selected: newSupplement.unit === unit.value }}
+              hitSlop={8}
             >
               <Text
                 style={[
@@ -577,6 +574,10 @@ const Step4: React.FC<Step4Props> = ({
                 newSupplement.timing === timing && styles.timingChipActive,
               ]}
               onPress={() => setNewSupplement((prev) => ({ ...prev, timing }))}
+              accessibilityRole="button"
+              accessibilityLabel={`Choisir le timing ${SUPPLEMENT_TIMINGS_LABELS[timing]}`}
+              accessibilityState={{ selected: newSupplement.timing === timing }}
+              hitSlop={8}
             >
               <Text
                 style={[
@@ -608,7 +609,13 @@ const Step4: React.FC<Step4Props> = ({
                   {supplement.dosage} • {SUPPLEMENT_TIMINGS_LABELS[supplement.timing] ?? supplement.timing}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => handleRemoveSupplement(supplement.id)}>
+              <TouchableOpacity
+                onPress={() => handleRemoveSupplement(supplement.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Supprimer ${supplement.name}`}
+                accessibilityHint="Retire ce supplement de la liste"
+                hitSlop={8}
+              >
                 <Text style={styles.removeLink}>Supprimer</Text>
               </TouchableOpacity>
             </View>

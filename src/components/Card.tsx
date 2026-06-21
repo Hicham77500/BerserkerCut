@@ -4,7 +4,8 @@
 
 import React from 'react';
 import { View, StyleSheet, ViewStyle, ViewProps } from 'react-native';
-import { Colors, BorderRadius, Spacing, Shadows } from '../utils/theme';
+import { BorderRadius, Spacing, Shadows, ThemePalette } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 interface CardProps extends ViewProps {
   variant?: 'default' | 'elevated' | 'outlined';
@@ -19,6 +20,9 @@ export const Card: React.FC<CardProps> = ({
   style,
   ...props
 }) => {
+  const { colors } = useThemeMode();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const cardStyle = [
     styles.base,
     styles[variant],
@@ -33,24 +37,24 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  base: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    overflow: 'hidden', // Ensures content respects border radius
-  } as ViewStyle,
+const createStyles = (colors: ThemePalette) =>
+  StyleSheet.create({
+    base: {
+      backgroundColor: colors.surface,
+      borderRadius: BorderRadius.lg,
+      overflow: 'hidden',
+    } as ViewStyle,
 
-  default: {
-    ...Shadows.sm,
-  } as ViewStyle,
+    default: {
+      ...Shadows.sm,
+    } as ViewStyle,
 
-  elevated: {
-    ...Shadows.md, // Use medium shadow for better hierarchy
-  } as ViewStyle,
+    elevated: {
+      ...Shadows.md,
+    } as ViewStyle,
 
-  outlined: {
-    // No shadow for outlined variant, only border
-    borderWidth: 1,
-    borderColor: Colors.border,
-  } as ViewStyle,
-});
+    outlined: {
+      borderWidth: 1,
+      borderColor: colors.border,
+    } as ViewStyle,
+  });

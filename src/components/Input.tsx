@@ -13,7 +13,8 @@ import {
   TextInputProps,
   TouchableOpacity
 } from 'react-native';
-import { Colors, Typography, BorderRadius, Spacing, Shadows } from '../utils/theme';
+import { Typography, BorderRadius, Spacing, Shadows, ThemePalette } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -41,6 +42,8 @@ export const Input: React.FC<InputProps> = ({
   onSubmitEditing,
   ...rest
 }) => {
+  const { colors } = useThemeMode();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -72,7 +75,7 @@ export const Input: React.FC<InputProps> = ({
         
         <TextInput
           style={inputStyle}
-          placeholderTextColor={Colors.textMuted}
+          placeholderTextColor={colors.textMuted}
           secureTextEntry={isPassword && !isPasswordVisible}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -104,109 +107,104 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: Spacing.md,
-  } as ViewStyle,
+const createStyles = (colors: ThemePalette) =>
+  StyleSheet.create({
+    wrapper: {
+      marginBottom: Spacing.md,
+    } as ViewStyle,
 
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surface,
-  } as ViewStyle,
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderRadius: BorderRadius.md,
+      backgroundColor: colors.surface,
+    } as ViewStyle,
 
-  // Variants with improved iOS styling
-  default: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor: 'transparent',
-  } as ViewStyle,
+    default: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      backgroundColor: 'transparent',
+    } as ViewStyle,
 
-  outlined: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.xs, // Subtle shadow for depth
-  } as ViewStyle,
+    outlined: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...Shadows.xs,
+    } as ViewStyle,
 
-  filled: {
-    backgroundColor: Colors.backgroundDark,
-    ...Shadows.xs, // Subtle shadow for depth
-  } as ViewStyle,
+    filled: {
+      backgroundColor: colors.backgroundDark,
+      ...Shadows.xs,
+    } as ViewStyle,
 
-  // Sizes with iOS standards
-  sm: {
-    minHeight: 36,
-    paddingHorizontal: Spacing.md, // Increased for better touch targets
-  } as ViewStyle,
+    sm: {
+      minHeight: 36,
+      paddingHorizontal: Spacing.md,
+    } as ViewStyle,
 
-  md: {
-    minHeight: 44, // iOS standard height
-    paddingHorizontal: Spacing.md,
-  } as ViewStyle,
+    md: {
+      minHeight: 44,
+      paddingHorizontal: Spacing.md,
+    } as ViewStyle,
 
-  lg: {
-    minHeight: 52, // iOS larger input
-    paddingHorizontal: Spacing.lg,
-  } as ViewStyle,
+    lg: {
+      minHeight: 52,
+      paddingHorizontal: Spacing.lg,
+    } as ViewStyle,
 
-  // States with improved transitions
-  focused: {
-    borderColor: Colors.primary,
-    borderWidth: 2,
-    ...Shadows.sm, // Enhanced shadow when focused
-  } as ViewStyle,
+    focused: {
+      borderColor: colors.primary,
+      borderWidth: 2,
+      ...Shadows.sm,
+    } as ViewStyle,
 
-  error: {
-    borderColor: Colors.error,
-  } as ViewStyle,
+    error: {
+      borderColor: colors.error,
+    } as ViewStyle,
 
-  // Input
-  input: {
-    flex: 1,
-    ...Typography.body,
-    color: Colors.text,
-  } as TextStyle,
+    input: {
+      flex: 1,
+      ...Typography.body,
+      color: colors.text,
+    } as TextStyle,
 
-  inputWithLeftIcon: {
-    marginLeft: Spacing.sm,
-  } as TextStyle,
+    inputWithLeftIcon: {
+      marginLeft: Spacing.sm,
+    } as TextStyle,
 
-  inputWithRightIcon: {
-    marginRight: Spacing.sm,
-  } as TextStyle,
+    inputWithRightIcon: {
+      marginRight: Spacing.sm,
+    } as TextStyle,
 
-  // Icons
-  leftIcon: {
-    marginRight: Spacing.sm,
-  } as ViewStyle,
+    leftIcon: {
+      marginRight: Spacing.sm,
+    } as ViewStyle,
 
-  rightIcon: {
-    marginLeft: Spacing.sm,
-  } as ViewStyle,
+    rightIcon: {
+      marginLeft: Spacing.sm,
+    } as ViewStyle,
 
-  passwordToggle: {
-    fontSize: 16,
-  } as TextStyle,
+    passwordToggle: {
+      fontSize: 16,
+    } as TextStyle,
 
-  // Labels and helpers with iOS-optimized typography
-  label: {
-    ...Typography.label, // Using our new iOS-specific label style
-    color: Colors.text,
-    marginBottom: Spacing.xs,
-  } as TextStyle,
+    label: {
+      ...Typography.label,
+      color: colors.text,
+      marginBottom: Spacing.xs,
+    } as TextStyle,
 
-  errorText: {
-    ...Typography.footnote, // Using our new iOS-specific footnote style
-    color: Colors.error,
-    marginTop: Spacing.xs,
-  } as TextStyle,
+    errorText: {
+      ...Typography.footnote,
+      color: colors.error,
+      marginTop: Spacing.xs,
+    } as TextStyle,
 
-  helperText: {
-    ...Typography.footnote, // Using our new iOS-specific footnote style
-    color: Colors.textMuted,
-    marginTop: Spacing.xs,
-  } as TextStyle,
-});
+    helperText: {
+      ...Typography.footnote,
+      color: colors.textMuted,
+      marginTop: Spacing.xs,
+    } as TextStyle,
+  });
 
 export default Input;

@@ -257,7 +257,7 @@ export class DemoPlanService {
   /**
    * Récupérer le plan du jour
    */
-  static async getTodaysPlan(userId: string): Promise<DailyPlan | null> {
+  static async getTodaysPlan(_userId: string): Promise<DailyPlan | null> {
     const today = new Date().toISOString().split('T')[0];
     const planId = `demo_${today}`;
     

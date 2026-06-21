@@ -234,9 +234,6 @@ export class PlanService {
     
     try {
       // Construction de l'ID du plan pour aujourd'hui
-      const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
-      const planId = `${userId}_${today}`;
-      
       const planData = await apiClient.get<DailyPlan | null>('/plans/today', {
         query: { userId },
       });
@@ -498,7 +495,7 @@ export class PlanService {
    * - Valeurs nutritionnelles pour 100g
    * - Répartition par type de repas pour cohérence gustative
    */
-  private static generateFoodsForMeal(mealName: string, calories: number, macros: { protein: number; carbs: number; fat: number }): Food[] {
+  private static generateFoodsForMeal(mealName: string, calories: number, _macros: { protein: number; carbs: number; fat: number }): Food[] {
     const foods: Food[] = [];
     
     /**
@@ -715,7 +712,7 @@ export class PlanService {
    * - Jours d'entraînement: Hydratation, échauffement, technique, récupération
    * - Jours de repos: Récupération active, préparation, sommeil, hydratation
    */
-  private static generateDailyTip(user: User, dayType: 'training' | 'rest'): string {
+  private static generateDailyTip(_user: User, dayType: 'training' | 'rest'): string {
     /**
      * Base de données de conseils catégorisés
      * @description Conseils validés scientifiquement pour optimiser résultats

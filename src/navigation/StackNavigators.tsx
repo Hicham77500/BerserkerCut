@@ -21,6 +21,7 @@ import {
   NutritionCalendarScreen,
   TrainingScreen,
   AgendaScreen,
+  SystemSettingsScreen,
 } from '@/screens';
 
 // Types pour les navigateurs de pile (définissent les routes autorisées et leurs params).
@@ -45,6 +46,11 @@ export type TrainingStackParamList = {
 
 export type HomeStackParamList = {
   Home: undefined;
+  Paramètres: undefined;
+};
+
+export type SettingsStackParamList = {
+  Paramètres: undefined;
 };
 
 export type AgendaStackParamList = {
@@ -57,6 +63,7 @@ const NutritionStack = createStackNavigator<NutritionStackParamList>();
 const TrainingStack = createStackNavigator<TrainingStackParamList>();
 const HomeStack = createStackNavigator<HomeStackParamList>();
 const AgendaStack = createStackNavigator<AgendaStackParamList>();
+const SettingsStack = createStackNavigator<SettingsStackParamList>();
 
 /**
  * Navigateur de pile pour l'écran d'accueil
@@ -75,8 +82,28 @@ export const HomeStackNavigator: React.FC = () => {
         cardStyle: { backgroundColor: colors.background },
       }}
     >
-      <HomeStack.Screen name="Home" component={HomeDashboardScreen} options={{ title: 'Accueil' }} />
+      <HomeStack.Screen name="Home" component={HomeDashboardScreen} options={{ title: 'Accueil', headerShown: false }} />
+      <HomeStack.Screen name="Paramètres" component={SystemSettingsScreen} options={{ title: 'Paramètres' }} />
     </HomeStack.Navigator>
+  );
+};
+
+export const SettingsStackNavigator: React.FC = () => {
+  const { colors } = useThemeMode();
+
+  return (
+    <SettingsStack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerTintColor: colors.primary,
+        headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: { color: colors.text },
+        ...TransitionPresets.SlideFromRightIOS,
+        cardStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <SettingsStack.Screen name="Paramètres" component={SystemSettingsScreen} />
+    </SettingsStack.Navigator>
   );
 };
 

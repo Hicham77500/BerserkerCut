@@ -262,13 +262,13 @@ export const ProfilePhotosScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <Card style={styles.headerCard}>
           <Text style={styles.title}>Suivi photo</Text>
           <Text style={styles.subtitle}>
-            Vos photos sont stockées localement, chiffrées sur cet appareil. Elles ne sont jamais
-            envoyées sur iCloud sans votre consentement explicite.
+            Vos photos sont stockées localement dans l'application sur cet appareil. Elles ne sont
+            pas envoyées sur iCloud sans votre consentement explicite.
           </Text>
           <View style={styles.switchRow}>
             <View style={styles.switchLabels}>
@@ -282,6 +282,8 @@ export const ProfilePhotosScreen: React.FC = () => {
               onValueChange={handleConsentToggle}
               thumbColor={cloudConsent ? colors.primary : colors.textMuted}
               trackColor={{ true: colors.primary + '55', false: colors.border }}
+              accessibilityLabel="Activer ou desactiver la synchronisation iCloud"
+              accessibilityHint="Controle si les photos peuvent etre synchronisees vers l'album iCloud BerserkerCut"
             />
           </View>
 
@@ -290,6 +292,7 @@ export const ProfilePhotosScreen: React.FC = () => {
             onPress={handleTakePhoto}
             loading={isRequestingPermission}
             fullWidth
+            accessibilityLabel="Prendre une photo de progression"
           />
           <Button
             title="Effacer toutes les photos locales"
@@ -297,6 +300,7 @@ export const ProfilePhotosScreen: React.FC = () => {
             onPress={handleClearAll}
             fullWidth
             style={styles.clearButton}
+            accessibilityLabel="Effacer toutes les photos locales"
           />
           {cloudConsent && (
             <Button
@@ -305,6 +309,7 @@ export const ProfilePhotosScreen: React.FC = () => {
               onPress={() => syncFromCloud(photos)}
               fullWidth
               loading={syncingCloud}
+              accessibilityLabel="Rafraichir les photos depuis iCloud"
             />
           )}
           {cloudStatus ? (
@@ -322,7 +327,12 @@ export const ProfilePhotosScreen: React.FC = () => {
               .reverse()
               .map((photo) => (
                 <View key={photo.timestamp} style={styles.photoRow}>
-                  <Image source={{ uri: photo.uri }} style={styles.photo} />
+                  <Image
+                    source={{ uri: photo.uri }}
+                    style={styles.photo}
+                    accessibilityRole="image"
+                    accessibilityLabel={`Photo de progression du ${new Date(photo.timestamp).toLocaleDateString('fr-FR')}`}
+                  />
                   <View style={styles.photoMeta}>
                     <Text style={styles.photoDate}>
                       {new Date(photo.timestamp).toLocaleString('fr-FR', {
@@ -333,7 +343,13 @@ export const ProfilePhotosScreen: React.FC = () => {
                         minute: '2-digit',
                       })}
                     </Text>
-                    <TouchableOpacity onPress={() => handleDeletePhoto(photo.timestamp)}>
+                    <TouchableOpacity
+                      onPress={() => handleDeletePhoto(photo.timestamp)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Supprimer la photo du ${new Date(photo.timestamp).toLocaleDateString('fr-FR')}`}
+                      accessibilityHint="Retire definitivement cette photo de progression"
+                      hitSlop={8}
+                    >
                       <Text style={styles.deleteLink}>Supprimer</Text>
                     </TouchableOpacity>
                   </View>

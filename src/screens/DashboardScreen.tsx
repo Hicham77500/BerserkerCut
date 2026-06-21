@@ -215,7 +215,15 @@ export const DashboardScreen: React.FC = () => {
 
     return (
       <View key={meal.id} style={[styles.mealCard, isConsumed && styles.mealCardConsumed]}>
-        <TouchableOpacity style={styles.mealHeader} onPress={() => toggleMealExpanded(meal.id)}>
+        <TouchableOpacity
+          style={styles.mealHeader}
+          onPress={() => toggleMealExpanded(meal.id)}
+          accessibilityRole="button"
+          accessibilityLabel={`${isExpanded ? 'Replier' : 'Developper'} le repas ${meal.name}`}
+          accessibilityHint="Affiche ou masque le detail des aliments"
+          accessibilityState={{ expanded: isExpanded }}
+          hitSlop={8}
+        >
           <View>
             <Text style={styles.mealName}>{meal.name}</Text>
             <Text style={styles.mealTime}>{meal.time}</Text>
@@ -224,6 +232,10 @@ export const DashboardScreen: React.FC = () => {
             <TouchableOpacity
               onPress={() => toggleMealConsumed(meal.id)}
               style={[styles.consumeBadge, isConsumed && styles.consumeBadgeActive]}
+              accessibilityRole="button"
+              accessibilityLabel={`${isConsumed ? 'Marquer non pris' : 'Marquer pris'} pour ${meal.name}`}
+              accessibilityState={{ selected: isConsumed }}
+              hitSlop={8}
             >
               <Text style={styles.consumeBadgeText}>{isConsumed ? 'Pris' : 'À prendre'}</Text>
             </TouchableOpacity>
@@ -281,6 +293,10 @@ export const DashboardScreen: React.FC = () => {
               style={[styles.supplementCard, isTaken && styles.supplementTaken]}
               onPress={() => handleSupplementTaken(intake.supplementId)}
               activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={`${isTaken ? 'Supprimer la validation' : 'Valider'} supplement ${intake.name}`}
+              accessibilityState={{ selected: isTaken }}
+              hitSlop={8}
             >
               <View style={styles.supplementContent}>
                 <Text style={styles.supplementName}>
@@ -331,6 +347,10 @@ export const DashboardScreen: React.FC = () => {
                 : 'Profite de ce jour de repos pour récupérer, t\'étirer et planifier tes repas.'
             );
           }}
+          accessibilityRole="button"
+          accessibilityLabel="Afficher le conseil du type de jour"
+          accessibilityHint="Ouvre une information sur le jour d'entrainement ou de repos"
+          hitSlop={8}
         >
           <Text style={styles.badgeText}>
             {currentPlan.dayType === 'training' ? 'Jour d\'entraînement' : 'Jour de repos'}
@@ -374,6 +394,10 @@ export const DashboardScreen: React.FC = () => {
               key={filter.value}
               style={[styles.filterChip, activeMealFilter === filter.value && styles.filterChipActive]}
               onPress={() => setActiveMealFilter(filter.value)}
+              accessibilityRole="button"
+              accessibilityLabel={`Filtrer les repas: ${filter.label}`}
+              accessibilityState={{ selected: activeMealFilter === filter.value }}
+              hitSlop={8}
             >
               <Text
                 style={[styles.filterChipText, activeMealFilter === filter.value && styles.filterChipTextActive]}
@@ -455,6 +479,10 @@ export const DashboardScreen: React.FC = () => {
         style={styles.settingsButton}
         onPress={() => setSettingsVisible(true)}
         activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel="Personnaliser le dashboard"
+        accessibilityHint="Ouvre les reglages d'affichage des sections"
+        hitSlop={8}
       >
         <Text style={styles.settingsButtonText}>Personnaliser</Text>
       </TouchableOpacity>
@@ -463,7 +491,7 @@ export const DashboardScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
         <Header />
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Génération de votre plan quotidien...</Text>
@@ -474,7 +502,7 @@ export const DashboardScreen: React.FC = () => {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
         <Header />
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>❌ {error}</Text>
@@ -485,7 +513,7 @@ export const DashboardScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
       <StatusBar barStyle="light-content" />
       <Header />
       <ScrollView
@@ -530,6 +558,10 @@ export const DashboardScreen: React.FC = () => {
                       onPress={() => moveSection(section.id, 'up')}
                       disabled={index === 0}
                       style={[styles.moveButton, index === 0 && styles.moveButtonDisabled]}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Monter la section ${DASHBOARD_SECTIONS[section.id]}`}
+                      accessibilityState={{ disabled: index === 0 }}
+                      hitSlop={8}
                     >
                       <Text style={styles.moveButtonText}>↑</Text>
                     </TouchableOpacity>
@@ -540,6 +572,10 @@ export const DashboardScreen: React.FC = () => {
                         styles.moveButton,
                         index === sectionConfigs.length - 1 && styles.moveButtonDisabled,
                       ]}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Descendre la section ${DASHBOARD_SECTIONS[section.id]}`}
+                      accessibilityState={{ disabled: index === sectionConfigs.length - 1 }}
+                      hitSlop={8}
                     >
                       <Text style={styles.moveButtonText}>↓</Text>
                     </TouchableOpacity>
@@ -547,6 +583,7 @@ export const DashboardScreen: React.FC = () => {
                       value={section.visible}
                       onValueChange={() => toggleSectionVisibility(section.id)}
                       trackColor={{ false: Colors.border, true: Colors.primary }}
+                      accessibilityLabel={`Afficher ou masquer la section ${DASHBOARD_SECTIONS[section.id]}`}
                     />
                   </View>
                 </View>

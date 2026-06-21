@@ -468,15 +468,6 @@ export const ProfileOverviewScreen: React.FC = () => {
     console.warn(`[ProfileOverview] Route ${route} introuvable dans les navigateurs actifs.`);
   };
 
-  const quickActionsItems: Array<{ label: string; route: ProfileRoute }> = [
-    { label: 'Santé', route: 'Profil santé' },
-    { label: 'Objectifs', route: 'Objectifs' },
-    { label: 'Training', route: 'Entraînement' },
-    { label: 'Suppl.', route: 'Suppléments' },
-    { label: 'Photos', route: 'Photos' },
-    { label: 'Confidentialité', route: 'Confidentialité' },
-  ];
-
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
   <StatusBar barStyle="light-content" />
@@ -519,8 +510,8 @@ export const ProfileOverviewScreen: React.FC = () => {
         <Card style={styles.rgpdCard}>
           <Text style={styles.sectionTitle}>Note RGPD</Text>
           <Text style={styles.rgpdText}>
-            Les données de santé (poids, photos, sommeil) demeurent chiffrées sur cet appareil. Aucun upload n'est
-            réalisé sans votre accord explicite. Activez la synchronisation iCloud depuis la section Confidentialité.
+            Les données santé restent locales par défaut sur cet appareil. Aucun envoi de photos vers iCloud n'est
+            réalisé sans votre accord explicite. Gérez votre consentement dans la section Confidentialité.
           </Text>
         </Card>
 
@@ -530,6 +521,10 @@ export const ProfileOverviewScreen: React.FC = () => {
             style={styles.sectionHeader}
             onPress={() => toggleSection(SECTION_KEYS.personal)}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Basculer la section informations personnelles"
+            accessibilityState={{ expanded: expandedSections.personal }}
+            hitSlop={8}
           >
             <Text style={[styles.sectionTitle, styles.sectionHeaderTitle]}>Informations personnelles</Text>
             <Text style={styles.sectionChevron}>{expandedSections.personal ? '−' : '+'}</Text>
@@ -566,6 +561,10 @@ export const ProfileOverviewScreen: React.FC = () => {
             style={styles.sectionHeader}
             onPress={() => toggleSection(SECTION_KEYS.metrics)}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Basculer la section mesures physiques"
+            accessibilityState={{ expanded: expandedSections.metrics }}
+            hitSlop={8}
           >
             <Text style={[styles.sectionTitle, styles.sectionHeaderTitle]}>Mesures physiques</Text>
             <Text style={styles.sectionChevron}>{expandedSections.metrics ? '−' : '+'}</Text>
@@ -597,6 +596,10 @@ export const ProfileOverviewScreen: React.FC = () => {
             style={styles.sectionHeader}
             onPress={() => toggleSection(SECTION_KEYS.training)}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Basculer la section objectifs d'entrainement"
+            accessibilityState={{ expanded: expandedSections.training }}
+            hitSlop={8}
           >
             <Text style={[styles.sectionTitle, styles.sectionHeaderTitle]}>Objectifs d'entraînement</Text>
             <Text style={styles.sectionChevron}>{expandedSections.training ? '−' : '+'}</Text>
@@ -638,6 +641,10 @@ export const ProfileOverviewScreen: React.FC = () => {
             style={styles.sectionHeader}
             onPress={() => toggleSection(SECTION_KEYS.lifestyle)}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Basculer la section allergies et preferences"
+            accessibilityState={{ expanded: expandedSections.lifestyle }}
+            hitSlop={8}
           >
             <Text style={[styles.sectionTitle, styles.sectionHeaderTitle]}>Allergies & Préférences</Text>
             <Text style={styles.sectionChevron}>{expandedSections.lifestyle ? '−' : '+'}</Text>
@@ -669,13 +676,19 @@ export const ProfileOverviewScreen: React.FC = () => {
               style={styles.sectionToggle}
               onPress={() => toggleSection(SECTION_KEYS.supplements)}
               activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel="Basculer la section supplements personnels"
+              accessibilityState={{ expanded: expandedSections.supplements }}
+              hitSlop={8}
             >
               <Text style={[styles.sectionTitle, styles.sectionHeaderTitle]}>Suppléments personnels</Text>
-              <Text style={styles.sectionChevron}>{expandedSections.supplements ? '−' : '+'}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setSupplementModalVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Ajouter un supplement"
+              hitSlop={8}
             >
               <Text style={styles.addButtonText}>Ajouter</Text>
             </TouchableOpacity>
@@ -693,21 +706,38 @@ export const ProfileOverviewScreen: React.FC = () => {
                   <View key={timing} style={styles.supplementSection}>
                     <Text style={styles.supplementTitle}>{getTimingLabel(timing)}</Text>
                     {supplements.map((supplement) => (
-                      <TouchableOpacity
+                      <View
                         key={supplement.id}
                         style={[styles.supplementRow, !supplement.available && styles.supplementRowInactive]}
-                        onPress={() => handleToggleSupplementAvailability(supplement.id)}
-                        onLongPress={() => handleRemoveSupplement(supplement.id)}
-                        delayLongPress={350}
                       >
-                        <View>
+                        <View style={styles.supplementMainInfo}>
                           <Text style={styles.supplementName}>{supplement.name}</Text>
                           <Text style={styles.supplementDetails}>{supplement.dosage}</Text>
                         </View>
-                        <Text style={styles.supplementStatus}>
-                          {supplement.available ? 'Actif' : 'Inactif'}
-                        </Text>
-                      </TouchableOpacity>
+                        <View style={styles.supplementActions}>
+                          <TouchableOpacity
+                            style={styles.supplementToggleButton}
+                            onPress={() => handleToggleSupplementAvailability(supplement.id)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`${supplement.available ? 'Desactiver' : 'Activer'} ${supplement.name}`}
+                            hitSlop={8}
+                          >
+                            <Text style={styles.supplementToggleButtonText}>
+                              {supplement.available ? 'Actif' : 'Inactif'}
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.supplementDeleteButton}
+                            onPress={() => handleRemoveSupplement(supplement.id)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Supprimer ${supplement.name}`}
+                            accessibilityHint="Retire ce supplement de votre liste"
+                            hitSlop={8}
+                          >
+                            <Text style={styles.supplementDeleteButtonText}>Supprimer</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     ))}
                   </View>
                 ))
@@ -721,6 +751,10 @@ export const ProfileOverviewScreen: React.FC = () => {
             style={[styles.button, styles.logoutButton]}
             onPress={handleLogout}
             disabled={loading}
+            accessibilityRole="button"
+            accessibilityLabel="Se deconnecter"
+            accessibilityState={{ disabled: loading }}
+            hitSlop={8}
           >
             <Text style={styles.logoutButtonText}>
               {loading ? 'Déconnexion...' : 'Se déconnecter'}
@@ -763,6 +797,10 @@ export const ProfileOverviewScreen: React.FC = () => {
                     key={value}
                     style={[styles.timingChip, isActive && styles.timingChipActive]}
                     onPress={() => setNewSupplement((prev) => ({ ...prev, timing: value }))}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Choisir le timing ${label}`}
+                    accessibilityState={{ selected: isActive }}
+                    hitSlop={8}
                   >
                     <Text style={[styles.timingChipText, isActive && styles.timingChipTextActive]}>
                       {label}
@@ -779,12 +817,18 @@ export const ProfileOverviewScreen: React.FC = () => {
                   setSupplementModalVisible(false);
                   setNewSupplement({ name: '', dosage: '', timing: 'morning' });
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="Annuler l'ajout du supplement"
+                hitSlop={8}
               >
                 <Text style={styles.modalCancelText}>Annuler</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.modalConfirm]}
                 onPress={handleCreateSupplement}
+                accessibilityRole="button"
+                accessibilityLabel="Confirmer l'ajout du supplement"
+                hitSlop={8}
               >
                 <Text style={styles.modalConfirmText}>Ajouter</Text>
               </TouchableOpacity>
@@ -971,9 +1015,14 @@ const createStyles = (colors: ThemePalette) =>
       paddingVertical: Spacing.sm,
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: colors.border,
+      gap: Spacing.sm,
     },
     supplementRowInactive: {
       opacity: 0.5,
+    },
+    supplementMainInfo: {
+      flex: 1,
+      paddingRight: Spacing.sm,
     },
     supplementName: {
       ...Typography.body,
@@ -987,6 +1036,37 @@ const createStyles = (colors: ThemePalette) =>
     supplementStatus: {
       ...Typography.caption,
       color: colors.text,
+      fontWeight: '600',
+    },
+    supplementActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
+    },
+    supplementToggleButton: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.round,
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: 6,
+      backgroundColor: colors.background,
+    },
+    supplementToggleButtonText: {
+      ...Typography.caption,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    supplementDeleteButton: {
+      borderWidth: 1,
+      borderColor: colors.error,
+      borderRadius: BorderRadius.round,
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: 6,
+      backgroundColor: 'transparent',
+    },
+    supplementDeleteButtonText: {
+      ...Typography.caption,
+      color: colors.error,
       fontWeight: '600',
     },
     actionsCard: {

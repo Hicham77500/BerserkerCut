@@ -29,7 +29,7 @@ export const ProfileGoalsScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <Card style={styles.card}>
           <Text style={styles.cardTitle}>Objectif principal</Text>

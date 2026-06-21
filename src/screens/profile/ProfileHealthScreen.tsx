@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { ScrollView, View, Text, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
-import { Input, Button, Card, IOSButton } from '@/components';
+import { Input, Card, IOSButton } from '@/components';
 import { Typography, Spacing, BorderRadius, ThemePalette } from '@/utils/theme';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { HealthProfile } from '@/types';
@@ -34,24 +34,18 @@ export const ProfileHealthScreen: React.FC = () => {
     age: String(health.age || ''),
     averageSleepHours: String(health.averageSleepHours || ''),
   });
-  const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
-    setLoading(true);
-    try {
-      await updateProfile({
-        health: {
-          ...health,
-          weight: Number(form.weight) || 0,
-          height: Number(form.height) || 0,
-          age: Number(form.age) || 0,
-          averageSleepHours: Number(form.averageSleepHours) || 0,
-          lastUpdated: new Date(),
-        },
-      });
-    } finally {
-      setLoading(false);
-    }
+    await updateProfile({
+      health: {
+        ...health,
+        weight: Number(form.weight) || 0,
+        height: Number(form.height) || 0,
+        age: Number(form.age) || 0,
+        averageSleepHours: Number(form.averageSleepHours) || 0,
+        lastUpdated: new Date(),
+      },
+    });
   };
 
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -108,7 +102,7 @@ export const ProfileHealthScreen: React.FC = () => {
           </View>
 
           <IOSButton label="Enregistrer" onPress={() => {
-            handleSave().then(handleSaveSuccess).catch(error => {
+            handleSave().then(handleSaveSuccess).catch(() => {
               Alert.alert('Erreur', 'Une erreur est survenue lors de la sauvegarde. Veuillez réessayer.');
             });
           }} />

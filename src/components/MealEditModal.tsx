@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,14 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { Colors, Typography, Spacing, BorderRadius } from '@/utils/theme';
+import { Typography, Spacing, BorderRadius, ThemePalette } from '@/utils/theme';
 import { useThemeMode } from '@/hooks/useThemeMode';
 import { Meal, Food } from '@/types';
 import { IOSButton } from './IOSButton';
-import { IOSCheckbox } from './IOSCheckbox';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface MealEditModalProps {
   visible: boolean;
@@ -29,6 +31,8 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
   meal,
 }) => {
   const { colors } = useThemeMode();
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [mealName, setMealName] = useState(meal.name);
   const [mealTime, setMealTime] = useState(meal.time);
   const [foods, setFoods] = useState<Food[]>(meal.foods);
@@ -188,7 +192,10 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
 
   const buttonContainerStyle = [
     styles.buttonContainer,
-    { backgroundColor: colors.surface },
+    {
+      backgroundColor: colors.surface,
+      paddingBottom: Math.max(insets.bottom, Spacing.sm),
+    },
   ];
 
   if (!visible) return null;
@@ -200,9 +207,18 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
       transparent={true}
       onRequestClose={onClose}
     >
-      <View style={containerStyle}>
-        <View style={cardStyle}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView
+        style={styles.keyboardWrapper}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + Spacing.md : 0}
+      >
+        <View style={containerStyle}>
+          <View style={cardStyle}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scrollContent}
+            >
             <Text style={[Typography.h2, textStyle, styles.title]}>
               {isEditingFood || isAddingFood ? 'Éditer Aliment' : 'Éditer Repas'}
             </Text>
@@ -385,32 +401,39 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                 </View>
               </>
             )}
-          </ScrollView>
+            </ScrollView>
 
-          <View style={buttonContainerStyle}>
-            <IOSButton label="Annuler" onPress={onClose} variant="ghost" />
-            {!isEditingFood && !isAddingFood && (
-              <IOSButton label="Enregistrer" onPress={handleSaveMeal} />
-            )}
+            <View style={buttonContainerStyle}>
+              <IOSButton label="Annuler" onPress={onClose} variant="ghost" />
+              {!isEditingFood && !isAddingFood && (
+                <IOSButton label="Enregistrer" onPress={handleSaveMeal} />
+              )}
+            </View>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  keyboardWrapper: {
+    flex: 1,
+  },
   card: {
     width: '90%',
-    maxHeight: '80%',
+    maxHeight: '84%',
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
+  },
+  scrollContent: {
+    paddingBottom: Spacing.sm,
   },
   title: {
     marginBottom: Spacing.lg,
@@ -441,7 +464,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   foodInfo: {
     flex: 1,
@@ -460,14 +483,14 @@ const styles = StyleSheet.create({
   },
   actionText: {
     ...Typography.button,
-    color: Colors.primary,
+    color: colors.primary,
   },
   deleteButton: {
     backgroundColor: 'rgba(255, 0, 0, 0.1)',
   },
   deleteText: {
     ...Typography.button,
-    color: Colors.error,
+    color: colors.error,
   },
   addButton: {
     marginTop: Spacing.md,
@@ -477,7 +500,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -485,7 +508,7 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     marginTop: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: colors.border,
   },
   foodActionButtons: {
     flexDirection: 'row',

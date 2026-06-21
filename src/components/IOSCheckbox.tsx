@@ -6,7 +6,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { BorderRadius, Colors, Spacing, Typography } from '../utils/theme';
+import { BorderRadius, Spacing, Typography, ThemePalette } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 interface IOSCheckboxProps extends Omit<PressableProps, 'onPress'> {
   checked: boolean;
@@ -25,6 +26,9 @@ export const IOSCheckbox: React.FC<IOSCheckboxProps> = ({
   style: styleProp,
   ...rest
 }) => {
+  const { colors } = useThemeMode();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   const handlePress = () => {
     if (disabled) return;
     onChange(!checked);
@@ -68,49 +72,50 @@ export const IOSCheckbox: React.FC<IOSCheckboxProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    backgroundColor: Colors.surface,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: BorderRadius.md,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.surfaceDark ?? Colors.surface,
-  },
-  checkboxChecked: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  checkmark: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  textContainer: {
-    flex: 1,
-    marginLeft: Spacing.md,
-  },
-  label: {
-    color: Colors.text,
-  },
-  description: {
-    color: Colors.textLight,
-    marginTop: Spacing.xs,
-  },
-});
+const createStyles = (colors: ThemePalette) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: Spacing.sm,
+      paddingHorizontal: Spacing.md,
+      borderRadius: BorderRadius.lg,
+      backgroundColor: colors.surface,
+    },
+    pressed: {
+      opacity: 0.8,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    checkbox: {
+      width: 24,
+      height: 24,
+      borderRadius: BorderRadius.md,
+      borderWidth: 2,
+      borderColor: colors.border,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.surfaceDark ?? colors.surface,
+    },
+    checkboxChecked: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+    },
+    checkmark: {
+      color: colors.textDark,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    textContainer: {
+      flex: 1,
+      marginLeft: Spacing.md,
+    },
+    label: {
+      color: colors.text,
+    },
+    description: {
+      color: colors.textLight,
+      marginTop: Spacing.xs,
+    },
+  });

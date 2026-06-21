@@ -2,6 +2,9 @@ import * as SecureStore from 'expo-secure-store';
 
 const isAvailable = async (): Promise<boolean> => {
   try {
+    if (typeof SecureStore.isAvailableAsync !== 'function') {
+      return false;
+    }
     return await SecureStore.isAvailableAsync();
   } catch (error) {
     console.warn('SecureStore indisponible', error);

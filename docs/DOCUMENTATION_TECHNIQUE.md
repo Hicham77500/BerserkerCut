@@ -51,32 +51,26 @@ npm test           # Tests unitaires
 ## 🧭 Navigation détaillée
 
 ### Architecture globale
-- `src/navigation/Navigation.tsx` : conteneur racine (Auth + Plans + Drawer)
-- `src/navigation/DrawerNavigator.tsx` : menu latéral personnalisé + tabs
+- `src/navigation/Navigation.tsx` : conteneur racine (Auth + Plans + stack racine)
+- `src/navigation/MainNavigator.tsx` : navigation principale tabs-only
 - `src/navigation/StackNavigators.tsx` : piles pour chaque domaine
 
 ### Flux principale
 ```
 NavigationContainer
 └─ AuthProvider / PlanProvider
-   └─ AppToolbar (header global)
-      └─ AppNavigator (stack racine)
-         ├─ LoginScreen
-         ├─ OnboardingScreen
-         └─ MainNavigator (Drawer + Tabs)
-             ├─ DrawerNavigator (menu)
-             └─ TabNavigator (4 stacks)
+   └─ AppNavigator (stack racine)
+      ├─ LoginScreen
+      ├─ OnboardingScreen
+      └─ MainNavigator
+         ├─ MainTabs (5 stacks visibles)
+         └─ ProfileStack (route interne)
 ```
 
-### DrawerNavigator
-- Menu latéral animé (Animated API)
-- Items : Accueil, Nutrition, Entraînement, **Agenda**, Profil, Confidentialité, Paramètres, Déconnexion
-- Exposition globale des méthodes `openDrawer` et `closeDrawer`
-
 ### TabNavigator
-- 4 onglets principaux visibles : Home, Nutrition, Training, Profile
-- Route "Agenda" cachée (tab button masqué) accessible via le drawer ou les CTA de l'accueil
-- Style sombre, badges emoji pour icônes
+- 5 onglets principaux visibles : Home, Nutrition, Training, Agenda, Paramètres
+- `ProfileStack` reste accessible via CTA internes sans dupliquer la navigation primaire
+- Style dynamique clair/sombre, badges emoji pour icônes, hauteur ajustée aux safe areas
 - Transitions iOS (`SlideFromRightIOS`, `ModalSlideFromBottomIOS`)
 
 ---
@@ -164,8 +158,8 @@ Chaque composant suit :
    - Centralise l'état de permission (`granted`/`denied`/`undetermined`)
    - Fournit `scheduleNotification`, `scheduleDailyReminder`, `cancelAll`
    - Listener `addNotificationResponseReceivedListener` prêt pour analytics/navigation
-- Intégration UI : `HomeDashboardScreen`
-   - CTA "Activer les notifications" + rappels matin/soir préconfigurés
+- Intégration UI : `SystemSettingsScreen`
+   - CTA d'autorisation + rappels matin/soir préconfigurés
    - Bouton de test (notification 5 secondes) et reset des rappels
 
 ### Agenda iOS (Expo Calendar)

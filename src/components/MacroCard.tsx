@@ -4,7 +4,8 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { Colors, Typography, BorderRadius, Spacing } from '../utils/theme';
+import { Typography, BorderRadius, Spacing, ThemePalette } from '../utils/theme';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import { Card } from './Card';
 
 interface MacroCardProps {
@@ -24,6 +25,8 @@ export const MacroCard: React.FC<MacroCardProps> = ({
   title = "Macronutriments",
   showPercentages = false,
 }) => {
+  const { colors } = useThemeMode();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const totalMacros = protein + carbs + fat;
   const proteinPercentage = totalMacros > 0 ? (protein / totalMacros) * 100 : 0;
   const carbsPercentage = totalMacros > 0 ? (carbs / totalMacros) * 100 : 0;
@@ -39,7 +42,7 @@ export const MacroCard: React.FC<MacroCardProps> = ({
     color: string; 
   }) => (
     <View style={styles.macroBarContainer}>
-      <View style={[styles.macroBar, { backgroundColor: Colors.background }]}>
+      <View style={[styles.macroBar, { backgroundColor: colors.background }]}>
         <View 
           style={[
             styles.macroBarFill, 
@@ -63,45 +66,45 @@ export const MacroCard: React.FC<MacroCardProps> = ({
       <View style={styles.macrosContainer}>
         <View style={styles.macroItem}>
           <View style={styles.macroHeader}>
-            <View style={[styles.macroColor, { backgroundColor: Colors.protein }]} />
+            <View style={[styles.macroColor, { backgroundColor: colors.protein }]} />
             <Text style={styles.macroLabel}>Protéines</Text>
           </View>
           <Text style={styles.macroValue}>{protein}g</Text>
           {showPercentages && (
             <Text style={styles.macroPercentage}>{proteinPercentage.toFixed(1)}%</Text>
           )}
-          <MacroBar value={protein} total={totalMacros} color={Colors.protein} />
+          <MacroBar value={protein} total={totalMacros} color={colors.protein} />
         </View>
 
         <View style={styles.macroItem}>
           <View style={styles.macroHeader}>
-            <View style={[styles.macroColor, { backgroundColor: Colors.carbs }]} />
+            <View style={[styles.macroColor, { backgroundColor: colors.carbs }]} />
             <Text style={styles.macroLabel}>Glucides</Text>
           </View>
           <Text style={styles.macroValue}>{carbs}g</Text>
           {showPercentages && (
             <Text style={styles.macroPercentage}>{carbsPercentage.toFixed(1)}%</Text>
           )}
-          <MacroBar value={carbs} total={totalMacros} color={Colors.carbs} />
+          <MacroBar value={carbs} total={totalMacros} color={colors.carbs} />
         </View>
 
         <View style={styles.macroItem}>
           <View style={styles.macroHeader}>
-            <View style={[styles.macroColor, { backgroundColor: Colors.fat }]} />
+            <View style={[styles.macroColor, { backgroundColor: colors.fat }]} />
             <Text style={styles.macroLabel}>Lipides</Text>
           </View>
           <Text style={styles.macroValue}>{fat}g</Text>
           {showPercentages && (
             <Text style={styles.macroPercentage}>{fatPercentage.toFixed(1)}%</Text>
           )}
-          <MacroBar value={fat} total={totalMacros} color={Colors.fat} />
+          <MacroBar value={fat} total={totalMacros} color={colors.fat} />
         </View>
       </View>
     </Card>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemePalette) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -111,12 +114,12 @@ const styles = StyleSheet.create({
 
   title: {
     ...Typography.h3,
-    color: Colors.text,
+    color: colors.text,
   } as TextStyle,
 
   calories: {
     ...Typography.h3,
-    color: Colors.calories,
+    color: colors.calories,
     fontWeight: '700',
   } as TextStyle,
 
@@ -144,21 +147,21 @@ const styles = StyleSheet.create({
 
   macroLabel: {
     ...Typography.bodySmall,
-    color: Colors.text,
+    color: colors.text,
     flex: 1,
     letterSpacing: 0.25, // iOS typography enhancement
   } as TextStyle,
 
   macroValue: {
     ...Typography.bodySmall,
-    color: Colors.text,
+    color: colors.text,
     fontWeight: '600',
     letterSpacing: 0.25, // iOS typography enhancement
   } as TextStyle,
 
   macroPercentage: {
     ...Typography.caption,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginLeft: Spacing.xs,
   } as TextStyle,
 

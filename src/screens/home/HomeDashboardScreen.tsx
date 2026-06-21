@@ -4,14 +4,12 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
 import { usePlan } from '@/hooks/usePlan';
 import { useThemeMode } from '@/hooks/useThemeMode';
-import { useNotifications } from '@/hooks/useNotifications';
 import { Card, IOSButton, ProgressBar } from '@/components';
 import DesignSystem from '@/utils/designSystem';
 import { Typography, Spacing, ThemePalette } from '@/utils/theme';
@@ -20,13 +18,6 @@ export const HomeDashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const { currentPlan, loading, supplementProgress, generateDailyPlan } = usePlan();
-  const {
-    permissionStatus,
-    requestPermission,
-    scheduleNotification,
-    scheduleDailyReminder,
-    cancelAll,
-  } = useNotifications();
   const name = user?.profile?.name?.trim() || user?.email?.split('@')[0] || 'Athlète';
   const today = new Date();
   const formattedDate = today.toLocaleDateString('fr-FR', {
@@ -35,7 +26,9 @@ export const HomeDashboardScreen: React.FC = () => {
     month: 'long',
   });
   const { colors } = useThemeMode();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const headerTopSpacing = Math.max(Spacing.sm, Math.min(insets.top * 0.25, Spacing.lg));
   
   // Recharger le plan et le statut des suppléments quand l'écran devient actif
   useFocusEffect(
@@ -58,91 +51,21 @@ export const HomeDashboardScreen: React.FC = () => {
   const macros = currentPlan?.nutritionPlan.macros;
   const macroTotal = macros ? macros.protein + macros.carbs + macros.fat : 0;
 
-  const notificationsEnabled = permissionStatus === 'granted';
-
   const handleOpenAgenda = useCallback(() => {
     navigation.navigate('AgendaStack');
   }, [navigation]);
 
-  const handleRequestPermission = useCallback(async () => {
-    const granted = await requestPermission();
-    if (!granted) {
-      Alert.alert(
-        'Notifications désactivées',
-        "Tu peux les activer depuis les réglages iOS pour recevoir les rappels BerserkerCut.",
-      );
-    }
-  }, [requestPermission]);
-
-  const handleScheduleMorningReminder = useCallback(async () => {
-    try {
-      const identifier = await scheduleDailyReminder({
-        title: 'Briefing matinal',
-        body: 'Consulte ton plan BerserkerCut et prépare ta journée.',
-        hour: 7,
-        minute: 30,
-      });
-      Alert.alert('Rappel du matin programmé', `Identifiant : ${identifier}`);
-    } catch (error) {
-      Alert.alert('Impossible de programmer le rappel', (error as Error).message);
-    }
-  }, [scheduleDailyReminder]);
-
-  const handleScheduleEveningReminder = useCallback(async () => {
-    try {
-      const identifier = await scheduleDailyReminder({
-        title: 'Checklist suppléments',
-        body: 'Valide tes suppléments du soir pour clôturer la journée.',
-        hour: 21,
-        minute: 0,
-      });
-      Alert.alert('Rappel du soir programmé', `Identifiant : ${identifier}`);
-    } catch (error) {
-      Alert.alert('Impossible de programmer le rappel', (error as Error).message);
-    }
-  }, [scheduleDailyReminder]);
-
-  const handleTestNotification = useCallback(async () => {
-    try {
-      await scheduleNotification({
-        title: 'BerserkerCut',
-        body: 'Notification test : ton rappel arrive dans 5 secondes.',
-        date: new Date(Date.now() + 5_000),
-      });
-      Alert.alert('Notification test programmée', 'Elle apparaîtra dans quelques secondes.');
-    } catch (error) {
-      Alert.alert('Notification impossible', (error as Error).message);
-    }
-  }, [scheduleNotification]);
-
-  const handleCancelReminders = useCallback(async () => {
-    try {
-      await cancelAll();
-      Alert.alert('Rappels réinitialisés', 'Tous les rappels ont été supprimés.');
-    } catch (error) {
-      Alert.alert('Impossible de supprimer', (error as Error).message);
-    }
-  }, [cancelAll]);
-
   return (
-    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
+        <View style={{ ...styles.header, paddingTop: headerTopSpacing }}>
           <View>
-            <Text style={styles.greeting}>Bonjour {name}</Text>
-            <Text style={styles.subheading}>{formattedDate}</Text>
+            <Text accessibilityRole="header" style={styles.greeting}>Bonjour {name}</Text>
+            <Text accessibilityLabel={`Date du jour ${formattedDate}`} style={styles.subheading}>{formattedDate}</Text>
           </View>
-          <IOSButton
-            label="Profil"
-            variant="ghost"
-            align="leading"
-            onPress={() =>
-              navigation.navigate('ProfileStack' as never, { screen: 'Profil' } as never)
-            }
-          />
         </View>
 
         <View style={styles.cardsWrapper}>
@@ -262,51 +185,6 @@ export const HomeDashboardScreen: React.FC = () => {
             />
           </Card>
 
-          <Card style={styles.card}>
-            <Text style={styles.cardLabel}>Rappels intelligents</Text>
-            <Text style={styles.cardDescription}>
-              Programme des notifications iOS pour garder le focus sur ta nutrition et tes suppléments.
-            </Text>
-            {!notificationsEnabled ? (
-              <IOSButton
-                label="Activer les notifications"
-                variant="primary"
-                align="leading"
-                onPress={handleRequestPermission}
-              />
-            ) : (
-              <View style={styles.remindersButtons}>
-                <IOSButton
-                  label="Rappel matin 7h30"
-                  align="leading"
-                  variant="secondary"
-                  onPress={handleScheduleMorningReminder}
-                />
-                <IOSButton
-                  label="Rappel soir 21h"
-                  align="leading"
-                  variant="secondary"
-                  onPress={handleScheduleEveningReminder}
-                />
-              </View>
-            )}
-            <View style={styles.remindersButtons}>
-              <IOSButton
-                label="Notification test (5s)"
-                align="leading"
-                variant="ghost"
-                onPress={handleTestNotification}
-                disabled={!notificationsEnabled}
-              />
-              <IOSButton
-                label="Réinitialiser les rappels"
-                align="leading"
-                variant="ghost"
-                onPress={handleCancelReminders}
-                disabled={!notificationsEnabled}
-              />
-            </View>
-          </Card>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -328,9 +206,7 @@ const createStyles = (colors: ThemePalette) =>
       backgroundColor: colors.background,
     },
     header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      paddingTop: Spacing.sm,
     },
     greeting: {
       ...Typography.h1,
@@ -381,9 +257,6 @@ const createStyles = (colors: ThemePalette) =>
     macroValue: {
       ...Typography.bodySmall,
       color: colors.text,
-    },
-    remindersButtons: {
-      gap: Spacing.sm,
     },
   });
 
