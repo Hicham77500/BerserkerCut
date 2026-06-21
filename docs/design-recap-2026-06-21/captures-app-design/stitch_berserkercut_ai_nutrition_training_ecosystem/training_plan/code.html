@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERSERKERCUT - Training</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#433030",
+                      "on-primary-fixed": "#410007",
+                      "surface-container-lowest": "#180a0a",
+                      "primary-fixed-dim": "#ffb3b1",
+                      "surface-bright": "#473534",
+                      "surface-container-low": "#271717",
+                      "on-secondary-container": "#5b3b00",
+                      "primary": "#ffb3b1",
+                      "surface-dim": "#1e0f0f",
+                      "on-tertiary-fixed-variant": "#1a4e50",
+                      "on-background": "#f9dcda",
+                      "inverse-surface": "#f9dcda",
+                      "on-tertiary-fixed": "#002021",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#3e2c2b",
+                      "tertiary-fixed": "#b9ecee",
+                      "background": "#1e0f0f",
+                      "on-surface": "#f9dcda",
+                      "secondary-fixed": "#ffddb3",
+                      "tertiary-container": "#68999b",
+                      "secondary-container": "#ec9e00",
+                      "surface-container-high": "#372625",
+                      "surface-tint": "#ffb3b1",
+                      "inverse-primary": "#bb152c",
+                      "on-secondary-fixed-variant": "#624000",
+                      "on-tertiary": "#003739",
+                      "primary-fixed": "#ffdad8",
+                      "on-tertiary-container": "#002f31",
+                      "on-error": "#690005",
+                      "outline-variant": "#5b403f",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#92001c",
+                      "on-primary": "#680011",
+                      "on-primary-container": "#5b000e",
+                      "secondary-fixed-dim": "#ffb950",
+                      "secondary": "#ffbd5c",
+                      "primary-container": "#ff535b",
+                      "on-surface-variant": "#e4bebc",
+                      "on-secondary": "#452b00",
+                      "on-secondary-fixed": "#291800",
+                      "surface-container": "#2c1b1b",
+                      "tertiary-fixed-dim": "#9ecfd1",
+                      "outline": "#ab8987",
+                      "surface": "#1e0f0f",
+                      "surface-variant": "#433030",
+                      "tertiary": "#9ecfd1",
+                      "on-error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "md": "16px",
+                      "xl": "40px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "margin-desktop": "32px",
+                      "base": "4px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "display-lg": ["Anton"],
+                      "label-technical": ["JetBrains Mono"],
+                      "headline-lg": ["Anton"],
+                      "body-sm": ["Inter"],
+                      "title-md": ["Inter"],
+                      "headline-lg-mobile": ["Anton"]
+              },
+              "fontSize": {
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                      "label-technical": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "36px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "32px", "fontWeight": "400"}]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0D0D0D; /* Base background from Style Guidance */
+            color: #f9dcda; /* on-background */
+        }
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.8); /* #1A1A1A surface with opacity */
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 218, 220, 0.1); /* Steel Gray 10% */
+        }
+        .tech-border {
+            border: 1px solid rgba(168, 218, 220, 0.1);
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-lg text-body-lg min-h-screen flex flex-col antialiased">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface full-width top-0 border-b border-outline-variant/10 flat no shadows flex justify-between items-center w-full px-margin-mobile py-sm sticky z-40 md:hidden">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30 flex-shrink-0 active:scale-95 transition-transform hover:opacity-80">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A close-up, high-contrast, moody portrait of a focused athlete in a dimly lit, brutalist industrial gym setting. The lighting is dramatic, highlighting sweat and determination. Dark, gritty athletic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNN1Lc0vHlcTrm-i2KRGUELYgorUvYi2nHLhd7fjbeaQn8XlOVf2r50P4QGIn4-wY04OlprkTMhfWzZKBXW0QRw2ZyjbxEdA_QM53qQtKQhUeDuF3mRZYVdSxwNCbYR_IwLjCGJVmvSUy1_TsRbot84UMpzr84CQCUenXY1hOOygnMR0A_97CJUpp2dJfa_iqXmbQCt3AevfE8A-bfuHR8YBMXvTJHMSF7ZiX2jiL9Bnhx43mMeMxKigau-O6v783snLyzTBaOSrA"/>
+</div>
+<h1 class="font-display-lg text-headline-lg-mobile text-primary uppercase tracking-tighter">BERSERKERCUT</h1>
+<button class="text-primary dark:text-primary active:scale-95 transition-transform hover:opacity-80 flex items-center justify-center w-8 h-8">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Desktop Nav Cluster (Hidden on mobile) -->
+<nav class="hidden md:flex bg-surface dark:bg-surface border-b border-outline-variant/10 px-margin-desktop py-lg justify-between items-center sticky top-0 z-40">
+<div class="flex items-center gap-xl">
+<h1 class="font-display-lg text-headline-lg text-primary uppercase tracking-tighter">BERSERKERCUT</h1>
+<div class="flex gap-lg font-label-technical text-label-technical">
+<a class="text-on-surface-variant hover:text-primary/70 transition-all duration-200 uppercase flex items-center gap-xs" href="#"><span class="material-symbols-outlined text-[18px]">home</span> Home</a>
+<a class="text-on-surface-variant hover:text-primary/70 transition-all duration-200 uppercase flex items-center gap-xs" href="#"><span class="material-symbols-outlined text-[18px]">restaurant</span> Nutrition</a>
+<a class="text-primary font-bold transition-all duration-200 uppercase flex items-center gap-xs border-b-2 border-primary pb-xs" href="#"><span class="material-symbols-outlined text-[18px]">fitness_center</span> Training</a>
+<a class="text-on-surface-variant hover:text-primary/70 transition-all duration-200 uppercase flex items-center gap-xs" href="#"><span class="material-symbols-outlined text-[18px]">calendar_today</span> Agenda</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-primary hover:opacity-80 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden tech-border">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A close-up, high-contrast, moody portrait of a focused athlete in a dimly lit, brutalist industrial gym setting. The lighting is dramatic, highlighting sweat and determination. Dark, gritty athletic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUKYJ7UM-HbdWLZr2bzfJt-0ijzdc_ZSpsFhS-txZM7bpYO8Tl8Hl3cbUek2Qi9NcQZR9imJnOLd1ryETn0hBIA4DYyKsi_VffbrCdz47H-KHlOhcxNDicPIzIMBARyLBcYBWFJ6gPwkxSpuUNR6_gMzsn-9XJJdNhifdaJEWzyqYtZPJMlBzHe9us7oI5i2hQ9TVAzUKR-cYRpSV5TicqVSdwG0bVj82iq4mIUT7O1HQUF6A1gMLL3asd-nl5KMw1GjP4EpRPo10"/>
+</div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-grow px-margin-mobile md:px-margin-desktop py-lg md:py-xl max-w-7xl mx-auto w-full pb-32 md:pb-lg flex flex-col gap-xl">
+<!-- Header Section -->
+<section class="flex flex-col gap-sm">
+<p class="font-label-technical text-label-technical text-primary tracking-widest uppercase">Today's Protocol</p>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background uppercase tracking-tight">Hypertrophy Upper Body</h2>
+<div class="flex gap-md font-label-technical text-label-technical text-on-surface-variant mt-xs">
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">timer</span> 65 MIN</span>
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">local_fire_department</span> HIGH INTENSITY</span>
+</div>
+</section>
+<!-- Weekly Schedule Strip -->
+<section class="glass-panel p-md rounded-lg overflow-x-auto snap-x hide-scrollbar">
+<div class="flex gap-sm min-w-max">
+<!-- Days -->
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface/50 min-w-[60px] snap-start opacity-50">
+<span class="font-label-technical text-[10px] text-on-surface-variant">MON</span>
+<span class="font-title-md text-title-md text-on-surface-variant">12</span>
+</div>
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface/50 min-w-[60px] snap-start opacity-50">
+<span class="font-label-technical text-[10px] text-on-surface-variant">TUE</span>
+<span class="font-title-md text-title-md text-on-surface-variant">13</span>
+</div>
+<!-- Active Day -->
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface min-w-[60px] snap-start border-primary relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<span class="font-label-technical text-[10px] text-primary">WED</span>
+<span class="font-title-md text-title-md text-on-background">14</span>
+</div>
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface/50 min-w-[60px] snap-start">
+<span class="font-label-technical text-[10px] text-on-surface-variant">THU</span>
+<span class="font-title-md text-title-md text-on-surface-variant">15</span>
+<div class="w-1 h-1 rounded-full bg-primary mt-xs"></div>
+</div>
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface/50 min-w-[60px] snap-start">
+<span class="font-label-technical text-[10px] text-on-surface-variant">FRI</span>
+<span class="font-title-md text-title-md text-on-surface-variant">16</span>
+<div class="w-1 h-1 rounded-full bg-primary mt-xs"></div>
+</div>
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface/50 min-w-[60px] snap-start">
+<span class="font-label-technical text-[10px] text-on-surface-variant">SAT</span>
+<span class="font-title-md text-title-md text-on-surface-variant">17</span>
+</div>
+<div class="flex flex-col items-center gap-xs p-sm tech-border rounded bg-surface/50 min-w-[60px] snap-start">
+<span class="font-label-technical text-[10px] text-on-surface-variant">SUN</span>
+<span class="font-title-md text-title-md text-on-surface-variant">18</span>
+</div>
+</div>
+</section>
+<!-- Exercise List (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-md md:gap-lg">
+<!-- Exercise 1 -->
+<div class="glass-panel rounded-lg p-md flex flex-col gap-sm relative overflow-hidden group">
+<div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start">
+<div class="flex gap-sm items-center">
+<span class="font-display-lg text-[24px] text-surface-variant opacity-50">01</span>
+<h3 class="font-title-md text-title-md text-on-background uppercase">Incline Dumbbell Press</h3>
+</div>
+<span class="material-symbols-outlined text-outline-variant">info</span>
+</div>
+<div class="mt-sm border-t tech-border pt-sm">
+<div class="grid grid-cols-4 gap-xs font-label-technical text-[10px] text-on-surface-variant mb-xs">
+<div>SET</div>
+<div class="col-span-2">LBS</div>
+<div>REPS</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">1</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="--" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-12 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="8-10" type="number"/>
+</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">2</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="--" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-12 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="8-10" type="number"/>
+</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">3</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="--" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-12 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="8-10" type="number"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Exercise 2 -->
+<div class="glass-panel rounded-lg p-md flex flex-col gap-sm relative overflow-hidden group">
+<div class="flex justify-between items-start">
+<div class="flex gap-sm items-center">
+<span class="font-display-lg text-[24px] text-surface-variant opacity-50">02</span>
+<h3 class="font-title-md text-title-md text-on-background uppercase">Pull-Ups</h3>
+</div>
+<span class="material-symbols-outlined text-outline-variant">info</span>
+</div>
+<div class="mt-sm border-t tech-border pt-sm">
+<div class="grid grid-cols-4 gap-xs font-label-technical text-[10px] text-on-surface-variant mb-xs">
+<div>SET</div>
+<div class="col-span-2">LBS (ADDED)</div>
+<div>REPS</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">1</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="BW" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="AMRAP" type="number"/>
+</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">2</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="BW" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="AMRAP" type="number"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Exercise 3 -->
+<div class="glass-panel rounded-lg p-md flex flex-col gap-sm relative overflow-hidden group">
+<div class="flex justify-between items-start">
+<div class="flex gap-sm items-center">
+<span class="font-display-lg text-[24px] text-surface-variant opacity-50">03</span>
+<h3 class="font-title-md text-title-md text-on-background uppercase">Seated Cable Row</h3>
+</div>
+<span class="material-symbols-outlined text-outline-variant">info</span>
+</div>
+<div class="mt-sm border-t tech-border pt-sm">
+<div class="grid grid-cols-4 gap-xs font-label-technical text-[10px] text-on-surface-variant mb-xs">
+<div>SET</div>
+<div class="col-span-2">LBS</div>
+<div>REPS</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">1</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="--" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="10-12" type="number"/>
+</div>
+</div>
+<!-- Set Row -->
+<div class="grid grid-cols-4 gap-xs items-center py-xs border-b tech-border/50">
+<div class="font-label-technical text-label-technical text-on-background">2</div>
+<div class="col-span-2">
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="--" type="number"/>
+</div>
+<div>
+<input class="bg-transparent border-none p-0 h-6 w-16 text-on-background font-label-technical text-label-technical focus:ring-0 focus:border-b focus:border-secondary placeholder-surface-variant transition-colors" placeholder="10-12" type="number"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Area -->
+<div class="flex justify-center mt-xl mb-lg">
+<button class="bg-[#ff535b] text-[#180a0a] font-display-lg text-[24px] uppercase px-xl py-md rounded-none w-full md:w-auto tracking-widest hover:bg-[#ffb3b1] transition-colors active:scale-95 shadow-[0_0_20px_rgba(255,83,91,0.3)]">
+                Start Training
+            </button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="bg-surface/80 dark:bg-surface/80 fixed bottom-0 w-full z-50 backdrop-blur-md border-t border-primary flat no shadows fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out w-16" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-technical text-label-technical">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out w-16" href="#">
+<span class="material-symbols-outlined mb-1">restaurant</span>
+<span class="font-label-technical text-label-technical">Nutrition</span>
+</a>
+<!-- Active Tab -->
+<a class="flex flex-col items-center justify-center text-primary font-bold transition-all duration-200 ease-in-out w-16 relative" href="#">
+<div class="absolute -top-[9px] w-full h-[2px] bg-primary"></div>
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-label-technical text-label-technical">Training</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out w-16" href="#">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="font-label-technical text-label-technical">Agenda</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out w-16" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-technical text-label-technical">Settings</span>
+</a>
+</nav>
+<style>
+        /* Hide scrollbar for the weekly strip */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

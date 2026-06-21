@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Settings - Berserkercut</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#433030",
+                        "on-primary-fixed": "#410007",
+                        "surface-container-lowest": "#180a0a",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "surface-bright": "#473534",
+                        "surface-container-low": "#271717",
+                        "on-secondary-container": "#5b3b00",
+                        "primary": "#ffb3b1",
+                        "surface-dim": "#1e0f0f",
+                        "on-tertiary-fixed-variant": "#1a4e50",
+                        "on-background": "#f9dcda",
+                        "inverse-surface": "#f9dcda",
+                        "on-tertiary-fixed": "#002021",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#3e2c2b",
+                        "tertiary-fixed": "#b9ecee",
+                        "background": "#1e0f0f",
+                        "on-surface": "#f9dcda",
+                        "secondary-fixed": "#ffddb3",
+                        "tertiary-container": "#68999b",
+                        "secondary-container": "#ec9e00",
+                        "surface-container-high": "#372625",
+                        "surface-tint": "#ffb3b1",
+                        "inverse-primary": "#bb152c",
+                        "on-secondary-fixed-variant": "#624000",
+                        "on-tertiary": "#003739",
+                        "primary-fixed": "#ffdad8",
+                        "on-tertiary-container": "#002f31",
+                        "on-error": "#690005",
+                        "outline-variant": "#5b403f",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-primary": "#680011",
+                        "on-primary-container": "#5b000e",
+                        "secondary-fixed-dim": "#ffb950",
+                        "secondary": "#ffbd5c",
+                        "primary-container": "#ff535b",
+                        "on-surface-variant": "#e4bebc",
+                        "on-secondary": "#452b00",
+                        "on-secondary-fixed": "#291800",
+                        "surface-container": "#2c1b1b",
+                        "tertiary-fixed-dim": "#9ecfd1",
+                        "outline": "#ab8987",
+                        "surface": "#1e0f0f",
+                        "surface-variant": "#433030",
+                        "tertiary": "#9ecfd1",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "40px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "margin-desktop": "32px",
+                        "base": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Anton"],
+                        "label-technical": ["JetBrains Mono"],
+                        "headline-lg": ["Anton"],
+                        "body-sm": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg-mobile": ["Anton"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "label-technical": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "36px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "32px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { display: none; }
+        
+        /* Custom Toggle Switch styling for technical look */
+        .tech-toggle:checked + div {
+            background-color: theme('colors.primary');
+            border-color: theme('colors.primary');
+        }
+        .tech-toggle:checked + div > div {
+            transform: translateX(100%);
+            border-color: theme('colors.background');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex flex-col pb-24 pt-20 antialiased selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 full-width bg-surface dark:bg-surface border-b border-outline-variant/10 flex justify-between items-center w-full px-margin-mobile py-sm z-50">
+<div class="leading-element cursor-pointer hover:opacity-80 active:scale-95 transition-transform">
+<img alt="User profile photo" class="w-10 h-10 rounded-full object-cover border border-outline-variant/30" data-alt="A close-up, high-contrast, gritty portrait of a focused athlete in dramatic gym lighting, dark background, intense mood, highly detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_MvZxXunidsgfAASH3vL9nf2iVqOMyDw7JqoA16ZP9zvpNjOTKR00w25G5rsE8Z3tXV3Oz_cfR2D-YLspk77Cx6kgrImJC4Ys6c8hcVNGfsbymT8ZM2xBrBLCgLk-y4JVG7DdEMuEoHJ35opL8_8vfNVsIHlQ1d2A0ftvwp_KZi9JaoG541qZbXvbX_TN6KW2Y8SeO7NRt5Dh8z0aDFY2Bi4AXQzflaRok6xIOE1QWVhn1ofctb06406USNdYVxqtUHNkTtLqT3w"/>
+</div>
+<div class="headline-container text-center flex-1 mx-4">
+<h1 class="font-display-lg text-headline-lg-mobile text-primary uppercase tracking-tighter">BERSERKERCUT</h1>
+</div>
+<button class="trailing-element text-primary dark:text-primary hover:opacity-80 active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile md:px-margin-desktop max-w-4xl mx-auto w-full space-y-lg mt-md">
+<div class="mb-lg">
+<h2 class="font-title-md text-title-md text-on-background uppercase tracking-widest border-l-4 border-primary pl-xs mb-xs">System settings</h2>
+<p class="font-label-technical text-label-technical text-on-surface-variant">CONFIGURE OPERATIONAL PARAMETERS</p>
+</div>
+<!-- System Section -->
+<section class="bg-surface border border-outline-variant/20 rounded-DEFAULT p-md space-y-0 relative overflow-hidden">
+<!-- Decorative glass flare -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+<h3 class="font-label-technical text-label-technical text-primary mb-md border-b border-outline-variant/10 pb-xs">SYS_PREF</h3>
+<div class="flex items-center justify-between py-sm border-b border-outline-variant/10 last:border-0 group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-background transition-colors">dark_mode</span>
+<div>
+<div class="font-body-lg text-body-lg text-on-background">Persistent Dark Mode</div>
+<div class="font-label-technical text-label-technical text-on-surface-variant">FORCE TACTICAL INTERFACE</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer tech-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant border border-outline-variant rounded-full peer-focus:outline-none transition-colors duration-200 ease-in-out relative">
+<div class="absolute top-[2px] left-[2px] bg-on-background border border-surface rounded-full h-5 w-5 transition-transform duration-200 ease-in-out"></div>
+</div>
+</label>
+</div>
+</section>
+<!-- Notifications Control Center -->
+<section class="bg-surface border border-outline-variant/20 rounded-DEFAULT p-md space-y-0">
+<h3 class="font-label-technical text-label-technical text-primary mb-md border-b border-outline-variant/10 pb-xs">NOTIF_CTRL</h3>
+<div class="flex items-center justify-between py-sm border-b border-outline-variant/10 group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-background transition-colors">wb_sunny</span>
+<div>
+<div class="font-body-lg text-body-lg text-on-background">Morning Protocol</div>
+<div class="font-label-technical text-label-technical text-on-surface-variant">DAILY WAKE &amp; READINESS</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer tech-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant border border-outline-variant rounded-full peer-focus:outline-none transition-colors duration-200 ease-in-out relative">
+<div class="absolute top-[2px] left-[2px] bg-on-background border border-surface rounded-full h-5 w-5 transition-transform duration-200 ease-in-out"></div>
+</div>
+</label>
+</div>
+<div class="flex items-center justify-between py-sm border-b border-outline-variant/10 group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-background transition-colors">bedtime</span>
+<div>
+<div class="font-body-lg text-body-lg text-on-background">Night Protocol</div>
+<div class="font-label-technical text-label-technical text-on-surface-variant">RECOVERY &amp; REVIEW REMINDER</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer tech-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant border border-outline-variant rounded-full peer-focus:outline-none transition-colors duration-200 ease-in-out relative">
+<div class="absolute top-[2px] left-[2px] bg-on-background border border-surface rounded-full h-5 w-5 transition-transform duration-200 ease-in-out"></div>
+</div>
+</label>
+</div>
+<div class="py-md flex justify-end">
+<button class="flex items-center gap-sm px-4 py-2 border border-outline-variant text-on-background font-label-technical text-label-technical rounded-DEFAULT hover:bg-surface-variant hover:border-primary transition-all active:scale-95">
+<span class="material-symbols-outlined text-[16px]">campaign</span>
+                    TRIGGER TEST
+                </button>
+</div>
+</section>
+<!-- Privacy & Profile Links -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<a class="bg-surface border border-outline-variant/20 rounded-DEFAULT p-md flex flex-col justify-between hover:border-primary/50 transition-colors group h-32 relative overflow-hidden" href="#">
+<div class="absolute inset-0 bg-gradient-to-br from-transparent to-surface-variant/30 pointer-events-none"></div>
+<div class="flex justify-between items-start w-full relative z-10">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">shield_lock</span>
+<span class="font-label-technical text-label-technical text-primary bg-primary/10 px-2 py-1 rounded-sm border border-primary/20">CONSENT: VALID</span>
+</div>
+<div class="relative z-10 mt-auto flex justify-between items-end w-full">
+<div>
+<div class="font-body-lg text-body-lg text-on-background group-hover:text-primary transition-colors">Privacy Status</div>
+<div class="font-label-technical text-label-technical text-on-surface-variant">DATA HANDLING RULES</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<a class="bg-surface border border-outline-variant/20 rounded-DEFAULT p-md flex flex-col justify-between hover:border-primary/50 transition-colors group h-32 relative overflow-hidden" href="#">
+<div class="absolute inset-0 bg-gradient-to-br from-transparent to-surface-variant/30 pointer-events-none"></div>
+<div class="flex justify-between items-start w-full relative z-10">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">ecg_heart</span>
+<span class="font-label-technical text-label-technical text-on-surface-variant bg-surface-variant px-2 py-1 rounded-sm border border-outline-variant/30">SYNCED: 12M AGO</span>
+</div>
+<div class="relative z-10 mt-auto flex justify-between items-end w-full">
+<div>
+<div class="font-body-lg text-body-lg text-on-background group-hover:text-primary transition-colors">Health Profile</div>
+<div class="font-label-technical text-label-technical text-on-surface-variant">BIOMETRIC DATA CORE</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-surface/80 dark:bg-surface/80 backdrop-blur-md border-t border-primary z-50 md:hidden transition-all duration-200 ease-in-out shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out py-1 px-2" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-technical text-[10px] uppercase tracking-widest">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out py-1 px-2" href="#">
+<span class="material-symbols-outlined mb-1">restaurant</span>
+<span class="font-label-technical text-[10px] uppercase tracking-widest">Nutrition</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out py-1 px-2" href="#">
+<span class="material-symbols-outlined mb-1">fitness_center</span>
+<span class="font-label-technical text-[10px] uppercase tracking-widest">Training</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 transition-all duration-200 ease-in-out py-1 px-2" href="#">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="font-label-technical text-[10px] uppercase tracking-widest">Agenda</span>
+</a>
+<!-- Active Nav Item -->
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:text-primary/70 transition-all duration-200 ease-in-out py-1 px-2 relative" href="#">
+<div class="absolute -top-[1px] left-0 w-full h-[2px] bg-primary shadow-[0_0_8px_rgba(255,179,177,0.8)]"></div>
+<span class="material-symbols-outlined mb-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-technical text-[10px] uppercase tracking-widest">Settings</span>
+</a>
+</nav>
+<!-- Desktop Nav Fallback (Hidden on Mobile) -->
+<nav class="hidden md:flex fixed top-16 right-margin-desktop space-x-lg z-50 py-sm">
+<a class="font-label-technical text-label-technical text-on-surface-variant hover:text-primary transition-colors" href="#">HOME</a>
+<a class="font-label-technical text-label-technical text-on-surface-variant hover:text-primary transition-colors" href="#">NUTRITION</a>
+<a class="font-label-technical text-label-technical text-on-surface-variant hover:text-primary transition-colors" href="#">TRAINING</a>
+<a class="font-label-technical text-label-technical text-on-surface-variant hover:text-primary transition-colors" href="#">AGENDA</a>
+<a class="font-label-technical text-label-technical text-primary font-bold border-b-2 border-primary" href="#">SETTINGS</a>
+</nav>
+</body></html>

@@ -10,6 +10,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
+  InputAccessoryView,
 } from 'react-native';
 import { Typography, Spacing, BorderRadius, ThemePalette } from '@/utils/theme';
 import { useThemeMode } from '@/hooks/useThemeMode';
@@ -46,6 +48,14 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
   const [fat, setFat] = useState('');
   const [isAddingFood, setIsAddingFood] = useState(false);
   const [isEditingFood, setIsEditingFood] = useState(false);
+  const keyboardAccessoryViewId = 'meal-edit-keyboard-accessory';
+
+  const keyboardInputProps = {
+    returnKeyType: 'done' as const,
+    blurOnSubmit: true,
+    onSubmitEditing: Keyboard.dismiss,
+    inputAccessoryViewID: Platform.OS === 'ios' ? keyboardAccessoryViewId : undefined,
+  };
 
   useEffect(() => {
     // Reset form when modal becomes visible
@@ -126,16 +136,31 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
       return;
     }
 
+    const parsedQuantity = parseFloat(foodQuantity);
+    const parsedCalories = parseFloat(foodCalories);
+    const parsedProtein = parseFloat(protein);
+    const parsedCarbs = parseFloat(carbs);
+    const parsedFat = parseFloat(fat);
+
+    if (
+      [parsedQuantity, parsedCalories, parsedProtein, parsedCarbs, parsedFat].some((value) =>
+        Number.isNaN(value)
+      )
+    ) {
+      Alert.alert('Valeurs invalides', 'Veuillez entrer des valeurs numériques valides.');
+      return;
+    }
+
     const newFood: Food = {
       id: isEditingFood && selectedFood ? selectedFood.id : `food_${Date.now()}`,
       name: foodName,
-      quantity: parseFloat(foodQuantity),
+      quantity: parsedQuantity,
       unit: foodUnit,
-      calories: parseFloat(foodCalories),
+      calories: parsedCalories,
       macros: {
-        protein: parseFloat(protein),
-        carbs: parseFloat(carbs),
-        fat: parseFloat(fat),
+        protein: parsedProtein,
+        carbs: parsedCarbs,
+        fat: parsedFat,
       },
     };
 
@@ -234,6 +259,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     onChangeText={setMealName}
                     placeholder="Nom du repas"
                     placeholderTextColor={colors.textMuted}
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -245,6 +271,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     onChangeText={setMealTime}
                     placeholder="HH:MM"
                     placeholderTextColor={colors.textMuted}
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -309,6 +336,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     onChangeText={setFoodName}
                     placeholder="Nom de l'aliment"
                     placeholderTextColor={colors.textMuted}
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -322,6 +350,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                       placeholder="100"
                       placeholderTextColor={colors.textMuted}
                       keyboardType="numeric"
+                      {...keyboardInputProps}
                     />
                   </View>
                   <View style={[styles.formGroup, { flex: 1 }]}>
@@ -332,6 +361,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                       onChangeText={setFoodUnit}
                       placeholder="g"
                       placeholderTextColor={colors.textMuted}
+                      {...keyboardInputProps}
                     />
                   </View>
                 </View>
@@ -345,6 +375,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     placeholder="Calories par portion"
                     placeholderTextColor={colors.textMuted}
                     keyboardType="numeric"
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -359,6 +390,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     placeholder="Grammes de protéines"
                     placeholderTextColor={colors.textMuted}
                     keyboardType="numeric"
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -371,6 +403,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     placeholder="Grammes de glucides"
                     placeholderTextColor={colors.textMuted}
                     keyboardType="numeric"
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -383,6 +416,7 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                     placeholder="Grammes de lipides"
                     placeholderTextColor={colors.textMuted}
                     keyboardType="numeric"
+                    {...keyboardInputProps}
                   />
                 </View>
 
@@ -409,6 +443,21 @@ export const MealEditModal: React.FC<MealEditModalProps> = ({
                 <IOSButton label="Enregistrer" onPress={handleSaveMeal} />
               )}
             </View>
+
+            {Platform.OS === 'ios' && (
+              <InputAccessoryView nativeID={keyboardAccessoryViewId}>
+                <View style={styles.keyboardAccessory}>
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel="Fermer le clavier"
+                    onPress={Keyboard.dismiss}
+                    style={styles.keyboardAccessoryButton}
+                  >
+                    <Text style={styles.keyboardAccessoryText}>Fermer le clavier</Text>
+                  </TouchableOpacity>
+                </View>
+              </InputAccessoryView>
+            )}
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -517,5 +566,24 @@ const createStyles = (colors: ThemePalette) => StyleSheet.create({
   },
   cancelButton: {
     marginRight: Spacing.sm,
+  },
+  keyboardAccessory: {
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    alignItems: 'flex-end',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+  },
+  keyboardAccessoryButton: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: colors.surfaceDark,
+  },
+  keyboardAccessoryText: {
+    ...Typography.bodySmall,
+    color: colors.primary,
+    fontWeight: '600',
   },
 });

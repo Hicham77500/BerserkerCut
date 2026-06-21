@@ -41,21 +41,42 @@ const MainTabNavigator: React.FC = () => {
             borderTopWidth: 1,
             borderTopColor: colors.border,
             paddingBottom: Math.max(insets.bottom, Spacing.sm),
-            paddingTop: Spacing.xs,
-            height: 56 + Math.max(insets.bottom, Spacing.sm) + Spacing.xs,
+            paddingTop: Spacing.sm,
+            height: 64 + Math.max(insets.bottom, Spacing.sm) + Spacing.sm,
+          },
+          tabBarItemStyle: {
+            paddingVertical: Spacing.xs,
+          },
+          tabBarIconStyle: {
+            marginTop: 2,
           },
           tabBarLabelStyle: {
             fontSize: 12,
+            lineHeight: 14,
+            marginTop: 2,
           },
           tabBarIcon: ({ color, focused }) => (
             <View
               style={{
-                padding: 6,
+                width: 34,
+                height: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: 16,
                 backgroundColor: focused ? colors.secondaryLight : 'transparent',
               }}
             >
-              <Text style={{ fontSize: 20, color }}>{tabIcons[route.name] ?? '•'}</Text>
+              <Text
+                style={{
+                  fontSize: 22,
+                  lineHeight: 24,
+                  color,
+                  includeFontPadding: false,
+                  textAlignVertical: 'center',
+                }}
+              >
+                {tabIcons[route.name] ?? '•'}
+              </Text>
             </View>
           ),
         })}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,16 @@ import {
   TextInput,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  InputAccessoryView,
+  Keyboard,
 } from 'react-native';
 import { Typography, Spacing, BorderRadius, ThemePalette } from '../utils/theme';
 import { useThemeMode } from '../hooks/useThemeMode';
 import { NutritionPlan, Meal } from '../types';
 import { NUTRITION_CONSTANTS } from '../utils/nutritionConstants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface NutritionGoalsModalProps {
   visible: boolean;
@@ -30,7 +35,17 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
   isTrainingDay,
 }) => {
   const { colors } = useThemeMode();
-  const styles = createStyles(colors);
+  const insets = useSafeAreaInsets();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const keyboardAccessoryViewId = 'nutrition-goals-keyboard-accessory';
+
+  const keyboardInputProps = {
+    keyboardType: 'numeric' as const,
+    returnKeyType: 'done' as const,
+    blurOnSubmit: true,
+    onSubmitEditing: Keyboard.dismiss,
+    inputAccessoryViewID: Platform.OS === 'ios' ? keyboardAccessoryViewId : undefined,
+  };
   
   const [totalCalories, setTotalCalories] = useState('');
   const [protein, setProtein] = useState('');
@@ -39,13 +54,21 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
   
   // Initialize form with current nutrition plan values
   useEffect(() => {
+    if (!visible) return;
+
     if (nutritionPlan) {
       setTotalCalories(nutritionPlan.totalCalories.toString());
       setProtein(nutritionPlan.macros.protein.toString());
       setCarbs(nutritionPlan.macros.carbs.toString());
       setFat(nutritionPlan.macros.fat.toString());
+      return;
     }
-  }, [nutritionPlan]);
+
+    setTotalCalories('');
+    setProtein('');
+    setCarbs('');
+    setFat('');
+  }, [nutritionPlan, visible]);
   
   const validateMacros = () => {
     // Convert inputs to numbers
@@ -189,21 +212,31 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Adapter mes objectifs nutritionnels</Text>
-          <Text style={styles.modalSubtitle}>
-            Jour {isTrainingDay ? 'd\'entraînement' : 'de repos'}
-          </Text>
-          
-          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView
+        style={styles.keyboardWrapper}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + Spacing.md : 0}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Adapter mes objectifs nutritionnels</Text>
+            <Text style={styles.modalSubtitle}>
+              Jour {isTrainingDay ? 'd\'entraînement' : 'de repos'}
+            </Text>
+
+            <ScrollView
+              style={styles.scrollView}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+            >
             <View style={styles.formGroup}>
               <Text style={styles.label}>Total calorique (kcal)</Text>
               <TextInput
                 style={styles.input}
                 value={totalCalories}
                 onChangeText={setTotalCalories}
-                keyboardType="numeric"
+                {...keyboardInputProps}
                 placeholder="Entrez les calories totales"
               />
             </View>
@@ -219,7 +252,7 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
                   style={[styles.input, styles.macroInput]}
                   value={protein}
                   onChangeText={setProtein}
-                  keyboardType="numeric"
+                  {...keyboardInputProps}
                   placeholder="Protéines (g)"
                 />
                 {macroPercentages && (
@@ -237,7 +270,7 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
                   style={[styles.input, styles.macroInput]}
                   value={carbs}
                   onChangeText={setCarbs}
-                  keyboardType="numeric"
+                  {...keyboardInputProps}
                   placeholder="Glucides (g)"
                 />
                 {macroPercentages && (
@@ -255,7 +288,7 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
                   style={[styles.input, styles.macroInput]}
                   value={fat}
                   onChangeText={setFat}
-                  keyboardType="numeric"
+                  {...keyboardInputProps}
                   placeholder="Lipides (g)"
                 />
                 {macroPercentages && (
@@ -278,7 +311,7 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
               style={[styles.modalButton, styles.modalCancel]}
               onPress={onClose}
             >
-              <Text style={styles.modalCancelText}>Annuler</Text>
+              <Text style={styles.modalCancelText}>Fermer le clavier</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.modalConfirm]}
@@ -287,14 +320,33 @@ export const NutritionGoalsModal: React.FC<NutritionGoalsModalProps> = ({
               <Text style={styles.modalConfirmText}>Appliquer</Text>
             </TouchableOpacity>
           </View>
+
+          {Platform.OS === 'ios' && (
+            <InputAccessoryView nativeID={keyboardAccessoryViewId}>
+              <View style={styles.keyboardAccessory}>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel="Fermer le clavier"
+                  onPress={Keyboard.dismiss}
+                  style={styles.keyboardAccessoryButton}
+                >
+                  <Text style={styles.keyboardAccessoryText}>Fermer le clavier</Text>
+                </TouchableOpacity>
+              </View>
+            </InputAccessoryView>
+          )}
         </View>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
 
 const createStyles = (palette: ThemePalette) => 
   StyleSheet.create({
+    keyboardWrapper: {
+      flex: 1,
+    },
     modalBackdrop: {
       flex: 1,
       backgroundColor: palette.overlay,
@@ -406,6 +458,25 @@ const createStyles = (palette: ThemePalette) =>
     modalConfirmText: {
       ...Typography.bodySmall,
       color: palette.textDark,
+      fontWeight: '600',
+    },
+    keyboardAccessory: {
+      backgroundColor: palette.surface,
+      borderTopWidth: 1,
+      borderTopColor: palette.border,
+      alignItems: 'flex-end',
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.xs,
+    },
+    keyboardAccessoryButton: {
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xs,
+      borderRadius: BorderRadius.sm,
+      backgroundColor: palette.background,
+    },
+    keyboardAccessoryText: {
+      ...Typography.bodySmall,
+      color: palette.primary,
       fontWeight: '600',
     },
   });

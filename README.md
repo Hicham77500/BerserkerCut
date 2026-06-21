@@ -33,7 +33,7 @@ BerserkerCut is an Expo + React Native TypeScript app focused on an iOS-first ex
 - 🥗 Daily meal plans with macro tracking and supplement timing guidance.
 - 💤 Contextual tips that adapt to rest/training days.
 - ✈️ Demo/offline mode powered by AsyncStorage for instant preview without backend.
-- 🌘 Dark theme everywhere — light mode was removed and UI toggles replaced with a consistent dark-native design language.
+- 🌗 Runtime dark/light theme support with a unified design system and persisted user preference.
 - 📸 Photo capture & gallery management to document meals or progress.
 
 ## Architecture
@@ -98,10 +98,10 @@ When `EXPO_PUBLIC_API_BASE_URL` is missing or unreachable, the demo services tak
 
 ## Design system & theming
 
-- The app is dark-only. `useThemeMode` now delivers a static dark palette (`DarkColors`), and UI toggles were removed.
+- The app supports dark and light mode via `useThemeMode`, with persisted user preference.
 - `src/utils/theme.ts` centralises the palette, typography, spacing, and shadows tuned for iOS.
-- Surfaces favour copper/anthracite tones with accessible contrast; cards and overlays rely on `colors.surface`, `colors.secondaryBackground`, and `colors.overlay`.
-- Component styling should consume `Spacing`, `Typography`, and `Colors` tokens from the design system to remain consistent.
+- Surfaces rely on semantic tokens (`colors.surface`, `colors.secondaryBackground`, `colors.overlay`) to stay coherent in both modes.
+- Component styling should consume `Spacing`, `Typography`, and runtime color tokens from the design system to remain consistent.
 
 ## Backend expectations
 
@@ -130,6 +130,15 @@ The mobile app never talks to MongoDB directly. Secure the API with JWT middlewa
 - `src/services/sessionStorage.ts` – JWT/session helpers.
 - `src/utils/designSystem.ts` – layout constants and design tokens.
 - `src/utils/debug.ts` – developer diagnostics (`quickDiagnose()` for local checks).
+- `../AllSkills/mobile-app-design/` – mobile UX heuristics used for keyboard and modal ergonomics.
+- `../AllSkills/code-review-skill/` – review checklist used before merge.
+- `../AllSkills/android-reverse-engineering-skill/` – reverse-engineering reference when needed for interoperability analysis.
+
+### Keyboard Handling Standard (Long Modals)
+
+- Use `KeyboardAvoidingView` to preserve visibility while editing.
+- Keep `keyboardShouldPersistTaps="handled"` on form scroll containers.
+- On iOS, expose an explicit `Fermer le clavier` action with `InputAccessoryView`.
 
 ---
 

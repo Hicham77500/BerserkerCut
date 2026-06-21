@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - Step 1</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Anton&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#433030",
+                        "on-primary-fixed": "#410007",
+                        "surface-container-lowest": "#180a0a",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "surface-bright": "#473534",
+                        "surface-container-low": "#271717",
+                        "on-secondary-container": "#5b3b00",
+                        "primary": "#ffb3b1",
+                        "surface-dim": "#1e0f0f",
+                        "on-tertiary-fixed-variant": "#1a4e50",
+                        "on-background": "#f9dcda",
+                        "inverse-surface": "#f9dcda",
+                        "on-tertiary-fixed": "#002021",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#3e2c2b",
+                        "tertiary-fixed": "#b9ecee",
+                        "background": "#1e0f0f",
+                        "on-surface": "#f9dcda",
+                        "secondary-fixed": "#ffddb3",
+                        "tertiary-container": "#68999b",
+                        "secondary-container": "#ec9e00",
+                        "surface-container-high": "#372625",
+                        "surface-tint": "#ffb3b1",
+                        "inverse-primary": "#bb152c",
+                        "on-secondary-fixed-variant": "#624000",
+                        "on-tertiary": "#003739",
+                        "primary-fixed": "#ffdad8",
+                        "on-tertiary-container": "#002f31",
+                        "on-error": "#690005",
+                        "outline-variant": "#5b403f",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-primary": "#680011",
+                        "on-primary-container": "#5b000e",
+                        "secondary-fixed-dim": "#ffb950",
+                        "secondary": "#ffbd5c",
+                        "primary-container": "#ff535b",
+                        "on-surface-variant": "#e4bebc",
+                        "on-secondary": "#452b00",
+                        "on-secondary-fixed": "#291800",
+                        "surface-container": "#2c1b1b",
+                        "tertiary-fixed-dim": "#9ecfd1",
+                        "outline": "#ab8987",
+                        "surface": "#1e0f0f",
+                        "surface-variant": "#433030",
+                        "tertiary": "#9ecfd1",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "40px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "margin-desktop": "32px",
+                        "base": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Anton"],
+                        "label-technical": ["JetBrains Mono"],
+                        "headline-lg": ["Anton"],
+                        "body-sm": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg-mobile": ["Anton"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-technical": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "24px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "32px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 218, 220, 0.1);
+        }
+        .berserker-input {
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.3);
+            border-radius: 0;
+            padding: 8px 0;
+            color: #f9dcda; /* on-surface */
+            transition: all 0.3s ease;
+        }
+        .berserker-input:focus {
+            outline: none;
+            box-shadow: none;
+            border-bottom: 1px solid #ffbd5c; /* secondary / primal orange */
+        }
+        .goal-card.active {
+            border: 1px solid #ffb3b1; /* primary */
+            background: rgba(255, 179, 177, 0.1);
+        }
+        /* Custom radio button style */
+        .custom-radio {
+            appearance: none;
+            background-color: transparent;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 1px solid rgba(168, 218, 220, 0.5);
+            display: grid;
+            place-content: center;
+        }
+        .custom-radio::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em #ffb3b1; /* primary */
+            background-color: #ffb3b1;
+        }
+        .custom-radio:checked::before {
+            transform: scale(1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-lg antialiased min-h-screen flex flex-col items-center justify-center p-margin-mobile md:p-margin-desktop bg-[url('placeholder')] bg-cover bg-center" data-alt="A gritty, industrial gym environment with heavy iron plates and rusty chains. The lighting is harsh and moody, with deep shadows and intense high-contrast accents highlighting the raw texture of the equipment. The overall aesthetic is aggressive, brutally functional, and dark, evoking a sense of raw power and intense focus suitable for a hardcore athletic training app.">
+<div class="absolute inset-0 bg-background/90 z-0"></div> <!-- Overlay for readability -->
+<main class="relative z-10 w-full max-w-md flex flex-col gap-xl">
+<!-- Progress Header -->
+<header class="flex flex-col gap-sm items-center text-center">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase tracking-widest">Initialization</span>
+<div class="flex items-center gap-2">
+<div class="h-1 w-12 bg-primary"></div>
+<div class="h-1 w-12 bg-surface-container-highest"></div>
+<div class="h-1 w-12 bg-surface-container-highest"></div>
+<div class="h-1 w-12 bg-surface-container-highest"></div>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant mt-1">1 / 4</span>
+</header>
+<!-- Main Form Container -->
+<div class="glass-panel p-lg flex flex-col gap-lg">
+<div class="text-center">
+<h1 class="font-display-lg text-display-lg text-primary uppercase mb-2">Identify</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Forging your profile requires basic parameters. Enter your details below.</p>
+</div>
+<form class="flex flex-col gap-xl" onsubmit="event.preventDefault();">
+<!-- Name Input -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-technical text-label-technical text-on-surface-variant uppercase" for="identity_name">Designation</label>
+<input class="berserker-input font-title-md text-title-md w-full" id="identity_name" placeholder="Enter Name" required="" type="text"/>
+</div>
+<!-- Gender Selection -->
+<div class="flex flex-col gap-sm">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Biological Marker</span>
+<div class="flex gap-md">
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="custom-radio" name="gender" type="radio" value="male"/>
+<span class="font-body-lg text-body-lg">Male</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer">
+<input class="custom-radio" name="gender" type="radio" value="female"/>
+<span class="font-body-lg text-body-lg">Female</span>
+</label>
+</div>
+</div>
+<!-- Primary Goal Selection -->
+<div class="flex flex-col gap-sm">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Primary Directive</span>
+<div class="grid grid-cols-1 gap-sm">
+<!-- Goal: Fat Loss -->
+<label class="goal-card border border-outline-variant/10 p-md flex items-center justify-between cursor-pointer transition-all active group" onclick="document.querySelectorAll('.goal-card').forEach(c =&gt; c.classList.remove('active')); this.classList.add('active');">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary group-[.active]:text-primary" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md">Fat Loss</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Shed mass, reveal structure.</span>
+</div>
+</div>
+<input checked="" class="hidden" name="goal" type="radio" value="fat_loss"/>
+</label>
+<!-- Goal: Performance -->
+<label class="goal-card border border-outline-variant/10 p-md flex items-center justify-between cursor-pointer transition-all group" onclick="document.querySelectorAll('.goal-card').forEach(c =&gt; c.classList.remove('active')); this.classList.add('active');">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant group-[.active]:text-primary">bolt</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md">Performance</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Maximize output, increase stamina.</span>
+</div>
+</div>
+<input class="hidden" name="goal" type="radio" value="performance"/>
+</label>
+<!-- Goal: Recomposition -->
+<label class="goal-card border border-outline-variant/10 p-md flex items-center justify-between cursor-pointer transition-all group" onclick="document.querySelectorAll('.goal-card').forEach(c =&gt; c.classList.remove('active')); this.classList.add('active');">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant group-[.active]:text-primary">fitness_center</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md">Recomposition</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Build muscle, simultaneous burn.</span>
+</div>
+</div>
+<input class="hidden" name="goal" type="radio" value="recomposition"/>
+</label>
+</div>
+</div>
+</form>
+</div>
+<!-- Action Area -->
+<div class="mt-auto md:mt-0">
+<button class="w-full bg-primary-container text-on-primary-container font-display-lg text-headline-lg-mobile uppercase py-sm px-lg transition-transform active:scale-95 flex items-center justify-center gap-2 hover:opacity-90">
+                PROCEED
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_forward</span>
+</button>
+</div>
+</main>
+</body></html>

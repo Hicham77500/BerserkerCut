@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BerserkerCut - Agenda</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#271717",
+                        "on-secondary-container": "#5b3b00",
+                        "surface-bright": "#473534",
+                        "surface-container-highest": "#433030",
+                        "surface-container-high": "#372625",
+                        "on-surface-variant": "#e4bebc",
+                        "secondary-fixed-dim": "#ffb950",
+                        "on-tertiary-container": "#002f31",
+                        "background": "#1e0f0f",
+                        "surface-container-lowest": "#180a0a",
+                        "primary": "#ffb3b1",
+                        "outline": "#ab8987",
+                        "on-primary-fixed": "#410007",
+                        "on-tertiary-fixed": "#002021",
+                        "on-background": "#f9dcda",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "surface-tint": "#ffb3b1",
+                        "on-secondary-fixed-variant": "#624000",
+                        "inverse-on-surface": "#3e2c2b",
+                        "tertiary-container": "#68999b",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#5b000e",
+                        "tertiary-fixed-dim": "#9ecfd1",
+                        "on-secondary-fixed": "#291800",
+                        "inverse-surface": "#f9dcda",
+                        "outline-variant": "#5b403f",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#ffdad8",
+                        "surface-dim": "#1e0f0f",
+                        "primary-container": "#ff535b",
+                        "inverse-primary": "#bb152c",
+                        "surface-container": "#2c1b1b",
+                        "secondary-fixed": "#ffddb3",
+                        "on-primary": "#680011",
+                        "tertiary": "#9ecfd1",
+                        "on-surface": "#f9dcda",
+                        "on-tertiary": "#003739",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#ec9e00",
+                        "on-secondary": "#452b00",
+                        "tertiary-fixed": "#b9ecee",
+                        "secondary": "#ffbd5c",
+                        "on-tertiary-fixed-variant": "#1a4e50",
+                        "surface": "#1e0f0f",
+                        "surface-variant": "#433030",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "40px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg-mobile": ["Anton"],
+                        "headline-lg": ["Anton"],
+                        "label-technical": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Anton"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "24px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "32px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-technical": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "0.02em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0D0D0D;
+            color: #f9dcda; /* on-background */
+        }
+        .berserker-red { background-color: #e63946; }
+        .text-berserker-red { color: #e63946; }
+        .border-berserker-red { border-color: #e63946; }
+        
+        .glass-panel {
+            background-color: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 218, 220, 0.1);
+        }
+        
+        /* Custom scrollbar for horizontal calendar */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 23px; /* Center of icon */
+            top: 40px;
+            bottom: -20px;
+            width: 1px;
+            background-color: rgba(168, 218, 220, 0.1);
+            z-index: 0;
+        }
+        .timeline-item:last-child .timeline-line::before {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col font-body-sm relative pb-24 pt-16">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface dark:bg-surface border-b border-outline-variant/20 flex justify-between items-center px-margin-mobile h-16 w-full">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-100 p-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary italic font-black uppercase tracking-tighter">BERSERKERCUT</h1>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors active:scale-95 transition-transform duration-100 p-2 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-md mx-auto md:max-w-4xl px-margin-mobile py-lg">
+<!-- Weekly Calendar -->
+<section class="mb-lg">
+<div class="flex justify-between items-end mb-sm">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile uppercase text-on-background">This Week</h2>
+<span class="font-label-technical text-label-technical text-on-surface-variant">OCT 23 - OCT 29</span>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-sm pb-2">
+<!-- Day 1 -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel opacity-60">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Mon</span>
+<span class="font-title-md text-title-md mt-1">23</span>
+</div>
+<!-- Day 2 -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel opacity-60">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Tue</span>
+<span class="font-title-md text-title-md mt-1">24</span>
+</div>
+<!-- Day 3 (Active) -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel border border-primary relative">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary"></div>
+<span class="font-label-technical text-label-technical text-primary uppercase">Wed</span>
+<span class="font-title-md text-title-md mt-1 text-primary">25</span>
+</div>
+<!-- Day 4 -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel opacity-60">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Thu</span>
+<span class="font-title-md text-title-md mt-1">26</span>
+</div>
+<!-- Day 5 -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel opacity-60">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Fri</span>
+<span class="font-title-md text-title-md mt-1">27</span>
+</div>
+<!-- Day 6 -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel opacity-60">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Sat</span>
+<span class="font-title-md text-title-md mt-1">28</span>
+</div>
+<!-- Day 7 -->
+<div class="flex flex-col items-center justify-center min-w-[60px] h-20 rounded glass-panel opacity-60">
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase">Sun</span>
+<span class="font-title-md text-title-md mt-1">29</span>
+</div>
+</div>
+</section>
+<!-- Timeline Agenda -->
+<section class="relative">
+<!-- Timeline Item: Completed -->
+<div class="relative flex gap-md mb-lg timeline-item timeline-line">
+<div class="flex-shrink-0 w-12 h-12 rounded-full glass-panel flex items-center justify-center relative z-10 border border-tertiary-container/30 text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<div class="flex-grow glass-panel p-md rounded flex justify-between items-center opacity-70">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-technical text-label-technical text-on-surface-variant">07:00 AM</span>
+<span class="px-2 py-0.5 text-[10px] font-bold tracking-wider rounded bg-tertiary-container/20 text-tertiary uppercase">Completed</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-background line-through">Meal 1: Fasted Cardio Prep</h3>
+</div>
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+</div>
+</div>
+<!-- Timeline Item: Completed -->
+<div class="relative flex gap-md mb-lg timeline-item timeline-line">
+<div class="flex-shrink-0 w-12 h-12 rounded-full glass-panel flex items-center justify-center relative z-10 border border-tertiary-container/30 text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medication</span>
+</div>
+<div class="flex-grow glass-panel p-md rounded flex justify-between items-center opacity-70">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-technical text-label-technical text-on-surface-variant">07:30 AM</span>
+<span class="px-2 py-0.5 text-[10px] font-bold tracking-wider rounded bg-tertiary-container/20 text-tertiary uppercase">Completed</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-background line-through">Supplements: Fat Burner</h3>
+</div>
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+</div>
+</div>
+<!-- Timeline Item: Pending / Active -->
+<div class="relative flex gap-md mb-lg timeline-item timeline-line">
+<div class="flex-shrink-0 w-12 h-12 rounded-full berserker-red flex items-center justify-center relative z-10 text-white shadow-[0_0_15px_rgba(230,57,70,0.5)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+</div>
+<div class="flex-grow glass-panel border border-primary p-md rounded">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-technical text-label-technical text-primary">10:00 AM</span>
+<span class="px-2 py-0.5 text-[10px] font-bold tracking-wider rounded bg-primary/20 text-primary uppercase animate-pulse">In Progress</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-background mb-2">Heavy Push Session</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Protocol Alpha - Focus on incline movements and triceps exhaustion.</p>
+<button class="w-full berserker-red text-white font-headline-lg-mobile text-headline-lg-mobile text-sm uppercase py-2 tracking-widest hover:bg-red-700 transition-colors">Resume Protocol</button>
+</div>
+</div>
+<!-- Timeline Item: Upcoming -->
+<div class="relative flex gap-md mb-lg timeline-item timeline-line">
+<div class="flex-shrink-0 w-12 h-12 rounded-full glass-panel flex items-center justify-center relative z-10 text-on-surface-variant">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div class="flex-grow glass-panel p-md rounded">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-technical text-label-technical text-on-surface-variant">12:30 PM</span>
+<span class="px-2 py-0.5 text-[10px] font-bold tracking-wider rounded bg-surface-variant text-on-surface-variant uppercase">Upcoming</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-background">Post-Workout Nutrition</h3>
+<div class="mt-2 flex gap-2">
+<span class="text-xs font-label-technical px-2 py-1 bg-surface rounded text-primary">60g P</span>
+<span class="text-xs font-label-technical px-2 py-1 bg-surface rounded text-secondary">80g C</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item: Upcoming -->
+<div class="relative flex gap-md mb-lg timeline-item timeline-line">
+<div class="flex-shrink-0 w-12 h-12 rounded-full glass-panel flex items-center justify-center relative z-10 text-on-surface-variant">
+<span class="material-symbols-outlined">nightlight</span>
+</div>
+<div class="flex-grow glass-panel p-md rounded">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-technical text-label-technical text-on-surface-variant">09:00 PM</span>
+<span class="px-2 py-0.5 text-[10px] font-bold tracking-wider rounded bg-surface-variant text-on-surface-variant uppercase">Upcoming</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-background">Nightly Review &amp; Prep</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Log macros, prepare gym bag, check tomorrow's protocol.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 h-20 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-t border-primary dark:border-primary flex justify-around items-center w-full px-2 md:hidden">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:bg-primary/20 duration-150 p-2 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-technical text-label-technical uppercase tracking-widest text-[10px]">Home</span>
+</a>
+<!-- Nutrition (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:bg-primary/20 duration-150 p-2 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1">restaurant</span>
+<span class="font-label-technical text-label-technical uppercase tracking-widest text-[10px]">Nutrition</span>
+</a>
+<!-- Training (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:bg-primary/20 duration-150 p-2 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1">fitness_center</span>
+<span class="font-label-technical text-label-technical uppercase tracking-widest text-[10px]">Training</span>
+</a>
+<!-- Agenda (Active) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary font-bold border-t-2 border-primary -mt-[1px] hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:bg-primary/20 duration-150 p-2 w-full h-full bg-primary/5" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-label-technical text-label-technical uppercase tracking-widest text-[10px]">Agenda</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:bg-primary/20 duration-150 p-2 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-technical text-label-technical uppercase tracking-widest text-[10px]">Settings</span>
+</a>
+</nav>
+</body></html>

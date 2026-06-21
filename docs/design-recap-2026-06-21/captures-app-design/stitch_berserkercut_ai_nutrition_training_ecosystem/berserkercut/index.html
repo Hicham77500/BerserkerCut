@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>BerserkerCut - Design System Index</title>
+    <link href=\"https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&family=JetBrains+Mono:wght@500&display=swap\" rel=\"stylesheet\">
+    <link href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap\" rel=\"stylesheet\">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1e0f0f;
+            color: #f9dcda;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 32px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 64px;
+            border-bottom: 1px solid rgba(171, 137, 135, 0.2);
+            padding-bottom: 32px;
+        }
+        
+        h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: 48px;
+            color: #ffb3b1;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-bottom: 16px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #e4bebc;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 64px;
+        }
+        
+        .card {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(171, 137, 135, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            border-color: #ffb3b1;
+            transform: translateY(-4px);
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-content {
+            padding: 16px;
+        }
+        
+        .card-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 18px;
+            color: #ffb3b1;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-description {
+            font-size: 14px;
+            color: #e4bebc;
+            margin-bottom: 12px;
+        }
+        
+        .card-link {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #ffb3b1;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #ffb3b1;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+        
+        .card-link:hover {
+            background-color: #ffb3b1;
+            color: #1e0f0f;
+        }
+        
+        .icon {
+            font-size: 24px;
+            vertical-align: middle;
+        }
+        
+        section h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: 28px;
+            color: #ffb3b1;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            border-bottom: 2px solid rgba(171, 137, 135, 0.3);
+            padding-bottom: 12px;
+        }
+        
+        .section-description {
+            margin-bottom: 32px;
+            color: #e4bebc;
+            font-size: 14px;
+        }
+        
+        .specs {
+            background: rgba(26, 26, 26, 0.6);
+            border: 1px solid rgba(171, 137, 135, 0.2);
+            border-radius: 4px;
+            padding: 24px;
+            margin-top: 32px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+        
+        .specs dt {
+            color: #ffb3b1;
+            margin-top: 16px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        
+        .specs dd {
+            color: #e4bebc;
+            margin-left: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class=\"container\">
+        <header>
+            <h1><span class=\"icon material-symbols-outlined\">fitness_center</span> BerserkerCut Design System</h1>
+            <p class=\"subtitle\">Interactive Prototypes & Design Tokens</p>
+            <p class=\"subtitle\" style=\"margin-top: 12px;\">v1.0 • Industrial Brutalism + Glassmorphism</p>
+        </header>
+        
+        <!-- USER FLOW SECTION -->
+        <section>
+            <h2>User Onboarding Flow</h2>
+            <p class=\"section-description\">Complete signup journey from authentication through profile setup</p>
+            <div class=\"grid\">
+                <a href=\"../auth_consent/code.html\" class=\"card\">
+                    <img src=\"../auth_consent/screen.png\" alt=\"Auth & Consent\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">lock</span> Auth & Consent</h3>
+                        <p class=\"card-description\">Login, registration, privacy consent</p>
+                        <a href=\"../auth_consent/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../onboarding_identity/code.html\" class=\"card\">
+                    <img src=\"../onboarding_identity/screen.png\" alt=\"Identity\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">person</span> Step 1: Identity</h3>
+                        <p class=\"card-description\">Name, gender, cutting objective</p>
+                        <a href=\"../onboarding_identity/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../onboarding_health_data/code.html\" class=\"card\">
+                    <img src=\"../onboarding_health_data/screen.png\" alt=\"Health Data\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">favorite</span> Step 2: Health Profile</h3>
+                        <p class=\"card-description\">Height, weight, activity level, sleep</p>
+                        <a href=\"../onboarding_health_data/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../onboarding_training_style/code.html\" class=\"card\">
+                    <img src=\"../onboarding_training_style/screen.png\" alt=\"Training\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">fitness_center</span> Step 3: Training</h3>
+                        <p class=\"card-description\">Weekly schedule, experience level</p>
+                        <a href=\"../onboarding_training_style/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../onboarding_supplements/code.html\" class=\"card\">
+                    <img src=\"../onboarding_supplements/screen.png\" alt=\"Supplements\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">supplement_service</span> Step 4: Supplements</h3>
+                        <p class=\"card-description\">Preferences, allergies, budget</p>
+                        <a href=\"../onboarding_supplements/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- MAIN APP SECTION -->
+        <section>
+            <h2>Main App Experience</h2>
+            <p class=\"section-description\">Daily dashboard and tracking surfaces</p>
+            <div class=\"grid\">
+                <a href=\"../daily_pilot_dashboard/code.html\" class=\"card\">
+                    <img src=\"../daily_pilot_dashboard/screen.png\" alt=\"Dashboard\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">dashboard</span> Daily Dashboard</h3>
+                        <p class=\"card-description\">Adherence score, quick actions, 7-day trend</p>
+                        <a href=\"../daily_pilot_dashboard/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../nutrition_tracking/code.html\" class=\"card\">
+                    <img src=\"../nutrition_tracking/screen.png\" alt=\"Nutrition\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">restaurant</span> Nutrition Tracking</h3>
+                        <p class=\"card-description\">Macros, meals, calorie targets</p>
+                        <a href=\"../nutrition_tracking/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../training_plan/code.html\" class=\"card\">
+                    <img src=\"../training_plan/screen.png\" alt=\"Training\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">fitness_center</span> Training Plan</h3>
+                        <p class=\"card-description\">Weekly schedule, session details</p>
+                        <a href=\"../training_plan/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../weekly_agenda_reminders/code.html\" class=\"card\">
+                    <img src=\"../weekly_agenda_reminders/screen.png\" alt=\"Agenda\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">calendar_today</span> Agenda & Reminders</h3>
+                        <p class=\"card-description\">Calendar integration, daily notifications</p>
+                        <a href=\"../weekly_agenda_reminders/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+                
+                <a href=\"../system_settings/code.html\" class=\"card\">
+                    <img src=\"../system_settings/screen.png\" alt=\"Settings\" class=\"card-image\">
+                    <div class=\"card-content\">
+                        <h3 class=\"card-title\"><span class=\"icon material-symbols-outlined\">settings</span> System Settings</h3>
+                        <p class=\"card-description\">Theme, notifications, privacy controls</p>
+                        <a href=\"../system_settings/code.html\" class=\"card-link\">View Prototype →</a>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- DESIGN TOKENS -->
+        <section>
+            <h2>Design Tokens</h2>
+            <p class=\"section-description\">Color palette, typography, spacing system</p>
+            <div class=\"specs\">
+                <dl>
+                    <dt>Primary Color (Berserker Red)</dt>
+                    <dd>#ffb3b1 — Critical actions, achievements, high priority</dd>
+                    
+                    <dt>Secondary Color (Primal Orange)</dt>
+                    <dd>#ffbd5c — Energy states, active timers, metabolic data</dd>
+                    
+                    <dt>Background</dt>
+                    <dd>#1e0f0f — Deep onyx, reduces ocular strain</dd>
+                    
+                    <dt>Surface</dt>
+                    <dd>#1a1a1a — Cards and containers with glassmorphism</dd>
+                    
+                    <dt>Typography - Headlines</dt>
+                    <dd>Anton, 28-48px, uppercase, aggressive cinematic feel</dd>
+                    
+                    <dt>Typography - Body</dt>
+                    <dd>Inter, 14-16px, clear readable in gym environment</dd>
+                    
+                    <dt>Typography - Technical</dt>
+                    <dd>JetBrains Mono, 12px, data labels and technical info</dd>
+                    
+                    <dt>Spacing Base Unit</dt>
+                    <dd>4px — Foundation for all spacing and layout</dd>
+                    
+                    <dt>Border Radius</dt>
+                    <dd>0px (Sharp) — Brutalist aesthetic, except progress rings</dd>
+                    
+                    <dt>Glassmorphism</dt>
+                    <dd>20px backdrop blur, 1px borders, 10-20% opacity overlays</dd>
+                </dl>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

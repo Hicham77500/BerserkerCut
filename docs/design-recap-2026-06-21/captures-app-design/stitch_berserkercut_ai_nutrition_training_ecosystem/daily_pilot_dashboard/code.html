@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BerserkerCut - Daily Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#433030",
+                        "on-primary-fixed": "#410007",
+                        "surface-container-lowest": "#180a0a",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "surface-bright": "#473534",
+                        "surface-container-low": "#271717",
+                        "on-secondary-container": "#5b3b00",
+                        "primary": "#ffb3b1",
+                        "surface-dim": "#1e0f0f",
+                        "on-tertiary-fixed-variant": "#1a4e50",
+                        "on-background": "#f9dcda",
+                        "inverse-surface": "#f9dcda",
+                        "on-tertiary-fixed": "#002021",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#3e2c2b",
+                        "tertiary-fixed": "#b9ecee",
+                        "background": "#1e0f0f",
+                        "on-surface": "#f9dcda",
+                        "secondary-fixed": "#ffddb3",
+                        "tertiary-container": "#68999b",
+                        "secondary-container": "#ec9e00",
+                        "surface-container-high": "#372625",
+                        "surface-tint": "#ffb3b1",
+                        "inverse-primary": "#bb152c",
+                        "on-secondary-fixed-variant": "#624000",
+                        "on-tertiary": "#003739",
+                        "primary-fixed": "#ffdad8",
+                        "on-tertiary-container": "#002f31",
+                        "on-error": "#690005",
+                        "outline-variant": "#5b403f",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-primary": "#680011",
+                        "on-primary-container": "#5b000e",
+                        "secondary-fixed-dim": "#ffb950",
+                        "secondary": "#ffbd5c",
+                        "primary-container": "#ff535b",
+                        "on-surface-variant": "#e4bebc",
+                        "on-secondary": "#452b00",
+                        "on-secondary-fixed": "#291800",
+                        "surface-container": "#2c1b1b",
+                        "tertiary-fixed-dim": "#9ecfd1",
+                        "outline": "#ab8987",
+                        "surface": "#1e0f0f",
+                        "surface-variant": "#433030",
+                        "tertiary": "#9ecfd1",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "40px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "margin-desktop": "32px",
+                        "base": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Anton"],
+                        "label-technical": ["JetBrains Mono"],
+                        "headline-lg": ["Anton"],
+                        "body-sm": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg-mobile": ["Anton"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "label-technical": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "36px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "32px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 218, 220, 0.1);
+        }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar Mobile -->
+<header class="md:hidden full-width top-0 border-b border-outline-variant/10 bg-surface dark:bg-surface flex justify-between items-center w-full px-margin-mobile py-sm sticky z-40">
+<div class="flex items-center gap-sm hover:opacity-80 active:scale-95 transition-transform cursor-pointer">
+<img alt="User" class="w-8 h-8 rounded-full object-cover border border-outline-variant/30" data-alt="Close up profile photo of a muscular athlete in a dark gritty gym environment, high contrast lighting, intense focus, sweaty skin, wearing a minimalist black athletic top." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3wCd0V0CDoH_gGia9tRVpBa2XEH-DkmO1pPN-rKQU56mOJnIEfzsq9bV4UAtR0MEaNaHYJQtCfAsWWKEuScZjX05i07b3IBY5WwgzF04gT3hzIFcNdN3P9x8LojiloKeJZqlKsYnJ5MSv5X8CPgw9U9RjKRo6CnViMc_knCigHI-xyITEbdjNFFqQe1nScJtlOmfM5SflJ3lIIYHaR-uX-HNd1P0qRYfmXFiqfM99s9CWHdFyH7IkaDXSspantBvTWsUO6pruJ9I"/>
+</div>
+<h1 class="font-display-lg text-headline-lg-mobile text-primary uppercase tracking-tighter">BERSERKERCUT</h1>
+<button class="text-on-surface-variant hover:opacity-80 active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- TopAppBar Desktop (Hidden on Mobile) -->
+<header class="hidden md:flex top-0 border-b border-outline-variant/10 bg-surface dark:bg-surface justify-between items-center w-full px-margin-desktop py-lg sticky z-40">
+<h1 class="font-display-lg text-headline-lg text-primary uppercase tracking-tighter">BERSERKERCUT</h1>
+<nav class="flex items-center gap-lg">
+<a class="text-primary hover:opacity-80 transition-colors font-title-md text-title-md flex items-center gap-xs" href="#"><span class="material-symbols-outlined" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>Home</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-colors font-title-md text-title-md flex items-center gap-xs" href="#"><span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>Nutrition</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-colors font-title-md text-title-md flex items-center gap-xs" href="#"><span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>Training</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-colors font-title-md text-title-md flex items-center gap-xs" href="#"><span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>Agenda</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:opacity-80 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<img alt="User" class="w-10 h-10 rounded-full object-cover border border-outline-variant/30 cursor-pointer" data-alt="Close up profile photo of a muscular athlete in a dark gritty gym environment, high contrast lighting, intense focus, sweaty skin, wearing a minimalist black athletic top." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2V8J-MYXbh5-7C2imadToDz7A9wOHHHcNMkztd_UFEuMu0gOUnJdzUuo4Tpk_OYgZ9LUv6Cnf3Ohstv-5LFwwAxt7HWuM23smwLK_Xa7toE-hXy-y9eHfOzo5_P0hAcNT1N6Dlu_vRU4UMRvy2qK0s1a5yNHFYJo9x3L5BqHyr0cNWVysCDzAYu91LEuX67wNg0mJLhvKlBxWDlEbvtgRUpRQMnynLlpd-riF5LebR0S-LMRtJumKxV6l8rzIh8LeBMcdG9Rqqqs"/>
+</div>
+</header>
+<main class="px-margin-mobile md:px-margin-desktop py-lg max-w-7xl mx-auto space-y-xl">
+<!-- Central Adherence Score -->
+<section class="flex flex-col items-center justify-center py-xl relative">
+<div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<circle class="text-primary stroke-current progress-ring-circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="37.68" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-display-lg text-display-lg text-on-surface">85%</span>
+<span class="font-label-technical text-label-technical text-on-surface-variant uppercase mt-1">Daily Adherence</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-sm text-center max-w-xs">You are locked in. Maintain the aggressive deficit to hit the target cut by Friday.</p>
+</section>
+<!-- Quick Action Cards (Bento Grid) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Meal Status -->
+<div class="glass-panel p-md rounded-lg flex flex-col justify-between h-40 group cursor-pointer hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-label-technical text-label-technical uppercase">Next Meal</span>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">In 2H</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface uppercase">Pre-Workout Fuel</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">40g P / 60g C / 10g F</p>
+</div>
+</div>
+<!-- Workout Today -->
+<div class="glass-panel p-md rounded-lg flex flex-col justify-between h-40 group cursor-pointer hover:border-primary/50 transition-colors bg-gradient-to-br from-surface to-surface-container-highest relative overflow-hidden">
+<div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4">
+<span class="material-symbols-outlined text-[100px]" data-icon="fitness_center">fitness_center</span>
+</div>
+<div class="flex justify-between items-start relative z-10">
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-label-technical text-label-technical text-primary uppercase">Training</span>
+</div>
+<span class="font-label-technical text-label-technical text-error border border-error/30 px-2 py-1 rounded bg-error/10 uppercase">Pending</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-title-md text-title-md text-on-surface uppercase">Hypertrophy: Push</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Heavy Compounds &amp; Volume</p>
+</div>
+</div>
+<!-- Mental Check-in -->
+<div class="glass-panel p-md rounded-lg flex flex-col justify-between h-40 group cursor-pointer hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-xs text-secondary">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-technical text-label-technical uppercase">Mental State</span>
+</div>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface uppercase">Log Condition</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Record fatigue &amp; focus levels</p>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 bg-surface-container-high py-1 rounded hover:bg-surface-container-highest transition-colors flex justify-center"><span class="material-symbols-outlined text-error" data-icon="battery_1_bar">battery_1_bar</span></button>
+<button class="flex-1 bg-surface-container-high py-1 rounded hover:bg-surface-container-highest transition-colors flex justify-center"><span class="material-symbols-outlined text-secondary" data-icon="battery_4_bar">battery_4_bar</span></button>
+<button class="flex-1 bg-surface-container-high py-1 rounded border border-primary/30 flex justify-center"><span class="material-symbols-outlined text-primary" data-icon="battery_full">battery_full</span></button>
+</div>
+</div>
+</section>
+<!-- 7-Day Trend -->
+<section class="glass-panel p-lg rounded-lg">
+<div class="flex justify-between items-center mb-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface uppercase tracking-tight">7-Day Consistency</h2>
+<span class="font-label-technical text-label-technical text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> On Track</span>
+</div>
+<!-- Simple CSS Bar Chart -->
+<div class="h-32 flex items-end justify-between gap-1 md:gap-2">
+<div class="w-full flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/20 rounded-t-sm h-[60%] relative group-hover:bg-primary/40 transition-colors">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-technical text-label-technical text-on-surface opacity-0 group-hover:opacity-100 transition-opacity">60%</div>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">Mon</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/40 rounded-t-sm h-[85%] relative group-hover:bg-primary/60 transition-colors">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-technical text-label-technical text-on-surface opacity-0 group-hover:opacity-100 transition-opacity">85%</div>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">Tue</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/60 rounded-t-sm h-[90%] relative group-hover:bg-primary/80 transition-colors">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-technical text-label-technical text-on-surface opacity-0 group-hover:opacity-100 transition-opacity">90%</div>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">Wed</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary/30 rounded-t-sm h-[70%] relative group-hover:bg-primary/50 transition-colors">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-technical text-label-technical text-on-surface opacity-0 group-hover:opacity-100 transition-opacity">70%</div>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">Thu</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group">
+<div class="w-full bg-primary border border-primary rounded-t-sm h-[95%] relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-label-technical text-label-technical text-on-surface">95%</div>
+</div>
+<span class="font-label-technical text-label-technical text-primary">Fri</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full border border-dashed border-outline-variant rounded-t-sm h-[10%] opacity-50"></div>
+<span class="font-label-technical text-label-technical text-on-surface-variant/50">Sat</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2">
+<div class="w-full border border-dashed border-outline-variant rounded-t-sm h-[10%] opacity-50"></div>
+<span class="font-label-technical text-label-technical text-on-surface-variant/50">Sun</span>
+</div>
+</div>
+<div class="w-full border-t border-outline-variant/30 mt-2"></div>
+</section>
+</main>
+<!-- BottomNavBar Mobile -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 backdrop-blur-md border-t border-primary bg-surface/80 dark:bg-surface/80 flex justify-around items-center px-4 py-2 pb-safe transition-all duration-200 ease-in-out">
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:opacity-80 active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-technical text-label-technical text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="restaurant">restaurant</span>
+<span class="font-label-technical text-label-technical text-[10px]">Nutrition</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="fitness_center">fitness_center</span>
+<span class="font-label-technical text-label-technical text-[10px]">Training</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-technical text-label-technical text-[10px]">Agenda</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary/70 active:scale-95 transition-transform w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="font-label-technical text-label-technical text-[10px]">Settings</span>
+</a>
+</nav>
+</body></html>

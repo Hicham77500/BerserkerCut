@@ -3,7 +3,8 @@ import { DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationLightTheme 
 /**
  * BerserkerCut Theme System
  * 
- * Harmonized color system based on anthracite/cuivre/olive palette
+ * Material Design 3 system with Industrial Brutalism + Glassmorphism
+ * Fire Orange (#FF5722) primary, Primal Orange (#ffbd5c) secondary
  * Optimized for iOS with consistent visual language
  * WCAG AA compliant contrast ratios
  */
@@ -11,29 +12,29 @@ import { DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationLightTheme 
 export type ThemeMode = 'dark' | 'light';
 
 export interface ThemePalette {
-  // Primary: Cuivre (Copper)
+  // Primary: Berserker Red (Material Design 3)
   primary: string;
   primaryDark: string; 
   primaryLight: string;
   
-  // Secondary: Anthracite (Dark Gray)
+  // Secondary: Primal Orange (Material Design 3)
   secondary: string;
   secondaryDark: string;
   secondaryLight: string;
   
-  // Accent: Olive
+  // Accent: Tertiary Teal (Material Design 3)
   accent: string;
   accentDark: string;
   accentLight: string;
   
-  // Backgrounds
+  // Backgrounds (Charcoal base)
   background: string;
   backgroundDark: string;
   secondaryBackground: string;
   surface: string;
   surfaceDark: string;
   
-  // Text
+  // Text (High contrast)
   text: string;
   textLight: string;
   textDark: string;
@@ -41,7 +42,7 @@ export interface ThemePalette {
   label: string;
   secondaryLabel: string;
   
-  // Feedback states
+  // Feedback states (error, success, warning, info)
   success: string;
   warning: string;
   error: string;
@@ -60,177 +61,201 @@ export interface ThemePalette {
   borderDark: string;
 }
 
-// Dark Theme Palette (Anthracite base)
+// Dark Theme Palette (Material Design 3 - Industrial Brutalism)
 export const DarkColors: ThemePalette = {
-  // Primary: Copper (Cuivre)
-  primary: '#C2633A',       // Improved copper tone
-  primaryDark: '#9A4C2C',   // Darker copper for pressed states
-  primaryLight: '#E08B62',  // Lighter copper for highlights
+  // Primary: Fire Orange (Material Design 3 - better contrast in light mode)
+  primary: '#FF5722',       // Deep Orange (Fire-like)
+  primaryDark: '#D84315',   // Darker orange for pressed states
+  primaryLight: '#FF7043',  // Lighter orange for highlights
 
-  // Secondary: Anthracite (Dark Gray)
-  secondary: '#242420',     // True anthracite dark
-  secondaryDark: '#1A1A17', // Deeper anthracite for contrast
-  secondaryLight: '#38382F', // Lighter anthracite for surfaces
+  // Secondary: Primal Orange (Material Design 3)
+  secondary: '#ffbd5c',     // Primal Orange
+  secondaryDark: '#ab8987', // Secondary outline
+  secondaryLight: '#ec9e00', // Secondary container
 
-  // Accent: Olive
-  accent: '#8A8B4A',        // True olive tone
-  accentDark: '#636534',    // Darker olive for depth
-  accentLight: '#A6A76D',   // Lighter olive for highlights
+  // Accent: Tertiary (Teal)
+  accent: '#9ecfd1',        // Tertiary (teal accent)
+  accentDark: '#1a4e50',    // On-tertiary-fixed-variant
+  accentLight: '#b9ecee',   // Tertiary fixed
 
-  // Backgrounds
-  background: '#1C1A18',    // Dark background (core)
-  backgroundDark: '#110C0A', // Darker background
-  secondaryBackground: '#221E1B',
-  surface: '#251C17',       // Surface element background
-  surfaceDark: '#2E231D',   // Alternative surface
+  // Backgrounds (Charcoal base from Material Design 3)
+  background: '#1e0f0f',    // Background
+  backgroundDark: '#180a0a', // Surface container lowest
+  secondaryBackground: '#271717', // Surface container low
+  surface: '#2c1b1b',       // Surface container
+  surfaceDark: '#372625',   // Surface container high
 
-  // Text
-  text: '#F5F2F0',          // Primary text (improved contrast)
-  textLight: '#C4BDB9',     // Secondary text
-  textDark: '#201711',      // Inverted text
-  textMuted: '#A99280',     // Muted text
-  label: '#F5F2F0',
-  secondaryLabel: '#C4BDB9',
+  // Text (High contrast on dark)
+  text: '#f9dcda',          // On-surface (light text)
+  textLight: '#e4bebc',     // On-surface-variant
+  textDark: '#3e2c2b',      // Inverse on-surface
+  textMuted: '#ab8987',     // Outline variant
+  label: '#f9dcda',
+  secondaryLabel: '#e4bebc',
 
-  // Feedback states
-  success: '#8AAC6F',       // Success green (more olive tint)
-  warning: '#DFA147',       // Warning orange
-  error: '#C25E44',         // Error red (copper tint)
-  info: '#6B8E9F',          // Info blue
+  // Feedback states (Material Design 3)
+  success: '#8AAC6F',       // Success green (maintaining)
+  warning: '#DFA147',       // Warning orange (maintaining)
+  error: '#ffb4ab',         // Error (Material Design 3)
+  info: '#9ecfd1',          // Info (tertiary)
 
-  // Macro nutrients (harmonized with main palette)
-  protein: '#C25E44',       // Protein (copper family)
-  carbs: '#6B8E9F',         // Carbs (blue)
-  fat: '#DFA147',           // Fat (orange/gold)
-  calories: '#9874BC',      // Calories (purple)
+  // Macro nutrients (aligned with brand)
+  protein: '#FF5722',       // Deep Orange (protein)
+  carbs: '#9ecfd1',         // Teal (carbs)
+  fat: '#ffbd5c',           // Primal Orange (fat)
+  calories: '#ff9999',      // Light red (calories)
 
-  // UI elements
-  overlay: 'rgba(23, 18, 15, 0.75)', // More opaque overlay
-  overlayLight: 'rgba(23, 18, 15, 0.4)', // Semi transparent overlay
-  border: '#3E2F26',        // Border color
-  borderDark: '#4E3C32',    // Dark border
+  // UI elements (Glassmorphism)
+  overlay: 'rgba(30, 15, 15, 0.6)', // 60% opacity for glass
+  overlayLight: 'rgba(30, 15, 15, 0.3)', // 30% semi-transparent
+  border: '#ab8987',        // Outline (border)
+  borderDark: '#5b403f',    // Outline variant (dark border)
 };
 
 export const Colors: ThemePalette = { ...DarkColors };
 
-// Light Theme Palette (iOS surfaces)
+// Light Theme Palette (Material Design 3 - High contrast)
 export const LightColors: ThemePalette = {
-  primary: '#C2633A',
-  primaryDark: '#9A4C2C',
-  primaryLight: '#E08B62',
+  primary: '#FF5722',       // Deep Orange (Fire) - excellent contrast on light
+  primaryDark: '#D84315',   // Darker for pressed states
+  primaryLight: '#FF7043',  // Lighter for highlights
 
-  secondary: '#EDE9E5',
-  secondaryDark: '#D4CFCB',
-  secondaryLight: '#F8F5F2',
+  secondary: '#ffbd5c',
+  secondaryDark: '#452b00', // On-secondary
+  secondaryLight: '#ec9e00', // Secondary container
 
-  accent: '#807C5A',
-  accentDark: '#5D5942',
-  accentLight: '#A5A07A',
+  accent: '#9ecfd1',
+  accentDark: '#003739',    // On-tertiary
+  accentLight: '#68999b',   // Tertiary container
 
-  background: '#FBF8F5',
-  backgroundDark: '#F1ECE7',
-  secondaryBackground: '#F5F1ED',
-  surface: '#FFFFFF',
-  surfaceDark: '#F1ECE7',
+  background: '#fffbfe',   // Light background (Material Design 3 standard)
+  backgroundDark: '#f1ecee', // Darker light variant
+  secondaryBackground: '#f7eff4',
+  surface: '#fffbfe',       // Light surface
+  surfaceDark: '#f1ecee',   // Alternative surface
 
-  text: '#2C2622',
-  textLight: '#6B5F58',
-  textDark: '#110C0A',
-  textMuted: '#8A7C71',
-  label: '#2C2622',
-  secondaryLabel: '#6B5F58',
+  text: '#1a1a1a',          // Dark text for light mode
+  textLight: '#49454e',     // Secondary text
+  textDark: '#f9dcda',      // Inverted (on-surface from dark mode)
+  textMuted: '#79747e',     // Outline
+  label: '#1a1a1a',
+  secondaryLabel: '#49454e',
 
-  success: '#4F8756',
-  warning: '#D48A28',
-  error: '#B24A32',
-  info: '#3F6D82',
+  success: '#66bb6a',       // Success light variant
+  warning: '#f57c00',       // Warning light variant
+  error: '#f2b8b5',         // Error light
+  info: '#80deea',          // Info light
 
-  protein: '#B24A32',
-  carbs: '#3F6D82',
-  fat: '#D48A28',
-  calories: '#7456A4',
+  protein: '#FF5722',       // Deep Orange (same)
+  carbs: '#80deea',         // Teal light
+  fat: '#ffbd5c',           // Primal Orange (same)
+  calories: '#ff9999',      // Light red
 
-  overlay: 'rgba(17, 12, 10, 0.05)',
-  overlayLight: 'rgba(17, 12, 10, 0.03)',
-  border: '#E1D9D2',
-  borderDark: '#C8BEB5',
+  overlay: 'rgba(0, 0, 0, 0.05)', // Subtle overlay for light
+  overlayLight: 'rgba(0, 0, 0, 0.02)', // Very subtle
+  border: '#e0e0e0',        // Light border
+  borderDark: '#cccccc',    // Darker light border
 };
 
-// Typography system with consistent scaling
+// Typography system with Material Design 3 specifications
+// Fonts: Anton (headlines), Inter (body), JetBrains Mono (technical)
 const createTypography = (palette: ThemePalette) => ({
-  // Headings
+  // Headlines with Anton font (aggressive, cinematic)
   h1: {
-    fontSize: 32,
-    fontWeight: '700' as const, // Bold
-    lineHeight: 40,
-    letterSpacing: 0.35,        // iOS-specific letter spacing
+    fontSize: 48,
+    fontWeight: '400' as const, // Anton is single weight
+    lineHeight: 52,
+    letterSpacing: 0.02, // Material Design 3 spec
+    fontFamily: 'Anton',
+    textTransform: 'uppercase' as any,
     color: palette.text,
   },
   h2: {
-    fontSize: 24,
-    fontWeight: '600' as const, // Semi-bold
-    lineHeight: 32,
-    letterSpacing: 0.25,
+    fontSize: 32,
+    fontWeight: '400' as const,
+    lineHeight: 36,
+    letterSpacing: 0.02,
+    fontFamily: 'Anton',
+    textTransform: 'uppercase' as any,
     color: palette.text,
   },
   h3: {
-    fontSize: 20,
-    fontWeight: '600' as const, // Semi-bold
-    lineHeight: 28,
-    letterSpacing: 0.15,
+    fontSize: 28,
+    fontWeight: '400' as const,
+    lineHeight: 32,
+    letterSpacing: 0.02,
+    fontFamily: 'Anton',
     color: palette.text,
   },
   h4: {
     fontSize: 18,
-    fontWeight: '500' as const, // Medium
+    fontWeight: '700' as const, // Inter: Bold for title
     lineHeight: 24,
-    letterSpacing: 0.15,
+    letterSpacing: 0,
+    fontFamily: 'Inter',
     color: palette.text,
   },
-  // Body text
+  // Body text with Inter font (clear, data-heavy)
   body: {
     fontSize: 16,
-    fontWeight: '400' as const, // Regular
+    fontWeight: '400' as const, // Inter: Regular
     lineHeight: 24,
-    letterSpacing: 0.5,
+    letterSpacing: 0,
+    fontFamily: 'Inter',
     color: palette.text,
   },
   bodySmall: {
     fontSize: 14,
-    fontWeight: '400' as const, // Regular
+    fontWeight: '400' as const,
     lineHeight: 20,
-    letterSpacing: 0.25,
+    letterSpacing: 0,
+    fontFamily: 'Inter',
     color: palette.textLight,
   },
+  // Technical labels with JetBrains Mono
   caption: {
     fontSize: 12,
-    fontWeight: '400' as const, // Regular
+    fontWeight: '500' as const, // JetBrains Mono: Medium
     lineHeight: 16,
-    letterSpacing: 0.4,
+    letterSpacing: 0.05, // Technical font spacing
+    fontFamily: 'JetBrains Mono',
     color: palette.textLight,
   },
-  // Interactive elements
+  // Interactive elements with Inter
   button: {
     fontSize: 16,
-    fontWeight: '600' as const, // Semi-bold
+    fontWeight: '700' as const, // Inter: Bold
     lineHeight: 24,
-    letterSpacing: 0.5,
+    letterSpacing: 0,
+    fontFamily: 'Inter',
     color: palette.text,
   },
-  // New styles for iOS
+  // iOS footnote style
   footnote: {
     fontSize: 13,
     fontWeight: '400' as const,
     lineHeight: 18,
     letterSpacing: -0.08,
+    fontFamily: 'Inter',
     color: palette.textLight,
   },
+  // iOS label style
   label: {
     fontSize: 15,
     fontWeight: '500' as const,
     lineHeight: 20,
     letterSpacing: -0.24,
+    fontFamily: 'Inter',
     color: palette.text,
+  },
+  // Technical data (set numbers, timestamps, macro grams)
+  technical: {
+    fontSize: 12,
+    fontWeight: '500' as const,
+    lineHeight: 16,
+    letterSpacing: 0.05,
+    fontFamily: 'JetBrains Mono',
+    color: palette.textLight,
   },
 });
 
@@ -272,67 +297,114 @@ export const LightNavigationTheme = {
   },
 };
 
-// iOS-optimized spacing system with more precision
+// Spacing system based on 4px base unit (Material Design 3 spec)
+// Tight (4-8px) for related data, loose (24px+) for distinct sections
 export const Spacing = {
-  xxs: 2,    // New: Extra small spacing
-  xs: 4,     // Extra small spacing
-  sm: 8,     // Small spacing
-  md: 16,    // Medium spacing
-  lg: 24,    // Large spacing
-  xl: 32,    // Extra large spacing
-  xxl: 48,   // Double extra large
+  xxs: 2,    // 2px: Very minimal spacing
+  xs: 4,     // 4px base: Extra small (tight spacing)
+  sm: 8,     // 8px: Small (tight related data)
+  md: 12,    // 12px: Medium-small
+  md_: 16,   // 16px: Medium (standard gutter)
+  lg: 24,    // 24px: Large (loose distinct sections)
+  xl: 32,    // 32px: Extra large
+  xxl: 48,   // 48px: Double extra large
+  // Aliases for layout
+  gutter: 16,        // Standard gutter width (4 * 4px)
+  margin_mobile: 16, // Mobile margin
+  margin_desktop: 32, // Desktop margin (8 * 4px)
 } as const;
 
-// iOS-optimized border radius system
+// Border radius system (sharp corners for Brutalism aesthetic)
+// 0px for majority of elements, exceptions for progress rings and status indicators
 export const BorderRadius = {
-  xs: 2,     // New: Extra small radius
-  sm: 4,     // Small radius 
-  md: 8,     // Medium radius
-  lg: 12,    // Large radius
-  xl: 16,    // Extra large radius
-  xxl: 24,   // New: Double extra large radius
-  round: 999, // Fully rounded (better than 50 for various sizes)
+  none: 0,    // Sharp corners (default for cards, buttons, modals)
+  xs: 4,      // 4px: Progress ring (slightly rounded)
+  sm: 8,      // 8px: Small progress rings, minor curves
+  md: 10,     // 10px: Medium progress rings
+  lg: 12,     // 12px: Large progress rings (functional exceptions)
+  xl: 16,     // 16px: Extra large (rare, for specific indicators)
+  round: 999, // Fully rounded (circle for avatars, status dots)
+  // Aliases
+  sharp: 0,   // Sharp Brutalist corner (majority)
+  slight: 4,  // Slight rounding for rings
 } as const;
 
 // Initialize typography with dark theme colors as default
 export let Typography: TypographyScheme = createTypography(DarkColors);
 
-// iOS-optimized shadow system
+// Elevation & Glassmorphism system (replacing soft shadows)
+// Tonal layering with 1px borders, no ambient shadows
+// Glassmorphic overlays: rgba(26,26,26,0.6) + 20px backdrop blur
 export const Shadows = {
-  xs: {      // New: Extra small shadow
+  // Glassmorphic surfaces (for modals, cards, overlays)
+  glass_xs: {
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    // Note: Actual glassmorphism requires:
+    // backgroundColor: 'rgba(26,26,26,0.6)'
+    // backdropFilter: 'blur(20px)'
+    // borderWidth: 1
+    // borderColor: 'rgba(171,137,135,0.2)'
+  },
+  glass_sm: {
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    // Glassmorphism config (higher opacity)
+    // backgroundColor: 'rgba(26,26,26,0.75)'
+    // backdropFilter: 'blur(20px)'
+  },
+  // Tonal borders (1px solid strokes, no shadows)
+  border_xs: {
+    shadowColor: 'transparent',
+    elevation: 0,
+    // Equivalent: 1px solid #ab8987 at 20% opacity
+  },
+  border_md: {
+    shadowColor: 'transparent',
+    elevation: 0,
+    // Equivalent: 1px solid #ab8987 at 15% opacity
+  },
+  // Legacy minimal shadows (for backward compat during transition)
+  xs: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 1,
   },
-  sm: {      // Small shadow (subtle)
+  sm: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.10,
     shadowRadius: 3,
-    elevation: 3,
+    elevation: 2,
   },
-  md: {      // Medium shadow
+  md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.12,
     shadowRadius: 8,
-    elevation: 6,
+    elevation: 4,
   },
-  lg: {      // Large shadow
+  lg: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.15,
     shadowRadius: 14,
-    elevation: 10,
+    elevation: 8,
   },
-  xl: {      // New: Extra large shadow
+  xl: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.18,
     shadowRadius: 20,
-    elevation: 15,
+    elevation: 12,
   },
 } as const;
 

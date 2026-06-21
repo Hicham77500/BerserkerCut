@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - Training Parameters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#433030",
+                        "on-primary-fixed": "#410007",
+                        "surface-container-lowest": "#180a0a",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "surface-bright": "#473534",
+                        "surface-container-low": "#271717",
+                        "on-secondary-container": "#5b3b00",
+                        "primary": "#ffb3b1",
+                        "surface-dim": "#1e0f0f",
+                        "on-tertiary-fixed-variant": "#1a4e50",
+                        "on-background": "#f9dcda",
+                        "inverse-surface": "#f9dcda",
+                        "on-tertiary-fixed": "#002021",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#3e2c2b",
+                        "tertiary-fixed": "#b9ecee",
+                        "background": "#1e0f0f",
+                        "on-surface": "#f9dcda",
+                        "secondary-fixed": "#ffddb3",
+                        "tertiary-container": "#68999b",
+                        "secondary-container": "#ec9e00",
+                        "surface-container-high": "#372625",
+                        "surface-tint": "#ffb3b1",
+                        "inverse-primary": "#bb152c",
+                        "on-secondary-fixed-variant": "#624000",
+                        "on-tertiary": "#003739",
+                        "primary-fixed": "#ffdad8",
+                        "on-tertiary-container": "#002f31",
+                        "on-error": "#690005",
+                        "outline-variant": "#5b403f",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-primary": "#680011",
+                        "on-primary-container": "#5b000e",
+                        "secondary-fixed-dim": "#ffb950",
+                        "secondary": "#ffbd5c",
+                        "primary-container": "#ff535b",
+                        "on-surface-variant": "#e4bebc",
+                        "on-secondary": "#452b00",
+                        "on-secondary-fixed": "#291800",
+                        "surface-container": "#2c1b1b",
+                        "tertiary-fixed-dim": "#9ecfd1",
+                        "outline": "#ab8987",
+                        "surface": "#1e0f0f",
+                        "surface-variant": "#433030",
+                        "tertiary": "#9ecfd1",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "xl": "40px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "margin-desktop": "32px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "safe": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Anton"],
+                        "label-technical": ["JetBrains Mono"],
+                        "headline-lg": ["Anton"],
+                        "body-sm": ["Inter"],
+                        "title-md": ["Inter"],
+                        "headline-lg-mobile": ["Anton"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-technical": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "24px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "32px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom form radio color reset for dark mode technical feel */
+        [type='radio']:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23ffb3b1' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+            border-color: #ffb3b1;
+            background-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-lg text-body-lg antialiased selection:bg-primary selection:text-on-primary">
+<!-- Main Canvas - Navigation Suppressed for Onboarding Flow -->
+<main class="flex-1 flex flex-col px-margin-mobile py-lg relative z-10 w-full max-w-md mx-auto">
+<!-- Header & Progress -->
+<header class="mb-lg pt-sm">
+<!-- Progress Bar (3/4) -->
+<div class="w-full bg-surface-variant h-[4px] mb-md rounded-none overflow-hidden flex">
+<div class="bg-primary w-3/4 h-full transition-all duration-500 ease-in-out"></div>
+</div>
+<div class="flex justify-between items-end mb-sm">
+<span class="font-label-technical text-label-technical text-primary uppercase tracking-widest">Phase 03</span>
+<span class="font-label-technical text-label-technical text-on-surface-variant tracking-widest">03 / 04</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background uppercase mb-xs tracking-tighter">Combat Parameters</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Calibrate your training vector for optimal adaptation.</p>
+</header>
+<!-- Form Elements -->
+<div class="flex-1 flex flex-col gap-xl">
+<!-- Frequency Selection -->
+<section>
+<h2 class="font-title-md text-title-md text-on-background mb-sm">Frequency <span class="font-label-technical text-label-technical text-outline-variant ml-xs">SESSIONS / WEEK</span></h2>
+<div class="grid grid-cols-3 gap-xs">
+<!-- Option 1: 3x -->
+<button class="bg-surface text-on-surface-variant border border-outline-variant/30 p-md flex flex-col items-center justify-center transition-all active:scale-95 hover:border-outline-variant focus:outline-none">
+<span class="font-display-lg text-display-lg leading-none">3</span>
+<span class="font-label-technical text-label-technical mt-xs text-outline">DAYS</span>
+</button>
+<!-- Option 2: 4x (Active State) -->
+<button class="bg-primary text-on-primary border border-primary p-md flex flex-col items-center justify-center transition-all active:scale-95 focus:outline-none relative overflow-hidden">
+<div class="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity"></div>
+<span class="font-display-lg text-display-lg leading-none relative z-10">4</span>
+<span class="font-label-technical text-label-technical mt-xs text-on-primary-container relative z-10">DAYS</span>
+</button>
+<!-- Option 3: 5x+ -->
+<button class="bg-surface text-on-surface-variant border border-outline-variant/30 p-md flex flex-col items-center justify-center transition-all active:scale-95 hover:border-outline-variant focus:outline-none">
+<span class="font-display-lg text-display-lg leading-none">5<span class="text-[24px] align-top leading-none">+</span></span>
+<span class="font-label-technical text-label-technical mt-xs text-outline">DAYS</span>
+</button>
+</div>
+</section>
+<!-- Discipline Selection -->
+<section>
+<h2 class="font-title-md text-title-md text-on-background mb-sm">Discipline <span class="font-label-technical text-label-technical text-outline-variant ml-xs">PRIMARY FOCUS</span></h2>
+<div class="flex flex-col gap-xs">
+<!-- Option 1: Bodybuilding (Active) -->
+<div class="relative overflow-hidden border border-primary bg-surface p-md flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform">
+<!-- Glassmorphic highlight -->
+<div class="absolute inset-0 bg-primary/5"></div>
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="relative z-10 flex items-center gap-md">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="fitness_center" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary uppercase tracking-tight">Hypertrophy</span>
+<span class="font-label-technical text-label-technical text-on-surface-variant">BODYBUILDING</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary relative z-10" data-icon="radio_button_checked">radio_button_checked</span>
+</div>
+<!-- Option 2: Powerlifting -->
+<div class="relative overflow-hidden border border-outline-variant/30 bg-surface p-md flex items-center justify-between cursor-pointer hover:border-outline-variant hover:bg-surface-variant/50 active:scale-[0.98] transition-all">
+<div class="relative z-10 flex items-center gap-md">
+<span class="material-symbols-outlined text-outline text-[32px]" data-icon="monitor_weight">monitor_weight</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-background uppercase tracking-tight">Maximal Strength</span>
+<span class="font-label-technical text-label-technical text-outline">POWERLIFTING</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant relative z-10" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+<!-- Option 3: CrossFit -->
+<div class="relative overflow-hidden border border-outline-variant/30 bg-surface p-md flex items-center justify-between cursor-pointer hover:border-outline-variant hover:bg-surface-variant/50 active:scale-[0.98] transition-all">
+<div class="relative z-10 flex items-center gap-md">
+<span class="material-symbols-outlined text-outline text-[32px]" data-icon="local_fire_department">local_fire_department</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-background uppercase tracking-tight">Metabolic Cond.</span>
+<span class="font-label-technical text-label-technical text-outline">CROSSFIT / FUNCTIONAL</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant relative z-10" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+</div>
+</section>
+<!-- Arsenal / Equipment Selection -->
+<section>
+<h2 class="font-title-md text-title-md text-on-background mb-sm">Arsenal <span class="font-label-technical text-label-technical text-outline-variant ml-xs">EQUIPMENT ACCESS</span></h2>
+<div class="flex flex-col gap-xs">
+<!-- Standard Select Style using labels -->
+<label class="flex items-center justify-between p-md border border-outline-variant/30 bg-surface cursor-pointer hover:border-outline-variant hover:bg-surface-variant/50 transition-colors">
+<div class="flex items-center gap-sm">
+<input checked="" class="form-radio text-primary border-outline-variant bg-transparent focus:ring-1 focus:ring-primary focus:ring-offset-0 focus:ring-offset-transparent w-4 h-4 cursor-pointer" name="equipment" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-background">Commercial Facility</span>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">FULL ACCESS</span>
+</label>
+<label class="flex items-center justify-between p-md border border-outline-variant/30 bg-surface cursor-pointer hover:border-outline-variant hover:bg-surface-variant/50 transition-colors">
+<div class="flex items-center gap-sm">
+<input class="form-radio text-primary border-outline-variant bg-transparent focus:ring-1 focus:ring-primary focus:ring-offset-0 focus:ring-offset-transparent w-4 h-4 cursor-pointer" name="equipment" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-background">Garage / Home Gym</span>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">RACK &amp; BARBELL</span>
+</label>
+<label class="flex items-center justify-between p-md border border-outline-variant/30 bg-surface cursor-pointer hover:border-outline-variant hover:bg-surface-variant/50 transition-colors">
+<div class="flex items-center gap-sm">
+<input class="form-radio text-primary border-outline-variant bg-transparent focus:ring-1 focus:ring-primary focus:ring-offset-0 focus:ring-offset-transparent w-4 h-4 cursor-pointer" name="equipment" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-background">Minimalist Setup</span>
+</div>
+<span class="font-label-technical text-label-technical text-on-surface-variant">DUMBBELLS ONLY</span>
+</label>
+</div>
+</section>
+</div>
+<!-- Footer Action -->
+<div class="mt-xl pt-lg pb-safe">
+<button class="w-full bg-primary text-on-primary font-headline-lg-mobile text-headline-lg-mobile uppercase py-[12px] flex items-center justify-center gap-sm hover:bg-primary/90 hover:shadow-[0_0_15px_rgba(255,83,91,0.4)] active:scale-[0.98] transition-all rounded-none border border-transparent focus:outline-none focus:border-white">
+                GENERATE PROTOCOL
+                <span class="material-symbols-outlined text-[28px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</main>
+</body></html>

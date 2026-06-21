@@ -154,7 +154,7 @@ const createStyles = (colors: ThemePalette) =>
 
     focused: {
       borderColor: colors.primary,
-      borderWidth: 2,
+      borderWidth: 1,
       ...Shadows.sm,
     } as ViewStyle,
 

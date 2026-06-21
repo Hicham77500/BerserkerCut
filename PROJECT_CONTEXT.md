@@ -165,7 +165,23 @@ Recommended pairings:
 - API contract changes: api-design + security + javascript
 - Native iOS bridge or migration work: swift + frontend + security
 
-## 7) Next Actions Queue
+### Fast Paths From BerserkerCut To AllSkills
+
+Use these relative paths when jumping from mobile implementation to skill references:
+
+- `../AllSkills/mobile-app-design/`
+- `../AllSkills/code-review-skill/`
+- `../AllSkills/android-reverse-engineering-skill/`
+
+## 7) UX Keyboard Input Conventions (Nutrition + Long Modals)
+
+- Long editable modals must use `KeyboardAvoidingView` with iOS `padding` behavior.
+- Scroll containers in forms must keep `keyboardShouldPersistTaps="handled"`.
+- Numeric nutrition inputs must support explicit dismissal (`returnKeyType="done"` + submit dismiss).
+- iOS-only long modals must expose an explicit action labeled `Fermer le clavier` via `InputAccessoryView`.
+- Keep implementation readable and reviewable: no obfuscation and no hidden input side effects.
+
+## 8) Next Actions Queue
 
 1. Resolve [FLAG-ARCH-01] and [FLAG-ARCH-02] together (single auth contract pass).
 2. Replace hardcoded LAN IP in src/services/apiClient.ts with deterministic host derivation.
