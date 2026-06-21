@@ -60,5 +60,30 @@ target 'BerserkerCut' do
         end
       end
     end
+
+    # Fix hermes-engine script phase warning (no outputs declared)
+    installer.pods_project.targets.each do |target|
+      if target.name == 'hermes-engine'
+        target.build_phases.each do |phase|
+          if phase.respond_to?(:name) && phase.name&.include?('Replace Hermes')
+            phase.always_out_of_date = '0' rescue nil
+          end
+        end
+      end
+    end
+
+    # Fix fmt consteval errors: patch xcconfig directly (Apple clang bug with consteval)
+    ['debug', 'release'].each do |cfg|
+      xcconfig_path = File.join(installer.sandbox.root, "Target Support Files/fmt/fmt.#{cfg}.xcconfig")
+      if File.exist?(xcconfig_path)
+        xcconfig = File.read(xcconfig_path)
+        unless xcconfig.include?('FMT_USE_CONSTEVAL')
+          File.write(xcconfig_path, xcconfig.gsub(
+            'GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1',
+            'GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1 FMT_USE_CONSTEVAL=0'
+          ))
+        end
+      end
+    end
   end
 end

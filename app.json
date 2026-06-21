@@ -4,16 +4,21 @@
     "slug": "BerserkerCut",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app-icon-1024.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "icon": "./assets/app-icon-1024.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.GCorp.BerserkerCut",
       "buildNumber": "1.0.4",
@@ -27,7 +32,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/app-icon-1024.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -45,7 +50,10 @@
     "extra": {
       "apiBaseUrl": "http://localhost:4000",
       "enableNewUi": true,
-      "EXPO_PUBLIC_ENABLE_NEW_UI": "true"
+      "EXPO_PUBLIC_ENABLE_NEW_UI": "true",
+      "eas": {
+        "projectId": "e6161916-771f-467d-9f4d-864a681d1528"
+      }
     }
   }
 }

@@ -19,7 +19,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
+    <string>1.0.4</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -27,12 +27,12 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.anonymous.BerserkerCut</string>
+          <string>com.GCorp.BerserkerCut</string>
         </array>
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>1.0.4</string>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
@@ -50,10 +50,24 @@
         </dict>
       </dict>
     </dict>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>BerserkerCut a besoin d'accéder à votre photothèque pour synchroniser vos photos de progression.</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your calendars</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your calendars</string>
+    <key>NSCameraUsageDescription</key>
+    <string>BerserkerCut utilise l'appareil photo pour capturer vos photos de progression.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>BerserkerCut enregistre vos photos dans votre album iCloud BerserkerCut.</string>
+    <string>BerserkerCut enregistre vos photos de suivi dans votre photothèque iCloud.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>BerserkerCut a besoin d'accéder à votre photothèque pour importer et synchroniser vos photos de progression.</string>
+    <key>NSRemindersFullAccessUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+    <key>RCTNewArchEnabled</key>
+    <true/>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
