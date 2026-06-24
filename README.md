@@ -10,10 +10,11 @@ iOS-first coaching app for personalised cutting plans (cloud or demo mode).
 4. [Getting started](#getting-started)
 5. [Environment variables](#environment-variables)
 6. [Development workflow](#development-workflow)
-7. [Design system & theming](#design-system--theming)
-8. [Backend expectations](#backend-expectations)
-9. [Roadmap](#roadmap)
-10. [Resources](#resources)
+7. [Project cleanup](#project-cleanup)
+8. [Design system & theming](#design-system--theming)
+9. [Backend expectations](#backend-expectations)
+10. [Roadmap](#roadmap)
+11. [Resources](#resources)
 
 ---
 
@@ -95,6 +96,26 @@ When `EXPO_PUBLIC_API_BASE_URL` is missing or unreachable, the demo services tak
   npm install
   npm run dev
   ```
+
+## Project cleanup
+
+To keep the repository lean, run this cleanup periodically in local development:
+
+```bash
+# From project root
+rm -rf .expo ios/build
+find . -name '.DS_Store' -type f -delete
+```
+
+For dependency reset:
+
+```bash
+rm -rf node_modules backend/node_modules
+npm install
+cd backend && npm install
+```
+
+Structural cleanup candidates are tracked in `todo.md` (legacy docs, stale files, and optional web-only leftovers).
 
 ## Design system & theming
 

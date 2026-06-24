@@ -100,3 +100,26 @@ Date: 2026-06-21
 - [x] Lancer les audits skills `AllSkills/mobile-app-design`
   - `validate-touch-targets.sh`: 0 issue sur `BerserkerCut/src`
   - `accessibility-audit.sh`: detections majoritairement sur boutons custom, plus corrections appliquees sur les ecrans prioritaires
+
+## Nettoyage structurel (dossiers/fichiers inutiles ou legacy)
+
+- [ ] Supprimer les artefacts locaux de build/cache non utiles au repo
+  - dossiers cibles: `.expo/`, `ios/build/`, `node_modules/`, `backend/node_modules/`
+  - fichiers cibles: `.DS_Store` (racine + sous-dossiers)
+  - verification: aucun de ces elements ne doit etre versionne
+
+- [ ] Evaluer la suppression de `public/manifest.json`
+  - contexte: app iOS-first Expo, usage web non prioritaire
+  - action: supprimer si aucune cible web/PWA active n'en depend
+
+- [ ] Nettoyer le legacy Firebase devenu hors scope runtime JWT/demo
+  - evaluer suppression de `firestore.rules`
+  - remplacer/archiver les sections Firebase dans `docs/ARCHITECTURE_TECHNIQUE.md`
+  - remplacer/archiver les variables Firebase dans `docs/DOCUMENTATION_TECHNIQUE.md`
+
+- [ ] Retirer les reliquats de navigation drawer
+  - cible: `src/types/global.d.ts` (`openDrawer`, `closeDrawer`)
+  - precondition: verifier qu'aucune reference runtime n'existe encore
+
+- [ ] Ajouter un script npm de nettoyage standardise
+  - proposition: `npm run clean:local` pour purger artefacts locaux en 1 commande
