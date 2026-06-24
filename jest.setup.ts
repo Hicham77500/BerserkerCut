@@ -39,6 +39,30 @@ jest.mock('expo-file-system', () => ({
   deleteAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
+// Mock du bridge natif Apple HealthKit pour tester les flux iOS
+// sans dépendre d'un runtime natif réel.
+jest.mock('react-native-health', () => ({
+  Constants: {
+    Units: {
+      kilogram: 'kg',
+    },
+    Permissions: {
+      Weight: 'Weight',
+      StepCount: 'StepCount',
+      HeartRate: 'HeartRate',
+    },
+  },
+  isAvailable: jest.fn((callback) => callback(null, true)),
+  initHealthKit: jest.fn((_permissions, callback) => callback(null, {})),
+  getLatestWeight: jest.fn((_options, callback) =>
+    callback(null, {
+      value: 75,
+      startDate: '2026-06-24T10:00:00.000Z',
+    })
+  ),
+  getStepCount: jest.fn((_options, callback) => callback(null, { value: 8000 })),
+}));
+
 // Mock des notifications Expo pour éviter les appels natifs et simplifier les tests.
 jest.mock('expo-notifications', () => ({
   requestPermissionsAsync: jest

@@ -5,6 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HealthProfile, HealthDataSource } from '../types';
+import { AppleHealthProvider } from './providers/appleHealthProvider';
 
 export interface HealthData {
   weight?: number;
@@ -33,6 +34,71 @@ export class HealthService {
    */
   static registerProvider(type: string, provider: HealthServiceProvider) {
     this.providers.set(type, provider);
+  }
+
+  static async connectAppleHealthKit(): Promise<boolean> {
+    const provider = this.providers.get('apple_healthkit');
+    if (!provider) {
+      return false;
+    }
+
+    const available = await provider.isAvailable();
+    if (!available) {
+      return false;
+    }
+
+    return provider.requestPermissions();
+  }
+
+  static async syncHealthDataFromSource(
+    profile: HealthProfile,
+  ): Promise<HealthProfile | null> {
+    const provider = this.providers.get(profile.dataSource.type);
+    if (!provider) {
+      return null;
+    }
+
+    const latestData = await provider.getLatestData();
+    if (!latestData) {
+      return null;
+    }
+
+    const nextProfile: HealthProfile = {
+      ...profile,
+      weight: typeof latestData.weight === 'number' ? latestData.weight : profile.weight,
+      averageDailySteps:
+        typeof latestData.steps === 'number' ? latestData.steps : profile.averageDailySteps,
+      restingHeartRate:
+        typeof latestData.heartRate === 'number'
+          ? latestData.heartRate
+          : profile.restingHeartRate,
+      averageSleepHours:
+        typeof latestData.sleepHours === 'number'
+          ? latestData.sleepHours
+          : profile.averageSleepHours,
+      dataSource: {
+        ...profile.dataSource,
+        isConnected: true,
+        lastSyncDate: latestData.timestamp,
+      },
+      lastUpdated: latestData.timestamp,
+      isManualEntry: false,
+    };
+
+    return nextProfile;
+  }
+
+  static disconnectHealthSource(profile: HealthProfile): HealthProfile {
+    return {
+      ...profile,
+      dataSource: {
+        type: 'manual',
+        isConnected: false,
+        permissions: [],
+      },
+      isManualEntry: true,
+      lastUpdated: new Date(),
+    };
   }
 
   /**
@@ -185,5 +251,6 @@ export class ManualHealthProvider implements HealthServiceProvider {
 
 // Enregistrer le provider manuel par défaut
 HealthService.registerProvider('manual', new ManualHealthProvider());
+HealthService.registerProvider('apple_healthkit', new AppleHealthProvider());
 
 export default HealthService;

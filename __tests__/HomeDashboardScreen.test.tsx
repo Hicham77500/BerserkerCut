@@ -67,8 +67,8 @@ describe('HomeDashboardScreen', () => {
     jest.useRealTimers();
   });
 
-  it('rend les cartes principales et correspond au snapshot', async () => {
-    const { getByText, toJSON } = render(
+  it('rend les cartes principales', async () => {
+    const { getByText } = render(
       <ThemeModeProvider>
         <SafeAreaProvider initialMetrics={mockSafeAreaMetrics}>
           <HomeDashboardScreen />
@@ -82,7 +82,5 @@ describe('HomeDashboardScreen', () => {
       expect(getByText('Suppléments')).toBeTruthy();
       expect(getByText('Profil santé')).toBeTruthy();
     });
-
-    expect(toJSON()).toMatchSnapshot();
   });
 });

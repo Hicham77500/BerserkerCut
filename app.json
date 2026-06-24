@@ -27,7 +27,9 @@
       "infoPlist": {
         "NSCameraUsageDescription": "BerserkerCut utilise l'appareil photo pour capturer vos photos de progression.",
         "NSPhotoLibraryUsageDescription": "BerserkerCut a besoin d'accéder à votre photothèque pour importer et synchroniser vos photos de progression.",
-        "NSPhotoLibraryAddUsageDescription": "BerserkerCut enregistre vos photos de suivi dans votre photothèque iCloud."
+        "NSPhotoLibraryAddUsageDescription": "BerserkerCut enregistre vos photos de suivi dans votre photothèque iCloud.",
+        "NSHealthShareUsageDescription": "BerserkerCut lit votre poids, vos pas et votre fréquence cardiaque pour améliorer le suivi de vos objectifs.",
+        "NSHealthUpdateUsageDescription": "BerserkerCut peut mettre à jour certaines données de santé si vous l'autorisez."
       }
     },
     "android": {
@@ -54,6 +56,17 @@
       "eas": {
         "projectId": "e6161916-771f-467d-9f4d-864a681d1528"
       }
-    }
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "react-native-health",
+        {
+          "healthSharePermission": "BerserkerCut lit votre poids, vos pas et votre fréquence cardiaque pour améliorer le suivi de vos objectifs.",
+          "healthUpdatePermission": "BerserkerCut peut mettre à jour certaines données de santé si vous l'autorisez.",
+          "isClinicalDataEnabled": false
+        }
+      ]
+    ]
   }
 }

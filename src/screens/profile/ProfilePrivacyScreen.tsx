@@ -14,6 +14,7 @@ import { getSecureItem, setSecureItem, clearAllSensitiveData, getSecureJSON, set
 import { useThemeMode } from '@/hooks/useThemeMode';
 import PhotoService from '@/services/photo';
 import photoStorage from '@/services/photoStorage';
+import { exportAIRecapToJsonFile } from '@/services/aiExport';
 
 type ConsentAuditAction = 'enabled' | 'disabled';
 
@@ -250,6 +251,27 @@ export const ProfilePrivacyScreen: React.FC = () => {
     );
   }, [deleteAccount]);
 
+  const handleExportAIData = useCallback(async () => {
+    if (!user) {
+      Alert.alert('Compte requis', 'Connectez-vous pour exporter vos données IA.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await exportAIRecapToJsonFile(user);
+      Alert.alert(
+        'Export prêt',
+        `Votre dossier IA a été généré.\n\nFichier: ${result.uri}\nTaille: ${result.size} caractères JSON.\n\nCe fichier peut être transmis à une IA pour un récap et des recommandations d\'objectif.`
+      );
+    } catch (error) {
+      console.warn('[ProfilePrivacyScreen] export AI data error', error);
+      Alert.alert('Erreur', "Impossible d'exporter les données IA pour le moment.");
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
 /**
  * Fonction: formatAuditLabel
  * Utilite: Encapsule une logique reutilisable locale ou exportee.
@@ -311,6 +333,14 @@ export const ProfilePrivacyScreen: React.FC = () => {
             style={styles.button}
           />
 
+          <Button
+            title={loading ? 'Export en cours...' : 'Exporter mon dossier IA (JSON)'}
+            variant="outline"
+            onPress={handleExportAIData}
+            disabled={loading}
+            style={styles.button}
+          />
+
           <View style={styles.accountActions}>
             <Button
               title="Supprimer le compte"
@@ -348,6 +378,9 @@ export const ProfilePrivacyScreen: React.FC = () => {
           </Text>
           <Text style={styles.sectionText}>
             • Cloud iOS : si activé, les photos sont copiées dans l'album iCloud BerserkerCut et supprimables depuis l'app.
+          </Text>
+          <Text style={styles.sectionText}>
+            • Usage commercial : aucune donnée personnelle, de santé, de nutrition ou de photo n'est récupérée, analysée ou traitée à des fins commerciales, publicitaires ou de revente.
           </Text>
           <Button
             title="Consulter la politique complète"

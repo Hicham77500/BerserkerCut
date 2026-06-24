@@ -4,6 +4,30 @@
  * Navigation: Voir les exports nommes pour les points d'entree publics.
  */
 import { User, UserProfile } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const DEMO_AUTH_ACCOUNTS_STORAGE_KEY = 'BERSERKERCUT_DEMO_AUTH_ACCOUNTS_V1';
+const DEMO_AUTH_ACTIVE_EMAIL_STORAGE_KEY = 'BERSERKERCUT_DEMO_AUTH_ACTIVE_EMAIL_V1';
+
+type PersistedUser = Omit<User, 'createdAt' | 'updatedAt'> & {
+  createdAt: string;
+  updatedAt: string;
+  profile: Omit<UserProfile, 'health'> & {
+    health: Omit<UserProfile['health'], 'lastUpdated' | 'dataSource'> & {
+      lastUpdated: string;
+      dataSource: Omit<UserProfile['health']['dataSource'], 'lastSyncDate'> & {
+        lastSyncDate?: string;
+      };
+    };
+  };
+};
+
+type PersistedAccount = {
+  password: string;
+  user: PersistedUser;
+};
+
+type PersistedAccountsStore = Record<string, PersistedAccount>;
 
 const BASE_PROFILE: UserProfile = {
   name: '',
@@ -118,16 +142,105 @@ const DEMO_USER: User = {
 export class DemoAuthService {
   private static currentUser: User | null = null;
   private static listeners: Array<(user: User | null) => void> = [];
+  private static accounts: PersistedAccountsStore = {};
+
+  private static serializeUser(user: User): PersistedUser {
+    return {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+      profile: {
+        ...user.profile,
+        health: {
+          ...user.profile.health,
+          lastUpdated: user.profile.health.lastUpdated.toISOString(),
+          dataSource: {
+            ...user.profile.health.dataSource,
+            lastSyncDate: user.profile.health.dataSource.lastSyncDate
+              ? user.profile.health.dataSource.lastSyncDate.toISOString()
+              : undefined,
+          },
+        },
+      },
+    };
+  }
+
+  private static deserializeUser(user: PersistedUser): User {
+    return {
+      ...user,
+      createdAt: new Date(user.createdAt),
+      updatedAt: new Date(user.updatedAt),
+      profile: {
+        ...user.profile,
+        health: {
+          ...user.profile.health,
+          lastUpdated: new Date(user.profile.health.lastUpdated),
+          dataSource: {
+            ...user.profile.health.dataSource,
+            lastSyncDate: user.profile.health.dataSource.lastSyncDate
+              ? new Date(user.profile.health.dataSource.lastSyncDate)
+              : undefined,
+          },
+        },
+      },
+    } as User;
+  }
+
+  private static async loadAccounts(): Promise<void> {
+    try {
+      const raw = await AsyncStorage.getItem(DEMO_AUTH_ACCOUNTS_STORAGE_KEY);
+      if (!raw) {
+        this.accounts = {};
+        return;
+      }
+      const parsed = JSON.parse(raw) as PersistedAccountsStore;
+      this.accounts = parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (error) {
+      console.warn('[DemoAuthService] loadAccounts error', error);
+      this.accounts = {};
+    }
+  }
+
+  private static async persistAccounts(): Promise<void> {
+    await AsyncStorage.setItem(
+      DEMO_AUTH_ACCOUNTS_STORAGE_KEY,
+      JSON.stringify(this.accounts)
+    );
+  }
+
+  private static async persistCurrentSession(email: string | null): Promise<void> {
+    if (email) {
+      await AsyncStorage.setItem(DEMO_AUTH_ACTIVE_EMAIL_STORAGE_KEY, email);
+      return;
+    }
+    await AsyncStorage.removeItem(DEMO_AUTH_ACTIVE_EMAIL_STORAGE_KEY);
+  }
 
   static async initialize(): Promise<void> {
+    await this.loadAccounts();
+    const activeEmail = await AsyncStorage.getItem(DEMO_AUTH_ACTIVE_EMAIL_STORAGE_KEY);
+    if (activeEmail && this.accounts[activeEmail]?.user) {
+      this.currentUser = this.deserializeUser(this.accounts[activeEmail].user);
+      this.notify();
+      return;
+    }
     this.currentUser = null;
   }
 
   static async login(email: string, password: string): Promise<User> {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
+    const account = this.accounts[email];
+    if (account && account.password === password) {
+      this.currentUser = this.deserializeUser(account.user);
+      await this.persistCurrentSession(email);
+      this.notify();
+      return this.currentUser;
+    }
+
     if (email === DEMO_USER.email && password === 'demo123') {
       this.currentUser = { ...DEMO_USER };
+      await this.persistCurrentSession(null);
       this.notify();
       return this.currentUser;
     }
@@ -137,6 +250,10 @@ export class DemoAuthService {
 
   static async register(email: string, _password: string): Promise<User> {
     await new Promise((resolve) => setTimeout(resolve, 300));
+
+    if (this.accounts[email]) {
+      throw new Error('Cette adresse email est déjà utilisée en mode local.');
+    }
 
     const demoProfile: UserProfile = {
       ...BASE_PROFILE,
@@ -151,12 +268,20 @@ export class DemoAuthService {
       updatedAt: new Date(),
     };
 
+    this.accounts[email] = {
+      password: _password,
+      user: this.serializeUser(this.currentUser),
+    };
+    await this.persistAccounts();
+    await this.persistCurrentSession(email);
+
     this.notify();
     return this.currentUser;
   }
 
   static async logout(): Promise<void> {
     this.currentUser = null;
+    await this.persistCurrentSession(null);
     this.notify();
   }
 
@@ -174,6 +299,15 @@ export class DemoAuthService {
       updatedAt: new Date(),
     };
 
+    const account = this.accounts[this.currentUser.email];
+    if (account) {
+      this.accounts[this.currentUser.email] = {
+        ...account,
+        user: this.serializeUser(this.currentUser),
+      };
+      await this.persistAccounts();
+    }
+
     this.notify();
     return this.currentUser;
   }
@@ -185,6 +319,13 @@ export class DemoAuthService {
   static getUserById(userId: string): Promise<User> {
     if (this.currentUser && this.currentUser.id === userId) {
       return Promise.resolve(this.currentUser);
+    }
+
+    const fromAccounts = Object.values(this.accounts)
+      .map((account) => this.deserializeUser(account.user))
+      .find((accountUser) => accountUser.id === userId);
+    if (fromAccounts) {
+      return Promise.resolve(fromAccounts);
     }
 
     if (DEMO_USER.id === userId) {

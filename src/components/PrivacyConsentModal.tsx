@@ -92,7 +92,8 @@ export const PrivacyConsentModal: React.FC<PrivacyConsentModalProps> = ({
             <View style={styles.section}>
               <Text style={[styles.heading, { color: colors.text }]}>Utilisation des données</Text>
               <Text style={[styles.text, { color: colors.textLight }]}>
-                BerserkerCut utilise vos données de nutrition uniquement pour améliorer votre expérience personnelle. 
+                BerserkerCut utilise vos données de nutrition uniquement pour améliorer votre expérience personnelle.
+                Aucune donnée n'est récupérée, analysée ou traitée à des fins commerciales, publicitaires ou de revente.
                 Nous pouvons collecter des statistiques anonymisées pour améliorer nos algorithmes de recommandation.
               </Text>
             </View>

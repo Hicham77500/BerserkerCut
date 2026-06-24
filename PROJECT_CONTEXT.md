@@ -148,6 +148,23 @@ Use these flags as anchors for next work sessions.
 - Validation (2026-06-21): `npx tsc --noEmit --noUnusedLocals --noUnusedParameters` now returns clean.
 - Priority: LOW
 
+### [FLAG-DATA-01] Personal account continuity and AI-ready export gap
+
+- Location: `src/services/demoAuth.ts`, `src/services/profileHistory.ts`, `src/services/aiExport.ts`, `src/screens/profile/ProfilePrivacyScreen.tsx`
+- Observation: local demo mode previously lost personal account continuity after restart and had no structured dataset export for AI recap workflows.
+- Mitigation (2026-06-24): demo personal accounts are now persisted across app restarts (local credentials + active session), profile evolution history is stored in structured snapshots, and a privacy-screen action now exports an AI-ready JSON dossier (objective, health, training, supplements, consent audit, history, recent plan cache).
+- Residual risk: exported JSON remains local plaintext by design and should be shared only by user intent.
+- Priority: MEDIUM
+
+### [FLAG-HEALTH-01] iOS weight tracking with Apple Health permissions flow
+
+- Location: `src/screens/profile/ProfileHealthScreen.tsx`, `src/services/healthService.ts`, `src/services/providers/appleHealthProvider.ts`, `app.json`
+- Observation: users need guided weight tracking with explicit Apple Health consent and native settings opt-out.
+- Mitigation (2026-06-24): added iOS flow to connect Apple Health, request permissions, sync latest weight into profile, disconnect Health source, and open native iOS settings to revoke access.
+- Mitigation (2026-06-24): Expo config now includes `react-native-health` plugin and HealthKit usage descriptions for iOS prebuild.
+- Residual risk: requires iOS development/production build with HealthKit capability (not available in plain Expo Go runtime).
+- Priority: MEDIUM
+
 ## 6) Suggested Skill Set For This Repository
 
 Adapted from orisha-skills and tailored to BerserkerCut workflows:
@@ -189,3 +206,48 @@ Use these relative paths when jumping from mobile implementation to skill refere
 4. Align docs and Copilot instructions with current runtime architecture.
 5. Add backend auth contract tests for register/login/refresh payload shape.
 6. Complete on-device accessibility and safe-area validation in both light and dark modes, then fold findings into the design backlog.
+
+## 9) Product + QA Non-Regression Baseline (2026-06-24)
+
+Scope introduced in this cycle:
+
+- iOS Apple Health weight-tracking connection and sync UX.
+- Local personal account persistence and AI-ready profile export.
+
+Automated non-regression tests now in place:
+
+- `__tests__/HealthService.test.ts`
+  - Connect flow returns success/failure according to provider availability and permission result.
+  - Sync flow merges provider values (weight, steps, heart rate, sleep) without erasing existing profile shape.
+  - Disconnect flow falls back to manual source while preserving core health values.
+- `__tests__/ProfileHealthScreen.test.tsx`
+  - Manual biometrics save still converts and persists numeric form values.
+  - iOS connect button triggers Apple Health connection and sets `dataSource.type = apple_healthkit`.
+  - iOS sync action persists latest synced weight in profile.
+  - Native settings button opens iOS settings for permission management.
+  - Full user flow covered: connect -> sync -> disconnect Apple Health.
+- `__tests__/HomeDashboardScreen.test.tsx`
+  - Main dashboard cards are validated through behavioral assertions (snapshot-free).
+
+Validation status (2026-06-24):
+
+- Command executed: `npm test -- --watch=false --runInBand`
+- Result: 5 suites passed, 16 tests passed, 0 snapshot dependency.
+
+CI quality gate added:
+
+- Workflow: `.github/workflows/qa-regression.yml`
+- Command: `npm run test:ci`
+- Gate policy: run regression suite and fail build if any `__tests__/**/*.snap` file is present.
+
+QA acceptance checklist (manual):
+
+1. iOS dev build: connect Apple Health from `Profil santé` and verify first consent prompt text.
+2. After consent: trigger sync and verify weight changes on screen and in profile data.
+3. Disable Health access from iOS Settings and confirm app gracefully falls back to manual mode.
+4. Reopen app and confirm personal local account continuity (demo local users remain available).
+
+Release risk notes:
+
+- HealthKit remains unavailable in plain Expo Go; verification requires iOS dev/prod build with HealthKit capability.
+- Existing unrelated navigation typing errors remain outside this scope and must be handled in a separate hardening pass.

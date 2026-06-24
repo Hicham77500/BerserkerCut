@@ -21,6 +21,7 @@ import {
   addModeChangeListener,
   initializeAppMode,
 } from '@/services/appModeService';
+import { ProfileHistoryService } from '@/services/profileHistory';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -130,6 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const userData = await AuthService.register(email, password);
       setUser(userData);
+      await ProfileHistoryService.append(userData, 'account_created');
     } catch (error) {
       console.error('Erreur lors de l\'inscription:', error);
       throw error;
@@ -178,6 +180,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const updatedUser = await AuthService.updateProfile(user.id, profileUpdates);
       setUser(updatedUser);
+      const reason = 'objective' in profileUpdates ? 'goal_updated' : 'profile_updated';
+      await ProfileHistoryService.append(updatedUser, reason);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du profil:', error);
       throw error;
