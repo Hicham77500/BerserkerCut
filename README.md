@@ -50,7 +50,7 @@ src/
 └── utils/             # Theme system, configuration, diagnostics, helpers
 ```
 
-More detailed flows live in `docs/ARCHITECTURE.md`.
+More detailed flows live in `docs/ARCHITECTURE_TECHNIQUE.md`.
 
 ## Getting started
 
@@ -96,6 +96,7 @@ When `EXPO_PUBLIC_API_BASE_URL` is missing or unreachable, the demo services tak
   npm install
   npm run dev
   ```
+- **Code conventions guardrail**: follow naming/comment policy in `PROJECT_CONTEXT.md` (section `11) Politique de conventions`).
 
 ## Project cleanup
 
@@ -146,7 +147,8 @@ The mobile app never talks to MongoDB directly. Secure the API with JWT middlewa
 
 ## Resources
 
-- `docs/ARCHITECTURE.md` – sequence diagrams, data models, domain logic.
+- `docs/ARCHITECTURE_TECHNIQUE.md` – sequence diagrams, data models, domain logic.
+- `docs/DOCUMENTATION_TECHNIQUE.md` – implementation details and operational references.
 - `assets/stitch_berserkercut_ai_nutrition_training_ecosystem/DESIGN.md` – design system rules and UI references.
 - `src/services/apiClient.ts` – REST client with automatic auth headers.
 - `src/services/sessionStorage.ts` – JWT/session helpers.

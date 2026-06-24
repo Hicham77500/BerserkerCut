@@ -1,8 +1,11 @@
 # Documentation Technique - BerserkerCut
 
-**Version :** 1.0.4  
-**Date :** 11 octobre 2025  
+**Version :** 1.1.0  
+**Date :** 25 juin 2026  
 **Portée :** Application mobile React Native / Expo (iOS-first)
+
+> Note de gouvernance: la source de verite produit/architecture est `PROJECT_CONTEXT.md`.
+> La politique de nommage/commentaires est decrite dans `PROJECT_CONTEXT.md` section `11) Politique de conventions`.
 
 ---
 
@@ -31,11 +34,12 @@ cd ios && pod install && cd ..
 ### Variables d’environnement
 Créer un fichier `.env` à la racine :
 ```
-FIREBASE_API_KEY=...
-FIREBASE_AUTH_DOMAIN=...
-FIREBASE_PROJECT_ID=...
-API_BASE_URL=https://api.berserkercut.com
+EXPO_PUBLIC_API_BASE_URL=http://localhost:4000
+EXPO_PUBLIC_FORCE_DEMO_MODE=false
 ```
+
+- `EXPO_PUBLIC_API_BASE_URL`: base URL de l'API REST Node/Express.
+- `EXPO_PUBLIC_FORCE_DEMO_MODE=true`: force le mode demo local meme si l'API est disponible.
 
 ### Scripts utiles (`package.json`)
 ```bash
@@ -68,10 +72,10 @@ NavigationContainer
 ```
 
 ### TabNavigator
-- 5 onglets principaux visibles : Home, Nutrition, Training, Agenda, Paramètres
-- `ProfileStack` reste accessible via CTA internes sans dupliquer la navigation primaire
-- Style dynamique clair/sombre, badges emoji pour icônes, hauteur ajustée aux safe areas
-- Transitions iOS (`SlideFromRightIOS`, `ModalSlideFromBottomIOS`)
+- La navigation principale active est tabs-only, sans drawer global.
+- `ProfileStack` reste accessible via routes internes sans dupliquer la navigation primaire.
+- Le nombre exact d'onglets visibles peut evoluer selon le scope MVP; verifier `src/navigation/MainNavigator.tsx`.
+- Style dynamique clair/sombre et hauteur ajustee aux safe areas.
 
 ---
 
@@ -100,7 +104,7 @@ Chaque composant suit :
 
 | Service | Fichier | Rôle |
 |---------|---------|------|
-| `auth.ts` | `src/services/auth.ts` | Authentification Firebase (login, register, logout, updateProfile) |
+| `auth.ts` | `src/services/auth.ts` | Authentification REST JWT (login, register, logout, updateProfile) |
 | `demoAuth.ts` | `src/services/demoAuth.ts` | Mode démo local |
 | `plan.ts` | `src/services/plan.ts` | Génération plans nutrition (macros, repas, suppléments) |
 | `healthService.ts` | `src/services/healthService.ts` | Profil santé (IMC, objectifs) |
@@ -111,7 +115,7 @@ Chaque composant suit :
 | `apiClient.ts` | `src/services/apiClient.ts` | Client HTTP centralisé |
 | `agendaService.ts` | `src/services/agendaService.ts` | Création d'événements natifs (Expo Calendar) |
 
-**Back-end** : dossier `backend/` (Node.js + Express) pour API complémentaire, avec authentification JWT/Firebase.
+**Back-end** : dossier `backend/` (Node.js + Express) pour API REST, avec authentification JWT.
 
 ---
 
@@ -119,7 +123,7 @@ Chaque composant suit :
 
 ### `useAuth`
 - Provider + hook (`src/hooks/useAuth.tsx`)
-- Gestion de l’état utilisateur (Firebase Auth + mode démo)
+- Gestion de l’état utilisateur (API JWT + mode démo)
 - Modal consentement confidentialité (SecureStore)
 - Méthodes exposées : `login`, `register`, `logout`, `updateProfile`
  
@@ -170,10 +174,10 @@ Chaque composant suit :
 - Hook `useAgenda`
    - Gère permissions (`getCalendarPermissionsAsync` + fallback request)
    - Rafraîchit les événements après chaque modification
-- Écran `AgendaScreen`
+- Écran `AgendaScreen` (si active selon le scope produit)
    - Actions rapides : séance 18h (1h30) / meal prep 12h30 (30 min)
    - Synchronisation manual refresh + empty state convivial
-   - Accessible via le drawer et via l'accueil (bouton "Voir l'agenda")
+   - Accessibilite via navigation interne dediee (sans dependance a un drawer global)
 
 ---
 
@@ -183,10 +187,10 @@ Chaque composant suit :
 - `AsyncStorage` : préférences non sensibles (thème, onboarding, mode app)
 - `SecureStore` : informations sensibles (consentement cloud, tokens)
 
-### Firestore (rules dans `firestore.rules`)
-- `users/{userId}` : accès restreint à l’utilisateur
-- `dailyPlans/{planId}` : propriétaire uniquement (`userId` dans document)
-- Tout le reste : accès interdit par défaut
+### Mode cloud et mode demo
+- Mode cloud: API REST JWT (dossier `backend/`).
+- Mode demo: stockage local pour valider les parcours sans backend.
+- Le mobile ne parle pas directement a la base de donnees: tout passe par la couche service (`src/services/*`).
 
 ### Données synchronisées
 - Profil utilisateur (`UserProfile`)
@@ -199,7 +203,7 @@ Chaque composant suit :
 - **Consentement explicite** : la modalité est gérée via `PrivacyConsentModal` (SecureStore).  
    - Collecte du consentement cloud (synchronisation des plans).  
    - Journalisation locale de la date/choix pour prouver la traçabilité.
-- **Droits utilisateurs** : l’architecture prévoit la suppression complète des données sur demande (service `auth.logout` + purge Firestore).  
+- **Droits utilisateurs** : l’architecture prévoit la suppression complète des données sur demande (service `auth.logout` + purge des donnees applicatives cote cloud/local).  
 - **Minimisation** : seules les données nécessaires aux recommandations sont stockées. Toute donnée facultative est désactivable par l’utilisateur.
 - **Anonymisation IA** : pour les fonctionnalités d’IA (roadmap), les données sont **pseudonymisées côté appareil** avant envoi :  
    - Suppression des identifiants personnels (nom, email).  
@@ -207,7 +211,7 @@ Chaque composant suit :
    - Les attributs sensibles (poids, sommeil) sont normalisés (plages de valeur) avant transmission.  
 - **Serveur & segmentation** : 
    - Backend Node/Express (dossier `backend/`) agit comme passerelle API.  
-   - Base Firestore : stockage transactionnel / temps réel des profils.  
+   - Base de donnees cloud: implementation backend selon configuration de l'environnement.  
    - Serveur IA (à venir) hébergé séparément, ne reçoit que des payloads anonymisés signés (JWT) via la passerelle.  
    - Aucun traitement IA n’est déclenché sans consentement actif.
 
@@ -238,7 +242,7 @@ Utilitaires dans `src/utils` :
 ### Bonnes pratiques
 - Tester les hooks via `renderHook`
 - Mock des services et navigation
-- Ajouter des tests snapshot pour composants visuels
+- Privilegier les assertions comportementales; eviter les snapshots visuels globaux
 
 ---
 
@@ -265,7 +269,7 @@ if (__DEV__) {
 ## 📝 FAQ Développeurs
 
 **Ajouter un écran ?**  
-Créer le composant dans `src/screens/<domaine>/` → l’ajouter au `StackNavigator` correspondant → Mettre à jour Drawer si nécessaire.
+Creer le composant dans `src/screens/<domaine>/` -> l'ajouter au `StackNavigator` correspondant -> verifier l'integration via la navigation tabs-only.
 
 **Changer les couleurs du thème ?**  
 Modifier `src/utils/theme.ts` (palettes `ThemePalette.dark` / `ThemePalette.light`).
@@ -290,4 +294,4 @@ Utiliser `@testing-library/react-hooks` ou wrapper custom.
 
 ---
 
-**Fin de la documentation technique v1.0.4**
+**Fin de la documentation technique v1.1.0**
