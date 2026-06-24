@@ -225,7 +225,11 @@ export const AgendaStackNavigator: React.FC = () => {
         cardStyle: { backgroundColor: colors.background },
       }}
     >
-      <AgendaStack.Screen name="Agenda" component={AgendaScreen} />
+      <AgendaStack.Screen
+        name="Agenda"
+        component={AgendaScreen}
+        options={{ title: "Semaine d'entraînement" }}
+      />
     </AgendaStack.Navigator>
   );
 };

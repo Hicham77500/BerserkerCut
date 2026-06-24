@@ -26,7 +26,7 @@ const tabIcons: Record<string, string> = {
   HomeStack: '🏠',
   NutritionStack: '🥗',
   TrainingStack: '🏋️',
-  AgendaStack: '📅',
+  AgendaStack: '🔥',
   SettingsStack: '⚙️',
 };
 
@@ -116,8 +116,8 @@ const MainTabNavigator: React.FC = () => {
           name="AgendaStack"
           component={AgendaStackNavigator}
           options={{
-            tabBarLabel: 'Agenda',
-            tabBarAccessibilityLabel: 'Onglet Agenda',
+            tabBarLabel: 'Semaine',
+            tabBarAccessibilityLabel: 'Onglet Semaine',
           }}
         />
         <Tab.Screen

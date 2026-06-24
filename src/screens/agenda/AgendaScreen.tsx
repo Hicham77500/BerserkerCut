@@ -3,130 +3,176 @@
  * Utilite: Contient la logique fonctionnelle de cette partie de BerserkerCut.
  * Navigation: Voir les exports nommes pour les points d'entree publics.
  */
-import React, { useCallback, useMemo } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
 import { Card, IOSButton } from '@/components';
+import { useAuth } from '@/hooks/useAuth';
+import { usePlan } from '@/hooks/usePlan';
 import { useThemeMode } from '@/hooks/useThemeMode';
-import { useAgenda } from '@/hooks/useAgenda';
-import { Spacing, ThemePalette, Typography } from '@/utils/theme';
+import { Spacing, ThemePalette, Typography, BorderRadius } from '@/utils/theme';
+import { WeeklyTrainingSession } from '@/types';
 
-/**
- * Fonction: toLocaleDateTime
- * Utilite: Encapsule une logique reutilisable locale ou exportee.
- */
-const toLocaleDateTime = (value: string | Date) =>
-  new Date(value).toLocaleString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+const WEEK_PROGRESS_STORAGE_KEY = 'BERSERKERCUT_AGENDA_WEEK_PROGRESS_V1';
+const WEEKDAY_SHORT_LABELS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+const WEEKDAY_FULL_LABELS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
-/**
- * Fonction: computeNextOccurrence
- * Utilite: Encapsule une logique reutilisable locale ou exportee.
- */
-const computeNextOccurrence = (hour: number, minute: number, dayOffset = 0) => {
-  const now = new Date();
-  const next = new Date(now);
-  next.setHours(hour, minute, 0, 0);
+const ESTIMATED_BURN_PER_MINUTE = {
+  strength: 8,
+  cardio: 10,
+  mixed: 9,
+  active_recovery: 4,
+  rest: 0,
+} as const;
 
-  if (next <= now) {
-    next.setDate(next.getDate() + 1 + dayOffset);
-  } else if (dayOffset) {
-    next.setDate(next.getDate() + dayOffset);
-  }
+type DayProgressMap = Record<number, boolean>;
 
+const getWeekStart = (date: Date): Date => {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  const mondayIndex = (next.getDay() + 6) % 7;
+  next.setDate(next.getDate() - mondayIndex);
   return next;
 };
 
-/**
- * Composant: AgendaScreen
- * Utilite: Gere le rendu UI et les interactions utilisateur de cet ecran/composant.
- */
+const getWeekStorageKey = (userId: string, weekStart: Date): string => {
+  return `${WEEK_PROGRESS_STORAGE_KEY}:${userId}:${weekStart.toISOString().split('T')[0]}`;
+};
+
+const estimateBurnedCalories = (day: WeeklyTrainingSession): number => {
+  if (!day.isTrainingDay || !day.training) {
+    return 0;
+  }
+
+  const duration = day.training.duration ?? 45;
+  const intensity = ESTIMATED_BURN_PER_MINUTE[day.training.type] ?? ESTIMATED_BURN_PER_MINUTE.mixed;
+  return Math.round(duration * intensity);
+};
+
+const formatWeekday = (date: Date): string =>
+  date.toLocaleDateString('fr-FR', {
+    weekday: 'short',
+    day: '2-digit',
+  });
+
+const initialProgress = (days: WeeklyTrainingSession[]): DayProgressMap =>
+  days.reduce<DayProgressMap>((acc, day) => {
+    if (day.isTrainingDay) {
+      acc[day.dayOfWeek] = false;
+    }
+    return acc;
+  }, {});
+
 export const AgendaScreen: React.FC = () => {
+  const { user } = useAuth();
+  const { currentPlan, weeklySchedule } = usePlan();
   const { colors } = useThemeMode();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const {
-    events,
-    loading,
-    permissionStatus,
-    scheduleEvent,
-    refreshEvents,
-    requestPermission,
-  } = useAgenda();
+  const [progress, setProgress] = useState<DayProgressMap>({});
+  const [loading, setLoading] = useState(true);
 
-  const ensurePermission = useCallback(async () => {
-    const granted = await requestPermission();
-    if (!granted) {
-      Alert.alert(
-        'Accès calendrier requis',
-        "Active l'accès au calendrier iOS pour synchroniser tes séances BerserkerCut.",
-      );
-    }
-    return granted;
-  }, [requestPermission]);
+  const weekStart = useMemo(() => getWeekStart(new Date()), []);
+  const storageKey = useMemo(() => {
+    if (!user?.id) return null;
+    return getWeekStorageKey(user.id, weekStart);
+  }, [user?.id, weekStart]);
 
-  useFocusEffect(
-    useCallback(() => {
-      refreshEvents(14);
-    }, [refreshEvents]),
+  useEffect(() => {
+    let mounted = true;
+
+    const hydrateProgress = async () => {
+      if (!storageKey) {
+        if (mounted) {
+          setProgress(initialProgress(weeklySchedule));
+          setLoading(false);
+        }
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const stored = await AsyncStorage.getItem(storageKey);
+        const parsed = stored ? (JSON.parse(stored) as DayProgressMap) : {};
+        const defaults = initialProgress(weeklySchedule);
+        if (mounted) {
+          setProgress({ ...defaults, ...parsed });
+        }
+      } catch (error) {
+        console.warn('[AgendaScreen] hydrate progress error', error);
+        if (mounted) {
+          setProgress(initialProgress(weeklySchedule));
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void hydrateProgress();
+
+    return () => {
+      mounted = false;
+    };
+  }, [storageKey, weeklySchedule]);
+
+  const weekDays = useMemo(
+    () =>
+      weeklySchedule.map((day) => {
+        const completed = Boolean(progress[day.dayOfWeek]);
+        return {
+          ...day,
+          completed,
+          burn: estimateBurnedCalories(day),
+        };
+      }),
+    [progress, weeklySchedule],
   );
 
-  const handleAddTraining = useCallback(async () => {
-    try {
-      const allowed = await ensurePermission();
-      if (!allowed) {
+  const trainingDays = useMemo(() => weekDays.filter((day) => day.isTrainingDay), [weekDays]);
+  const completedTrainingDays = useMemo(
+    () => trainingDays.filter((day) => day.completed),
+    [trainingDays],
+  );
+  const estimatedBurn = useMemo(
+    () => completedTrainingDays.reduce((sum, day) => sum + day.burn, 0),
+    [completedTrainingDays],
+  );
+
+  const persistProgress = useCallback(
+    async (nextProgress: DayProgressMap) => {
+      if (!storageKey) return;
+      try {
+        await AsyncStorage.setItem(storageKey, JSON.stringify(nextProgress));
+      } catch (error) {
+        console.warn('[AgendaScreen] persist progress error', error);
+      }
+    },
+    [storageKey],
+  );
+
+  const toggleDay = useCallback(
+    async (day: WeeklyTrainingSession) => {
+      if (!day.isTrainingDay) {
         return;
       }
-      const startDate = computeNextOccurrence(18, 0);
-      const endDate = new Date(startDate.getTime() + 90 * 60 * 1000);
-      await scheduleEvent({
-        title: 'Séance BerserkerCut',
-        notes: 'Prépare ton entraînement et ton pré-workout.',
-        startDate,
-        endDate,
-        type: 'training',
-      });
-      Alert.alert('Séance ajoutée', 'Ta prochaine séance est maintenant dans ton agenda.');
-    } catch (error) {
-      Alert.alert('Impossible d’ajouter', (error as Error).message);
-    }
-  }, [ensurePermission, scheduleEvent]);
 
-  const handleAddNutrition = useCallback(async () => {
-    try {
-      const allowed = await ensurePermission();
-      if (!allowed) {
-        return;
-      }
-      const startDate = computeNextOccurrence(12, 30);
-      const endDate = new Date(startDate.getTime() + 30 * 60 * 1000);
-      await scheduleEvent({
-        title: 'Meal prep BerserkerCut',
-        notes: 'Prépare ton repas principal et valide tes macros.',
-        startDate,
-        endDate,
-        type: 'nutrition',
-      });
-      Alert.alert('Rappel nutrition programmé', 'Ton créneau meal prep est planifié.');
-    } catch (error) {
-      Alert.alert('Impossible d’ajouter', (error as Error).message);
-    }
-  }, [ensurePermission, scheduleEvent]);
+      const nextProgress = {
+        ...progress,
+        [day.dayOfWeek]: !progress[day.dayOfWeek],
+      };
+      setProgress(nextProgress);
+      await persistProgress(nextProgress);
+    },
+    [persistProgress, progress],
+  );
 
-  const handleRefresh = useCallback(async () => {
-    try {
-      await refreshEvents(14);
-    } catch (error) {
-      Alert.alert('Erreur de synchronisation', (error as Error).message);
-    }
-  }, [refreshEvents]);
-
-  const emptyState = events.length === 0;
+  const resetWeek = useCallback(async () => {
+    const nextProgress = initialProgress(weeklySchedule);
+    setProgress(nextProgress);
+    await persistProgress(nextProgress);
+  }, [persistProgress, weeklySchedule]);
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.safeArea}>
@@ -136,83 +182,110 @@ export const AgendaScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Agenda natif</Text>
+          <View style={styles.headerTextGroup}>
+            <Text style={styles.title}>Semaine d'entraînement</Text>
             <Text style={styles.subtitle}>
-              Synchronise tes séances et blocs nutrition directement dans l’app Calendrier iOS.
+              Valide tes séances au fil de la semaine. Les flammes se remplissent quand tu coches tes trainings.
             </Text>
           </View>
           <IOSButton
-            label="Actualiser"
+            label="Réinitialiser"
             variant="ghost"
             align="leading"
-            onPress={handleRefresh}
+            onPress={resetWeek}
             loading={loading}
           />
         </View>
 
         <Card style={styles.card}>
-          <Text style={styles.cardLabel}>Actions rapides</Text>
-          <Text style={styles.cardDescription}>
-            Les événements s’ajoutent dans un calendrier dédié "BerserkerCut Agenda".
-          </Text>
-          {permissionStatus !== 'granted' && (
-            <IOSButton
-              label="Autoriser l’accès au calendrier"
-              variant="primary"
-              align="leading"
-              onPress={ensurePermission}
-            />
-          )}
-          <View style={styles.quickActions}>
-            <IOSButton
-              label="Ajouter séance (18h)"
-              align="leading"
-              onPress={handleAddTraining}
-              disabled={permissionStatus === 'denied'}
-            />
-            <IOSButton
-              label="Bloc nutrition (12h30)"
-              align="leading"
-              variant="secondary"
-              onPress={handleAddNutrition}
-              disabled={permissionStatus === 'denied'}
+          <Text style={styles.cardLabel}>Vue rapide</Text>
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryBlock}>
+              <Text style={styles.summaryValue}>{completedTrainingDays.length}/{trainingDays.length || 0}</Text>
+              <Text style={styles.summaryLabel}>séances validées</Text>
+            </View>
+            <View style={styles.summaryBlock}>
+              <Text style={styles.summaryValue}>{estimatedBurn} kcal</Text>
+              <Text style={styles.summaryLabel}>brûlées cette semaine</Text>
+            </View>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${trainingDays.length ? Math.round((completedTrainingDays.length / trainingDays.length) * 100) : 0}%`,
+                },
+              ]}
             />
           </View>
+          <Text style={styles.cardDescription}>
+            Déplace-toi simplement dans la semaine et tape sur une flamme pour marquer une séance comme faite.
+          </Text>
         </Card>
 
         <Card style={styles.card}>
-          <Text style={styles.cardLabel}>Événements à venir</Text>
-          {emptyState ? (
-            <Text style={styles.emptyState}>
-              Aucun événement planifié pour le moment. Ajoute tes rappels BerserkerCut et garde le
-              cap.
-            </Text>
-          ) : (
-            <View style={styles.eventsList}>
-              {events.map((event) => (
-                <View key={`${event.id}`} style={styles.eventRow}>
-                  <View style={styles.eventInfo}>
-                    <Text style={styles.eventTitle}>{event.title}</Text>
-                    <Text style={styles.eventTime}>{toLocaleDateTime(event.startDate)}</Text>
-                    {event.notes ? (
-                      <Text style={styles.eventNotes}>{event.notes}</Text>
-                    ) : null}
+          <Text style={styles.cardLabel}>Calendrier hebdo</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.weekScroll}>
+            {weekDays.map((day) => {
+              const active = day.isTrainingDay && day.completed;
+              const flameCount = day.isTrainingDay ? Math.max(1, Math.min(3, Math.round((day.burn || 0) / 200))) : 0;
+
+              return (
+                <Pressable
+                  key={`${day.dayOfWeek}-${day.date.toISOString()}`}
+                  accessibilityRole="button"
+                  accessibilityLabel={day.isTrainingDay ? `Valider ${day.label}` : `${day.label} repos`}
+                  accessibilityState={{ selected: Boolean(day.completed) }}
+                  onPress={() => toggleDay(day)}
+                  style={({ pressed }) => [
+                    styles.dayCard,
+                    day.isToday && styles.dayCardToday,
+                    day.isTrainingDay ? styles.dayCardTraining : styles.dayCardRest,
+                    active && styles.dayCardCompleted,
+                    pressed && styles.dayCardPressed,
+                  ]}
+                >
+                  <Text style={styles.dayShortLabel}>{WEEKDAY_SHORT_LABELS[day.dayOfWeek]}</Text>
+                  <Text style={styles.dayDate}>{formatWeekday(day.date)}</Text>
+                  <View style={styles.dayIconRow}>
+                    {day.isTrainingDay ? (
+                      Array.from({ length: flameCount }).map((_, index) => (
+                        <Text key={`${day.dayOfWeek}-flame-${index}`} style={[styles.flame, active && styles.flameActive]}>
+                          {active ? '🔥' : '🔥'}
+                        </Text>
+                      ))
+                    ) : (
+                      <Text style={styles.restIcon}>•</Text>
+                    )}
                   </View>
-                </View>
-              ))}
-            </View>
-          )}
+                  <Text style={[styles.dayMeta, active && styles.dayMetaActive]}>
+                    {day.isTrainingDay
+                      ? active
+                        ? 'Validé'
+                        : `${day.burn} kcal`
+                      : 'Repos'}
+                  </Text>
+                  <Text style={styles.dayHint}>
+                    {day.isTrainingDay ? 'Tape pour valider' : 'Récupération'}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </Card>
+
+        <Card style={styles.card}>
+          <Text style={styles.cardLabel}>Semaine active</Text>
+          <Text style={styles.cardDescription}>
+            {currentPlan?.dailyTip ?? 'Continue à valider tes séances pour garder le cap sur la sèche.'}
+          </Text>
         </Card>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-/**
- * Fonction: createStyles
- * Utilite: Encapsule une logique reutilisable locale ou exportee.
- */
 const createStyles = (colors: ThemePalette) =>
   StyleSheet.create({
     safeArea: {
@@ -234,6 +307,10 @@ const createStyles = (colors: ThemePalette) =>
       alignItems: 'flex-start',
       gap: Spacing.md,
     },
+    headerTextGroup: {
+      flex: 1,
+      gap: Spacing.xs,
+    },
     title: {
       ...Typography.h1,
       color: colors.text,
@@ -246,7 +323,7 @@ const createStyles = (colors: ThemePalette) =>
       gap: Spacing.md,
       padding: Spacing.lg,
       backgroundColor: colors.surface,
-      borderRadius: 12,
+      borderRadius: BorderRadius.lg,
     },
     cardLabel: {
       ...Typography.caption,
@@ -257,37 +334,111 @@ const createStyles = (colors: ThemePalette) =>
       ...Typography.body,
       color: colors.textLight,
     },
-    quickActions: {
-      gap: Spacing.sm,
-    },
-    eventsList: {
+    summaryRow: {
+      flexDirection: 'row',
       gap: Spacing.md,
     },
-    eventRow: {
+    summaryBlock: {
+      flex: 1,
+      gap: Spacing.xs,
       padding: Spacing.md,
+      borderRadius: BorderRadius.md,
       backgroundColor: colors.secondaryBackground,
-      borderRadius: 12,
-      gap: Spacing.xs,
     },
-    eventInfo: {
-      gap: Spacing.xs,
-    },
-    eventTitle: {
-      ...Typography.h3,
+    summaryValue: {
+      ...Typography.h2,
       color: colors.text,
-      textTransform: 'capitalize',
     },
-    eventTime: {
-      ...Typography.body,
-      color: colors.textLight,
-    },
-    eventNotes: {
+    summaryLabel: {
       ...Typography.bodySmall,
       color: colors.textLight,
     },
-    emptyState: {
-      ...Typography.body,
+    progressTrack: {
+      height: 10,
+      borderRadius: 999,
+      backgroundColor: colors.border,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: 999,
+      backgroundColor: colors.primary,
+    },
+    weekScroll: {
+      gap: Spacing.sm,
+      paddingRight: Spacing.sm,
+    },
+    dayCard: {
+      width: 88,
+      minHeight: 136,
+      paddingVertical: Spacing.sm,
+      paddingHorizontal: Spacing.sm,
+      borderRadius: BorderRadius.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.secondaryBackground,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: Spacing.xs,
+    },
+    dayCardTraining: {
+      backgroundColor: colors.surface,
+    },
+    dayCardRest: {
+      backgroundColor: colors.secondaryBackground,
+    },
+    dayCardToday: {
+      borderColor: colors.primary,
+    },
+    dayCardCompleted: {
+      backgroundColor: colors.primary + '15',
+      borderColor: colors.primary,
+    },
+    dayCardPressed: {
+      transform: [{ scale: 0.98 }],
+      opacity: 0.95,
+    },
+    dayShortLabel: {
+      ...Typography.caption,
       color: colors.textLight,
+      textTransform: 'uppercase',
+    },
+    dayDate: {
+      ...Typography.bodySmall,
+      color: colors.text,
+      textAlign: 'center',
+    },
+    dayIconRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      minHeight: 34,
+      gap: 2,
+    },
+    flame: {
+      fontSize: 18,
+      opacity: 0.7,
+    },
+    flameActive: {
+      opacity: 1,
+    },
+    restIcon: {
+      ...Typography.h2,
+      color: colors.textLight,
+    },
+    dayMeta: {
+      ...Typography.bodySmall,
+      color: colors.textLight,
+      fontWeight: '600',
+    },
+    dayMetaActive: {
+      color: colors.primary,
+    },
+    dayHint: {
+      ...Typography.caption,
+      color: colors.textLight,
+      textAlign: 'center',
     },
   });
 

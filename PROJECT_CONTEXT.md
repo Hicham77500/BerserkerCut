@@ -165,6 +165,14 @@ Use these flags as anchors for next work sessions.
 - Residual risk: requires iOS development/production build with HealthKit capability (not available in plain Expo Go runtime).
 - Priority: MEDIUM
 
+### [FLAG-UX-04] Native agenda simplified to weekly training validation
+
+- Location: `src/screens/agenda/AgendaScreen.tsx`, `src/navigation/MainNavigator.tsx`, `src/navigation/StackNavigators.tsx`
+- Observation: the previous native agenda/calendar event model was too heavy for the product need.
+- Mitigation (2026-06-24): replaced it with a horizontal weekly view inspired by Fitness, where each training day is validated with a flame marker and the week summary tracks completed sessions plus estimated calories burned.
+- Residual risk: the screen is intentionally local-first and does not manage external calendar events anymore.
+- Priority: MEDIUM
+
 ## 6) Suggested Skill Set For This Repository
 
 Adapted from orisha-skills and tailored to BerserkerCut workflows:
@@ -206,6 +214,7 @@ Use these relative paths when jumping from mobile implementation to skill refere
 4. Align docs and Copilot instructions with current runtime architecture.
 5. Add backend auth contract tests for register/login/refresh payload shape.
 6. Complete on-device accessibility and safe-area validation in both light and dark modes, then fold findings into the design backlog.
+7. Review the simplified weekly agenda on device and confirm the flame markers feel clear in both themes.
 
 ## 9) Product + QA Non-Regression Baseline (2026-06-24)
 
