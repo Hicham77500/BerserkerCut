@@ -261,3 +261,41 @@ Release risk notes:
 - `ROADMAP_SCREENS.md` is the screen-level source of truth for implementation order.
 - `TRELLO.md` is the living execution board and must be updated alongside roadmap changes.
 - When a task moves state, update all three artifacts in the same session when possible.
+
+## 11) Politique de conventions (nommage + commentaires) anti-derive
+
+Objectif: garantir un codebase lisible, stable et reviewable dans la duree, meme avec des contributions frequentes.
+
+### 11.1 Conventions de nommage (frontend Expo + backend Node)
+
+- Variables/fonctions: `camelCase`.
+- Composants React, ecrans, types, interfaces, enums: `PascalCase`.
+- Hooks React: prefixe obligatoire `use` (ex: `useThemeMode`, `usePlan`).
+- Constantes globales immuables: `UPPER_SNAKE_CASE`.
+- Fichiers composants/ecrans/types: `PascalCase.tsx` ou `PascalCase.ts`.
+- Fichiers utilitaires/services/hooks: `camelCase.ts`.
+- Noms de booleens explicites: commencer par `is`, `has`, `can`, `should`.
+- Noms de fonctions orientes action: commencer par un verbe (`loadPlan`, `saveProfile`, `syncHealthData`).
+- Interdits: abreviations ambigues (`data2`, `tmp`, `val`, `obj`) sauf variables de boucle ultra-locales.
+
+### 11.2 Conventions de commentaires
+
+- Regle principale: commenter le `why` (intention/contrainte), pas le `what` evident.
+- Commentaires obligatoires quand:
+  - une regle metier n'est pas triviale,
+  - un contournement technique est necessaire,
+  - une decision protege un contrat API/auth/plan,
+  - un comportement est lie a iOS/Android/Web de facon non evidente.
+- Commentaires interdits:
+  - commentaire ligne par ligne du code evident,
+  - code mort commente,
+  - TODO sans contexte.
+- Format TODO obligatoire:
+  - `TODO(YYYY-MM-DD,owner): action concise + critere de sortie`.
+
+### 11.3 Guardrails de review (a appliquer sur chaque PR)
+
+- Pas de renommage cosmetique massif hors besoin fonctionnel.
+- Toute nouvelle API/service/hook respecte les conventions ci-dessus avant merge.
+- Tout ecart volontaire doit etre justifie dans la PR et documente ici si durable.
+- En cas de conflit, `PROJECT_CONTEXT.md` fait foi sur les conventions de nommage/commentaires.
