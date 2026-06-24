@@ -5,8 +5,11 @@ Maintainer: Copilot workspace bootstrap
 
 ## 1) Project Snapshot
 
-- Product: iOS-first nutrition and supplement coaching app for cutting phase.
-- Current MVP reset: login screen and logo only; the rest of the product surface is temporarily removed from the active flow.
+- Product: iOS-first application de suivi nutritionnel et de transformation physique.
+- Current product direction: BerserkerCut v2 follows a 4-step journey: Tracker -> Understand -> Coach -> Automate.
+- Current MVP scope: Dashboard Tracker V1 first, then minimal daily capture flows for weight, water, and meals before any analytics or coaching.
+- Product intent for V1: answer a single question after login, "Comment se passe ma journée aujourd'hui ?"
+- AI is deferred until user data has been collected; coaching and automation remain downstream phases.
 - Frontend stack: Expo 54, React Native 0.81, React 19, TypeScript strict.
 - Backend stack: Node/Express + MongoDB (separate service in backend/).
 - Runtime modes:
@@ -21,6 +24,7 @@ Maintainer: Copilot workspace bootstrap
 - Expo register: index.ts
 - Root navigation and providers: src/navigation/Navigation.tsx
 - Main in-app navigator (tabs): src/navigation/MainNavigator.tsx
+- First post-login business screen: src/screens/dashboard/DashboardScreen.tsx
 - System settings screen: src/screens/settings/SystemSettingsScreen.tsx
 
 ### Domain layers
@@ -43,6 +47,7 @@ Maintainer: Copilot workspace bootstrap
 
 - Auth state and privacy consent are orchestrated in src/hooks/useAuth.tsx.
 - Daily plan lifecycle is orchestrated in src/hooks/usePlan.tsx.
+- Dashboard Tracker data should aggregate today's captured weight, meal, and water entries before introducing advice or scoring.
 - API client handles token attachment and query composition in src/services/apiClient.ts.
 - App mode switching (demo/cloud) is handled in src/services/appModeService.ts and src/utils/config.ts.
 
@@ -199,9 +204,11 @@ Use these relative paths when jumping from mobile implementation to skill refere
 
 ## 8) Next Actions Queue
 
-1. Define the new product MVP beyond login and logo.
-2. Decide whether backend auth remains needed in the short term or can be paused with the rest of the product.
-3. Rebuild only the next essential screen once the product direction is frozen.
+1. Build Dashboard Tracker V1 as the first post-login business screen.
+2. Deliver the capture-first MVP in priority order: dashboard, weight entry, water entry, meal entry.
+3. Keep `ROADMAP_PRODUCT.md`, `ROADMAP_SCREENS.md`, and `TRELLO.md` synchronized whenever scope changes.
+4. Decide whether backend auth remains needed in the short term or can be paused with the rest of the product.
+5. Rebuild only the next essential screen once the product direction is frozen.
 
 ## 9) Product + QA Non-Regression Baseline (2026-06-24)
 
@@ -247,3 +254,10 @@ Release risk notes:
 
 - HealthKit remains unavailable in plain Expo Go; verification requires iOS dev/prod build with HealthKit capability.
 - Existing unrelated navigation typing errors remain outside this scope and must be handled in a separate hardening pass.
+
+## 10) Roadmap Synchronization Rule
+
+- `ROADMAP_PRODUCT.md` is the phase-level source of truth for product direction.
+- `ROADMAP_SCREENS.md` is the screen-level source of truth for implementation order.
+- `TRELLO.md` is the living execution board and must be updated alongside roadmap changes.
+- When a task moves state, update all three artifacts in the same session when possible.

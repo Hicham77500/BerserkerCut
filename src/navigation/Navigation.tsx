@@ -21,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // Providers et hooks metiers pour l'authentification.
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 // Ecran d'entree principal.
-import { LoginScreen } from '@/screens';
+import { DashboardScreen, LoginScreen } from '@/screens';
 // Hook de thème pour synchroniser la navigation avec le mode actuel.
 import { useThemeMode } from '@/hooks/useThemeMode';
 // Échelle d'espacement partagée.
@@ -29,7 +29,7 @@ import { Spacing } from '@/utils/theme';
 
 // Composant qui affiche l'ecran de chargement puis l'ecran de connexion.
 const AppNavigator: React.FC = () => {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
   const { colors } = useThemeMode();
   const isWebPlatform = Platform.OS === 'web';
 
@@ -55,6 +55,10 @@ const AppNavigator: React.FC = () => {
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
+  }
+
+  if (user) {
+    return <DashboardScreen />;
   }
 
   return <LoginScreen />;
