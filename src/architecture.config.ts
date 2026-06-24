@@ -78,10 +78,10 @@ export const ARCHITECTURE_FOLDERS = {
  */
 export const NAMING_CONVENTIONS = {
   /** Composants React - PascalCase */
-  COMPONENTS: 'PascalCase (ex: UserProfile, MacroCard)',
+  COMPONENTS: 'PascalCase (ex: UserProfile, Button)',
   
   /** Hooks personnalisés - camelCase avec préfixe "use" */
-  HOOKS: 'camelCase with "use" prefix (ex: useAuth, usePlan)',
+  HOOKS: 'camelCase with "use" prefix (ex: useAuth, useThemeMode)',
   
   /** Services - PascalCase avec suffixe "Service" */
   SERVICES: 'PascalCase with "Service" suffix (ex: AuthService, PlanService)',

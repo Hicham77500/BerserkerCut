@@ -1,11 +1,12 @@
 # BerserkerCut - Project Context
 
-Version: 2026-06-21
+Version: 0.0.1
 Maintainer: Copilot workspace bootstrap
 
 ## 1) Project Snapshot
 
 - Product: iOS-first nutrition and supplement coaching app for cutting phase.
+- Current MVP reset: login screen and logo only; the rest of the product surface is temporarily removed from the active flow.
 - Frontend stack: Expo 54, React Native 0.81, React 19, TypeScript strict.
 - Backend stack: Node/Express + MongoDB (separate service in backend/).
 - Runtime modes:
@@ -150,28 +151,18 @@ Use these flags as anchors for next work sessions.
 
 ### [FLAG-DATA-01] Personal account continuity and AI-ready export gap
 
-- Location: `src/services/demoAuth.ts`, `src/services/profileHistory.ts`, `src/services/aiExport.ts`, `src/screens/profile/ProfilePrivacyScreen.tsx`
-- Observation: local demo mode previously lost personal account continuity after restart and had no structured dataset export for AI recap workflows.
-- Mitigation (2026-06-24): demo personal accounts are now persisted across app restarts (local credentials + active session), profile evolution history is stored in structured snapshots, and a privacy-screen action now exports an AI-ready JSON dossier (objective, health, training, supplements, consent audit, history, recent plan cache).
-- Residual risk: exported JSON remains local plaintext by design and should be shared only by user intent.
-- Priority: MEDIUM
+- Status: archived with the removed product surfaces.
+- Note: local persistence and AI export were implemented previously, but the related profile/privacy screens are no longer part of the active MVP.
 
 ### [FLAG-HEALTH-01] iOS weight tracking with Apple Health permissions flow
 
-- Location: `src/screens/profile/ProfileHealthScreen.tsx`, `src/services/healthService.ts`, `src/services/providers/appleHealthProvider.ts`, `app.json`
-- Observation: users need guided weight tracking with explicit Apple Health consent and native settings opt-out.
-- Mitigation (2026-06-24): added iOS flow to connect Apple Health, request permissions, sync latest weight into profile, disconnect Health source, and open native iOS settings to revoke access.
-- Mitigation (2026-06-24): Expo config now includes `react-native-health` plugin and HealthKit usage descriptions for iOS prebuild.
-- Residual risk: requires iOS development/production build with HealthKit capability (not available in plain Expo Go runtime).
-- Priority: MEDIUM
+- Status: archived with the removed product surfaces.
+- Note: HealthKit work existed previously, but it is no longer part of the current MVP flow.
 
 ### [FLAG-UX-04] Native agenda simplified to weekly training validation
 
-- Location: `src/screens/agenda/AgendaScreen.tsx`, `src/navigation/MainNavigator.tsx`, `src/navigation/StackNavigators.tsx`
-- Observation: the previous native agenda/calendar event model was too heavy for the product need.
-- Mitigation (2026-06-24): replaced it with a horizontal weekly view inspired by Fitness, where each training day is validated with a flame marker and the week summary tracks completed sessions plus estimated calories burned.
-- Residual risk: the screen is intentionally local-first and does not manage external calendar events anymore.
-- Priority: MEDIUM
+- Status: archived with the removed product surfaces.
+- Note: the weekly agenda view was removed to keep the active MVP minimal.
 
 ## 6) Suggested Skill Set For This Repository
 
@@ -208,13 +199,9 @@ Use these relative paths when jumping from mobile implementation to skill refere
 
 ## 8) Next Actions Queue
 
-1. Resolve [FLAG-ARCH-01] and [FLAG-ARCH-02] together (single auth contract pass).
-2. Replace hardcoded LAN IP in src/services/apiClient.ts with deterministic host derivation.
-3. Reduce backend header logging to non-sensitive fields only.
-4. Align docs and Copilot instructions with current runtime architecture.
-5. Add backend auth contract tests for register/login/refresh payload shape.
-6. Complete on-device accessibility and safe-area validation in both light and dark modes, then fold findings into the design backlog.
-7. Review the simplified weekly agenda on device and confirm the flame markers feel clear in both themes.
+1. Define the new product MVP beyond login and logo.
+2. Decide whether backend auth remains needed in the short term or can be paused with the rest of the product.
+3. Rebuild only the next essential screen once the product direction is frozen.
 
 ## 9) Product + QA Non-Regression Baseline (2026-06-24)
 

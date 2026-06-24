@@ -1,6 +1,6 @@
 {
   "name": "berserkercut",
-  "version": "1.0.4",
+  "version": "0.0.1",
   "description": "iOS-first React Native Expo app for personalized cutting nutrition and supplement plans with intelligent daily recommendations. PWA version planned for Phase 2.",
   "main": "index.ts",
   "scripts": {

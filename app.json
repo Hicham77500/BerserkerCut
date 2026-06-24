@@ -2,7 +2,7 @@
   "expo": {
     "name": "BerserkerCut",
     "slug": "BerserkerCut",
-    "version": "1.0.4",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/app-icon-1024.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,7 @@
       "icon": "./assets/app-icon-1024.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.GCorp.BerserkerCut",
-      "buildNumber": "1.0.4",
+      "buildNumber": "0.0.1",
       "requireFullScreen": false,
       "userInterfaceStyle": "light",
       "infoPlist": {
